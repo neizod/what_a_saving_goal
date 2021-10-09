@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:what_a_saving_goal/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +25,21 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Saving Goal Home Page'),
+      initialRoute: '/login',
+      onGenerateRoute: _getRoute,
+    );
+  }
+
+  Route<dynamic>? _getRoute(RouteSettings settings) {
+    if (settings.name != '/login') {
+      return null;
+    }
+
+    return MaterialPageRoute<void>(
+      settings: settings,
+      builder: (BuildContext context) => const LoginPage(),
+      fullscreenDialog: true,
     );
   }
 }
@@ -93,10 +108,14 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            const Text(
+            Container(
+              child:  Text(
               'You have pushed the button this many times:',
+              ),
+              alignment: Alignment.topCenter,
+              margin: EdgeInsets.fromLTRB(0, 100, 0, 0),
             ),
             Text(
               '$_counter',
