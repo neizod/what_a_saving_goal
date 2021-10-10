@@ -64,6 +64,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  int _current_balance = 435000;
 
   void _incrementCounter() {
     setState(() {
@@ -112,14 +113,31 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Container(
               child:  Text(
-              'You have pushed the button this many times:',
+              'ยอดเงินปัจจุบัน: $_current_balance บาท',
+              style: Theme.of(context).textTheme.headline5,
               ),
               alignment: Alignment.topCenter,
-              margin: EdgeInsets.fromLTRB(0, 100, 0, 0),
+              margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            Row(
+              children: <Widget> [
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    color: Colors.red,
+                    width: 10,
+                    child: Center(child:Text('29999')),
+                    ),
+                  ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Colors.green,
+                    width: 10,
+                    child: Center(child:Text('50000')),
+                    ),
+                  ),
+                ],
             ),
           ],
         ),
