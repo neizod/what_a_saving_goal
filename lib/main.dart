@@ -103,14 +103,50 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: _buildSpendHistory(5),
               ),
             ),
+            const SizedBox(height: 20.0),
+            FloatingActionButton.extended(
+              onPressed: _incrementCounter,
+              label: Text('บันทึกรายรับรายจ่าย',
+                style: Theme.of(context).textTheme.headline5,
+                 
+              )
+            ),
+            const SizedBox(height: 20.0),
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+              child: Text('เป้าหมายรายสัปดาห์',
+                style: Theme.of(context).textTheme.headline5,),
+            ),
+            const SizedBox(height: 20.0),
+            Container(
+              margin: EdgeInsets.fromLTRB(40, 0, 0, 40),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Text('ซื้อมือถือ'),
+                        ),
+                      Expanded(
+                        flex: 1,
+                        child: Text('แถบ progress'),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            FloatingActionButton.extended(
+              onPressed: _incrementCounter,
+              label: Text('เพิ่มเป้าหมาย',
+                style: Theme.of(context).textTheme.headline5,   
+              )
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
