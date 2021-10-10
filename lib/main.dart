@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:what_a_saving_goal/login.dart';
+import 'add_goal.dart';
 
 void main() {
   runApp(const MyApp());
@@ -139,7 +140,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             FloatingActionButton.extended(
-              onPressed: _incrementCounter,
+              onPressed: (){
+                Navigator.push(context,
+                MaterialPageRoute(builder: (context) => AddGoal()));
+              },
               label: Text('เพิ่มเป้าหมาย',
                 style: Theme.of(context).textTheme.headline5,   
               )
