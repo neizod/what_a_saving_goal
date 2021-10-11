@@ -2,8 +2,14 @@ import 'dart:html';
 
 import 'package:flutter/material.dart';
 
-class AddGoal extends StatelessWidget{
-  const AddGoal({Key ? key}) : super(key: key);
+class AddGoal extends StatefulWidget{
+  @override
+  _AddGoal createState() => _AddGoal();
+
+}
+
+class _AddGoal extends State<AddGoal>{
+  DateTime _datetime = DateTime.utc(1990, 1, 1);
 
   @override
   Widget build(BuildContext context){
@@ -42,10 +48,32 @@ class AddGoal extends StatelessWidget{
                         labelText: "งวด(วัน/สัปดาห์/เดือน)", 
                       ),
                     ),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: "กำหนดวันเริ่มต้น", 
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.fromLTRB(0, 20, 20, 20),
+                          child: Text(
+                            _datetime.year == 1990 ? 'กำหนดวันเริ่มต้น' 
+                              : '${_datetime.day}-${_datetime.month}-${_datetime.year}'
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            showDatePicker(
+                              context: context, 
+                              initialDate: DateTime.now(), 
+                              firstDate: DateTime(2020), 
+                              lastDate: DateTime(2022),
+                              ).then((date) {
+                                setState(() {
+                                  _datetime = date!;
+                                });
+                              });
+                          }, 
+                          child: Text('Open calendar'),
+                        ),
+                      ],
                     ),
                     TextField(
                       decoration: InputDecoration(
