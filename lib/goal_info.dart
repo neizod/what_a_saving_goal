@@ -1,9 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class GoalInfo extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: Text("รายละเอียดเป้าหมาย"),
@@ -40,41 +42,16 @@ class GoalInfo extends StatelessWidget{
                     ],
                   ),
                   Container(
-                    padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
-                    child: Row(
-                      children: <Widget> [
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            height: 40,
-                            alignment: Alignment.centerRight,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(20),
-                                topLeft: Radius.circular(20),
-                              ),
-                              color: Colors.green,
-                            ),
-                            child: Text('12000'),
-                          )
-                          ),
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            height: 40,
-                            alignment: Alignment.centerLeft,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                bottomRight: Radius.circular(20),
-                                topRight: Radius.circular(20),
-                              ),
-                              color: Colors.red,
-                            ),
-                            child: Text('6000'),
-                          )
-                          ),
-                      ],
+                    child: LinearPercentIndicator(
+                      width: MediaQuery.of(context).size.width - 40,
+                      lineHeight: 40,
+                      percent: 0.75,
+                      center: Text("7800/12000"),
+                      linearStrokeCap: LinearStrokeCap.roundAll,
+                      progressColor: Colors.green[400],
+                      backgroundColor: Colors.red[400],
                     ),
+                    padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
                   )
                 ],
                 )
@@ -104,6 +81,7 @@ class GoalInfo extends StatelessWidget{
   }
 
   List<Container> _buildSavingHistory(){
+    Random rng = Random();
     List<Container> saves = List.generate(
       4, 
       (index) => Container(
@@ -112,7 +90,7 @@ class GoalInfo extends StatelessWidget{
           children: [
             Text('งวดที่ ${index+1}'),
             Expanded(
-              child: _buildSavingGuage(100, 200)
+              child: _buildSavingGuage(50+rng.nextInt(150), 200)
               ),
           ],
           )
@@ -122,41 +100,15 @@ class GoalInfo extends StatelessWidget{
     return saves;
   }
 
-  Row _buildSavingGuage(int save, int goal){
-    Row saveGuage = Row(
-      children: <Widget> [
-        Expanded(
-          flex: 2,
-          child: Container(
-            height: 40,
-            alignment: Alignment.centerRight,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                topLeft: Radius.circular(20),
-              ),
-              color: Colors.green,
-            ),
-            child: Text('$save'),
-          )
-          ),
-        Expanded(
-          flex: 1,
-          child: Container(
-            height: 40,
-            alignment: Alignment.centerLeft,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-              color: Colors.red,
-            ),
-            child: Text('$goal'),
-          )
-          ),
-        ],
-    );
+  LinearPercentIndicator _buildSavingGuage(int save, int goal){
+    LinearPercentIndicator saveGuage = LinearPercentIndicator(
+      lineHeight: 30,
+      center: Text("$save / $goal"),
+      progressColor: Colors.green[400],
+      backgroundColor: Colors.red[400],
+      percent: save/goal,
+      animation: true,
+      );
     return saveGuage;
   }
 
