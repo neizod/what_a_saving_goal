@@ -80,20 +80,26 @@ class GoalInfo extends StatelessWidget{
     );
   }
 
-  List<Container> _buildSavingHistory(){
+  List<GestureDetector> _buildSavingHistory(){
     Random rng = Random();
-    List<Container> saves = List.generate(
+    List<GestureDetector> saves = List.generate(
       4, 
-      (index) => Container(
-        padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-        child: Row(
-          children: [
-            Text('งวดที่ ${index+1}'),
-            Expanded(
-              child: _buildSavingGuage(50+rng.nextInt(150), 200)
+      (index) => GestureDetector(
+        child: Container(
+          padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+          child: Row(
+            children: [
+              Container(
+                width: 70,
+                // padding: EdgeInsets.only(right: 15),
+                child: Text('งวดที่ ${index+1}'),
               ),
-          ],
-          )
+              Expanded(
+                child: _buildSavingGuage(50+rng.nextInt(150), 200)
+                ),
+            ],
+            ),
+          ),
       )
       );
 
