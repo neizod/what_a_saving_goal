@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:what_a_saving_goal/goal_info.dart';
 import 'package:what_a_saving_goal/login.dart';
 import 'package:what_a_saving_goal/add_cash.dart';
 import 'add_goal.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -125,22 +127,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 20.0),
             Container(
-              margin: EdgeInsets.fromLTRB(40, 0, 0, 40),
+              margin: EdgeInsets.fromLTRB(40, 0, 40, 40),
               child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Text('ซื้อมือถือ'),
-                        ),
-                      Expanded(
-                        flex: 1,
-                        child: Text('แถบ progress'),
-                        ),
-                    ],
-                  ),
-                ],
+                children: _buildGoalList(2)
               ),
             ),
             FloatingActionButton.extended(
@@ -157,6 +146,41 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  List<GestureDetector> _buildGoalList(int count){
+    List<GestureDetector> goals = List.generate(
+      count, 
+      (index) => 
+      GestureDetector(
+        onTap: () {
+          Navigator.push(context, 
+          MaterialPageRoute(builder: (context) => GoalInfo())
+          );
+        },
+        child: Container(
+          padding: EdgeInsets.only(bottom: 5),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text('ซื้อมือถือ'),
+                ),
+              Expanded(
+                child: LinearPercentIndicator(
+                  lineHeight: 20,
+                  animation: true,
+                  percent: 3/5,
+                  center: Text('300/500 บาท'),
+                  progressColor: Colors.green[400],
+                  backgroundColor: Colors.red[400],
+                  ),
+                ),
+            ],
+            ),
+        ),
+      )
+      );
+      return goals;
   }
 
   List<Container> _buildSpendHistory(int count){
