@@ -71,7 +71,7 @@ List<Card> _buildGridCards(int count, BuildContext context) {
         child: Column(
           children: <Widget>[
             AspectRatio(aspectRatio: 18.0/11.0,
-            child: Image.asset('dummy-profile.png'),
+            child: Image.asset('assets/dummy-profile.png'),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),

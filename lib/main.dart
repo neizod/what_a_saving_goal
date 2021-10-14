@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:what_a_saving_goal/login.dart';
+import 'package:what_a_saving_goal/add_cash.dart';
 import 'add_goal.dart';
 
 void main() {
@@ -106,11 +107,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 20.0),
             FloatingActionButton.extended(
-              onPressed: _incrementCounter,
+              onPressed: (){
+                Navigator.push(context,
+                MaterialPageRoute(builder: (context) => AddCash()));
+              },
               label: Text('บันทึกรายรับรายจ่าย',
                 style: Theme.of(context).textTheme.headline5,
-                 
-              )
+              ),
+              heroTag: null,
             ),
             const SizedBox(height: 20.0),
             Container(
@@ -146,7 +150,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               label: Text('เพิ่มเป้าหมาย',
                 style: Theme.of(context).textTheme.headline5,   
-              )
+              ),
+              heroTag: null,
             ),
           ],
         ),

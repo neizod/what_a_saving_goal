@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 
 class AddGoal extends StatefulWidget{
@@ -9,7 +7,7 @@ class AddGoal extends StatefulWidget{
 }
 
 class _AddGoal extends State<AddGoal>{
-  DateTime _datetime = DateTime.utc(1990, 1, 1);
+  DateTime? _datetime = null;
 
   @override
   Widget build(BuildContext context){
@@ -54,8 +52,8 @@ class _AddGoal extends State<AddGoal>{
                         Container(
                           padding: EdgeInsets.fromLTRB(0, 20, 20, 20),
                           child: Text(
-                            _datetime.year == 1990 ? 'กำหนดวันเริ่มต้น' 
-                              : '${_datetime.day}-${_datetime.month}-${_datetime.year}'
+                            _datetime == null ? 'กำหนดวันเริ่มต้น' 
+                              : _datetime.toString()
                           ),
                         ),
                         ElevatedButton(
@@ -64,10 +62,10 @@ class _AddGoal extends State<AddGoal>{
                               context: context, 
                               initialDate: DateTime.now(), 
                               firstDate: DateTime(2020), 
-                              lastDate: DateTime(2022),
+                              lastDate: DateTime(2022), 
                               ).then((date) {
                                 setState(() {
-                                  _datetime = date!;
+                                  _datetime = date;
                                 });
                               });
                           }, 
