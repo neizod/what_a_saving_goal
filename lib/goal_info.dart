@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:what_a_saving_goal/installment_info.dart';
 
 class GoalInfo extends StatelessWidget{
   @override
@@ -61,7 +62,7 @@ class GoalInfo extends StatelessWidget{
               child: Text('ประวัติการออมแบ่งตามเป้าหมายย่อย'),
             ),
             Column(
-              children: _buildSavingHistory(),
+              children: _buildSavingHistory(context),
               // Saving for Goal History Generator,
               ),
             Container(
@@ -80,11 +81,16 @@ class GoalInfo extends StatelessWidget{
     );
   }
 
-  List<GestureDetector> _buildSavingHistory(){
+  List<GestureDetector> _buildSavingHistory(BuildContext context){
     Random rng = Random();
     List<GestureDetector> saves = List.generate(
       4, 
       (index) => GestureDetector(
+        onTap: () {
+          Navigator.push(context, 
+          MaterialPageRoute(builder: (context) => InstallmentInfo())
+          );
+        },
         child: Container(
           padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
           child: Row(
