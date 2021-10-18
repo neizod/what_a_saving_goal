@@ -1,13 +1,37 @@
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:what_a_saving_goal/goal_info.dart';
 import 'package:what_a_saving_goal/login.dart';
 import 'package:what_a_saving_goal/add_cash.dart';
+
 import 'add_goal.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-void main() {
+
+Future<void> initDatabase() async {
+  await Hive.initFlutter();
+  var box = await Hive.openBox('data');
+  // await box.clear();     // XXX clean all the data
+
+  if (!box.containsKey('profiles')) {
+    box.put('profiles', [
+      'I am the first profile',
+      '... second ...',
+      '3rd time the charm!',
+      'last of the list now'
+    ]);
+  }
+}
+
+
+void main() async {
+  await initDatabase();
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -38,6 +62,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
@@ -46,6 +71,7 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
