@@ -22,28 +22,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _unfocusedColor = Colors.grey[600];
-  final _usernameFocusNode = FocusNode();
-  final _passwordFocusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    _usernameFocusNode.addListener(() {
-      setState(() {
-        // Redraw so that the username label reflects the focus state
-      });
-    });
-
-    _passwordFocusNode.addListener(() {
-      setState(() {
-        // Redraw so that the password label reflects the focus state
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

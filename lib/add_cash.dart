@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+DateTime? _dateTime = DateTime.now();
+
 class PaymentButton extends StatefulWidget{
   @override
   _PaymentButton createState() => _PaymentButton();
@@ -125,11 +127,45 @@ class _CategoryButton extends State<CategoryButton>{
   }
 }
 
+class DateTimeButton extends StatefulWidget{
+  @override
+  _DateTimeButton createState() => _DateTimeButton();
+}
+class _DateTimeButton extends State<DateTimeButton>{
+  @override
+  Widget build(BuildContext context){
+    return Row(
+      children: <Widget> [
+        Container(
+          width: 100,
+          child: Text("วันที่"),
+        ),
+        Expanded(
+          child: Text("${_dateTime?.day}-${_dateTime?.month}-${_dateTime?.year}"),
+        ),
+        IconButton(
+          onPressed: (){
+            showDatePicker(
+              context: context, 
+              initialDate: DateTime.now(), 
+              firstDate: DateTime(2020), 
+              lastDate: DateTime(2022), 
+              ).then((date) {
+                setState(() {
+                  _dateTime = date;
+                });
+              });
+          },
+          icon: Icon(Icons.calendar_today)
+        ),
+    ],
+    );
+  }
+}
+
 class AddCash extends StatelessWidget{
-  DateTime? _dateTime;
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: Text('เพิ่มรายรับรายจ่าย'),
@@ -169,21 +205,8 @@ class AddCash extends StatelessWidget{
                       ),
                     ],
                   ),
-                  Row(
-                    children: <Widget> [
-                      Container(
-                        width: 100,
-                        child: Text("วันที่"),
-                      ),
-                      Expanded(
-                        child: Text("${DateTime.now()}"),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.calendar_today),
-                      ),
-                    ],
-                  ),
+                  DateTimeButton(),
+
                 ],
               ),
             ),
