@@ -1,16 +1,40 @@
+import 'package:hive/hive.dart';
+
 import 'package:flutter/material.dart';
 
-class AddGoal extends StatefulWidget{
+
+class AddGoal extends StatefulWidget {
   @override
   _AddGoal createState() => _AddGoal();
-
 }
 
-class _AddGoal extends State<AddGoal>{
+
+class _AddGoal extends State<AddGoal> {
+  final titleController = TextEditingController();
+  final priceController = TextEditingController();
   DateTime? _datetime = null;
 
+  Future<void> addGoal() async {
+    if (titleController.text == '') {
+      titleController.text = 'untitled goal';   // TODO
+    }
+    if (priceController.text == '') {
+      priceController.text = '0';
+    }
+    var box = await Hive.openBox('data');
+    var goals = box.get('goals') ?? [];
+    goals.add({
+      'title': titleController.text,
+      'price': int.parse(priceController.text),
+      // 'date': TODO
+      'paids': [],
+      'done': false,
+    });
+    box.put('goals', goals);
+  }
+
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('เพิ่มเป้าหมาย'),
@@ -24,18 +48,22 @@ class _AddGoal extends State<AddGoal>{
             Expanded(
               child: Container(
                 padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                child: Column(                  
+                child: Column(
                   children: <Widget>[
                     TextField(
+                      controller: titleController,
                       decoration: InputDecoration(
                         labelText: "ชื่อเป้าหมาย", 
                       ),
                     ),
                     TextField(
+                      controller: priceController,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: "ราคา", 
                       ),
                     ),
+                    /* TODO hidden now since too much information
                     TextField(
                       decoration: InputDecoration(
                         labelText: "ระยะเวลา", 
@@ -46,6 +74,7 @@ class _AddGoal extends State<AddGoal>{
                         labelText: "งวด(วัน/สัปดาห์/เดือน)", 
                       ),
                     ),
+                    */
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
@@ -73,11 +102,13 @@ class _AddGoal extends State<AddGoal>{
                         ),
                       ],
                     ),
+                    /* TODO hidden now since too much information (plus overflow issue)
                     TextField(
                       decoration: InputDecoration(
                         labelText: "ชื่อเจ้าหนี้", 
                       ),
                     ),
+                    */
                     const SizedBox(height: 20,),
                     FloatingActionButton.extended(
                       onPressed: (){
@@ -106,9 +137,5 @@ class _AddGoal extends State<AddGoal>{
         ),
       )
     );
-  }
-
-  void addGoal(){
-    
   }
 }
