@@ -26,12 +26,11 @@ Future<void> initDatabase() async {
   }
 }
 
-
 void main() async {
   await initDatabase();
+
   runApp(const MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -45,6 +44,12 @@ class MyApp extends StatelessWidget {
       ),
       home: const MyHomePage(title: 'Saving Goal Home Page'),
       initialRoute: '/login',
+      routes: {
+        // '/': (context) => const MyHomePage(title: 'Saving Goal Home Page'),
+        // '/add_cash': (context) => AddCash(),
+        AddGoal.routeName: (context) => AddGoal(),
+        GoalInfo.routeName: (context) => GoalInfo(),
+      },
       onGenerateRoute: _getRoute,
     );
   }
@@ -62,7 +67,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
@@ -71,17 +75,8 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
-
-
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   int _current_balance = 435000;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,66 +142,15 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(height: 20.0),
             Container(
               alignment: Alignment.centerLeft,
-              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-              child: Text('เป้าหมายรายสัปดาห์',
+              margin: EdgeInsets.fromLTRB(20, 0, 0, 20),
+              child: Text('เป้าหมาย',
                 style: Theme.of(context).textTheme.headline5,),
             ),
-            const SizedBox(height: 20.0),
-            Container(
-              margin: EdgeInsets.fromLTRB(40, 0, 40, 40),
-              child: Column(
-                children: _buildGoalList(2)
-              ),
-            ),
-            FloatingActionButton.extended(
-              onPressed: (){
-                Navigator.push(context,
-                MaterialPageRoute(builder: (context) => AddGoal()));
-              },
-              label: Text('เพิ่มเป้าหมาย',
-                style: Theme.of(context).textTheme.headline5,   
-              ),
-              heroTag: null,
-            ),
+            BuildGoalList(),
           ],
         ),
       ),
     );
-  }
-
-  List<GestureDetector> _buildGoalList(int count){
-    List<GestureDetector> goals = List.generate(
-      count, 
-      (index) => 
-      GestureDetector(
-        onTap: () {
-          Navigator.push(context, 
-          MaterialPageRoute(builder: (context) => GoalInfo())
-          );
-        },
-        child: Container(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text('ซื้อมือถือ'),
-                ),
-              Expanded(
-                child: LinearPercentIndicator(
-                  lineHeight: 20,
-                  animation: true,
-                  percent: 3/5,
-                  center: Text('300/500 บาท'),
-                  progressColor: Colors.green[400],
-                  backgroundColor: Colors.red[400],
-                  ),
-                ),
-            ],
-            ),
-        ),
-      )
-      );
-      return goals;
   }
 
   List<Container> _buildSpendHistory(int count){
@@ -237,4 +181,86 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   return spends;
   }
+}
+
+class BuildGoalList extends StatefulWidget{
+  List<String> _objectiveName = ['ซื้อมือถือ','ซื้อมอไซต์'];
+  List<int> _price = [5000,12000]; 
+  List<int> _paided = [3000, 4000];
+
+  @override
+  State<BuildGoalList> createState() => _BuildGoalList();
+}
+
+class _BuildGoalList extends State<BuildGoalList>{
+  @override
+  Widget build(BuildContext context){
+    return Column(children: [
+      Container(
+        margin: EdgeInsets.fromLTRB(40, 0, 40, 40),
+        child: Column(
+          children: _buildGoalList(widget._objectiveName, widget._price, widget._paided),
+          ),
+      ),
+      FloatingActionButton.extended(
+        onPressed: (){
+          _navigateAddGoal(context);  
+        },
+        label: Text('เพิ่มเป้าหมาย',
+          style: Theme.of(context).textTheme.headline5,   
+        ),
+        heroTag: null,
+      ),
+    ],
+    );
+  }
+
+  List<Widget> _buildGoalList(var _objectiveList, var _priceList, var _paidedList){
+    int count = _objectiveList.length;
+    List<GestureDetector> goals = List.generate(
+      count, 
+      (index) => 
+      GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(context,
+          GoalInfo.routeName,
+          arguments: GoalInfoArguments('${_objectiveList[index]}', 0)
+          );
+        },
+        child: Container(
+          padding: EdgeInsets.only(bottom: 5),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text('${_objectiveList[index]}'),
+                ),
+              Expanded(
+                child: LinearPercentIndicator(
+                  lineHeight: 20,
+                  animation: true,
+                  percent: _paidedList[index]/_priceList[index],
+                  center: Text('${_paidedList[index]}/${_priceList[index]} บาท'),
+                  progressColor: Colors.green[400],
+                  backgroundColor: Colors.red[400],
+                  ),
+                ),
+            ],
+            ),
+        ),
+      )
+      );
+      return goals;
+  }
+
+  void _navigateAddGoal(BuildContext context) async {
+    await Navigator.pushNamed(context, 
+    AddGoal.routeName
+    );
+    setState(() {
+      widget._objectiveName.add('Added Item');
+      widget._price.add(3000);
+      widget._paided.add(0);      
+    });
+    print(widget._objectiveName);
+  } 
 }
