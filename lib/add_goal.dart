@@ -18,6 +18,12 @@ class _AddGoalForm extends State<AddGoalForm>{
   };
 
   @override
+  void dispose(){
+    formController.forEach((key, value) {value.dispose();});
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context){
     return Form(
       key: _formKey,
