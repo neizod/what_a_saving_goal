@@ -8,17 +8,17 @@ import 'add_goal.dart';
 import 'goal_info.dart';
 
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class Dashboard extends StatefulWidget {
+  const Dashboard({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
 
-class _MyHomePageState extends State<MyHomePage> {
+class _DashboardState extends State<Dashboard> {
   final DatabaseHandler _database = DatabaseHandler();
   String _profile = '';
   int _current_balance = 435000;
@@ -44,11 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              child: Text(
-                'hello $_profile.'
-              ),
-            ),
-            Container(
               child:  Text(
               'ยอดเงินปัจจุบัน: $_current_balance บาท',
               style: Theme.of(context).textTheme.headline5,
@@ -58,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 20.0),
             Container(
-              child: Row(              
+              child: Row(
                 children: <Widget> [
                   Expanded(
                     flex: 2,

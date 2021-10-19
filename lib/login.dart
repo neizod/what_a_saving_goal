@@ -47,10 +47,12 @@ class _LoginPageState extends State<LoginPage> {
         child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
           onTap: () {
-            _database.indexProfile = index;
+            _database.indexProfile = index; // TODO use setter
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MyHomePage(title: 'Saving Goal Dashboard')),
+              MaterialPageRoute(builder: (context) => Dashboard(
+                title: 'Dashboard: ${_profiles[index]}',
+              )),
             );
           },
           child: Column(
