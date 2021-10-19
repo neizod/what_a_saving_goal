@@ -77,15 +77,21 @@ class DatabaseHandler {
       {
         'name': 'งานแต่ง',
         'price': 300000,
+        'period': 30,
+        'price_per_period': 10000,
+        'paids': [],
       },
       {
         'name': 'เกษียณ',
         'price': 3000000,
+        'period': 400,
+        'price_per_period': 7500,
+        'paids': [3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3500, 3500, 3500],
       }
     ]);
   }
 
-  Future<List<String>> listProfiles() async {
+  Future<List> listProfiles() async {
     return await box.get('profiles');
   }
 
@@ -94,7 +100,7 @@ class DatabaseHandler {
   }
 
   Future<String> getProfile() async {
-    List<String> profiles = await listProfiles();
+    List profiles = await listProfiles();
     return profiles[indexProfile];
   }
 

@@ -6,12 +6,13 @@ import 'package:what_a_saving_goal/database_handler.dart';
 import 'package:what_a_saving_goal/installment_info.dart';
 
 class GoalInfo extends StatefulWidget{
-  const GoalInfo({Key? key, required this.title, required this.goal_index}): super(key: key); 
+  const GoalInfo({Key? key, required this.title, required this.goal_index}): super(key: key);
   final int goal_index;
   final String title;
   @override
   State<GoalInfo> createState() => _GoalInfo();
 }
+
 
 class _GoalInfo extends State<GoalInfo>{
   static String _goalDesc = "This is goal desciption from database";
@@ -48,7 +49,7 @@ class _GoalInfo extends State<GoalInfo>{
       body: Container(
         padding: EdgeInsets.all(20),
         child: Column(
-          children: <Widget> [ 
+          children: <Widget> [
             Container(
               child: Column(
                 children: <Widget>[
@@ -145,14 +146,13 @@ class _GoalInfo extends State<GoalInfo>{
                 child: Text('งวดที่ ${count-index}'),
               ),
               Expanded(
-                child: _buildSavingGuage(_paidHist[index], _installmentPrice)
+                child: _buildSavingGuage(_paidHist[count-index-1], _installmentPrice)
                 ),
             ],
             ),
           ),
-      )
+        )
       );
-
     return saves;
   }
 
