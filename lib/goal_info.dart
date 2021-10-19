@@ -4,12 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:what_a_saving_goal/installment_info.dart';
 
+class GoalInfoArguments {
+  final String title;
+  final int goal_index;
+
+  GoalInfoArguments(this.title, this.goal_index);
+}
+
 class GoalInfo extends StatelessWidget{
+  // const GoalInfo({Key? key, required this.title}): super(key: key); 
+  // final String title;
+  static const routeName = "/goalInfo";
+  static String _goalDesc = "This is goal desciption from database";
+  static int _goalPrice = 5000;
+  static int _sumPaid = 3700;
+  static int _installmentPrice = 5000~/4;
+  static List<int> _paidHist = [1250, 1250, 800, 400];
+
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as GoalInfoArguments;
     return Scaffold(
       appBar: AppBar(
-        title: Text("รายละเอียดเป้าหมาย"),
+        title: Text(args.title),
         ),
       body: Container(
         padding: EdgeInsets.all(20),
@@ -24,9 +41,18 @@ class GoalInfo extends StatelessWidget{
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('ชื่อเป้าหมาย'),
-                            Text('รายละเอียดเป้าหมาย'),
-                            Text('ราคารวมเป้าหมาย'),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Text(args.title),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Text(_goalDesc),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: Text("${_goalPrice}"),
+                            ),
                           ],
                           ),
                       ),
@@ -46,14 +72,14 @@ class GoalInfo extends StatelessWidget{
                     child: LinearPercentIndicator(
                       width: MediaQuery.of(context).size.width - 40,
                       lineHeight: 40,
-                      percent: 0.75,
-                      center: Text("7800/12000"),
+                      percent: _sumPaid/_goalPrice,
+                      center: Text("${_sumPaid}/${_goalPrice}"),
                       linearStrokeCap: LinearStrokeCap.roundAll,
                       progressColor: Colors.green[400],
                       backgroundColor: Colors.red[400],
                     ),
                     padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
-                  )
+                  ),
                 ],
                 )
             ),
@@ -102,7 +128,7 @@ class GoalInfo extends StatelessWidget{
                 child: Text('งวดที่ ${index+1}'),
               ),
               Expanded(
-                child: _buildSavingGuage(50+rng.nextInt(150), 200)
+                child: _buildSavingGuage(_paidHist[index], _installmentPrice)
                 ),
             ],
             ),

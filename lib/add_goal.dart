@@ -6,7 +6,6 @@ class AddGoalForm extends StatefulWidget{
   @override
   _AddGoalForm createState() => _AddGoalForm();
 }
-
 class _AddGoalForm extends State<AddGoalForm>{
   DateTime? _datetime = null;
   final _formKey = GlobalKey<FormState>();
@@ -17,7 +16,6 @@ class _AddGoalForm extends State<AddGoalForm>{
     'installment': TextEditingController(),
     'creditorName': TextEditingController()
   };
-
 
   @override
   Widget build(BuildContext context){
@@ -120,6 +118,7 @@ class _AddGoalForm extends State<AddGoalForm>{
       )
     );
   }
+  
   Future<void> addGoal(bool _debug) async {
     if(_debug){
       print("Objective Name: ${formController['objectName']?.text}");
@@ -128,21 +127,13 @@ class _AddGoalForm extends State<AddGoalForm>{
       print("Installment: ${formController['installment']?.text}");
       print("Creditor Name: ${formController['creditorName']?.text}");
     }
-    var box = await Hive.openBox('data');
-    var goals = box.get('goals') ?? [];
-    goals.add({
-      'title': formController['objectName']?.text,
-      'price': int.parse(formController['price']!.text),
-      'date': _datetime,
-      'paids': [],
-      'done': false,
-    });
-    box.put('goals', goals);
-  } //Create box.push here with asynchronus method
+     //Create box.push here with asynchronus method
+  }
 
 }
 
 class AddGoal extends StatefulWidget{
+  static const routeName = '/addGoal';
   @override
   _AddGoal createState() => _AddGoal();
 }
