@@ -21,16 +21,18 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final DatabaseHandler _database = DatabaseHandler();
   String _profile = '';
+  List _goals = [];
   int _current_balance = 435000;
 
   @override
   void initState() {
     super.initState();
-    getProfile().whenComplete(() => setState((){}));
+    getData().whenComplete(() => setState((){}));
   }
 
-  Future<void> getProfile() async {
+  Future<void> getData() async {
     _profile = await _database.getProfile();
+    _goals = await _database.listProfileGoals();
   }
 
   @override
@@ -107,7 +109,7 @@ class _DashboardState extends State<Dashboard> {
             Container(
               margin: EdgeInsets.fromLTRB(40, 0, 40, 40),
               child: Column(
-                children: _buildGoalList(2)
+                children: _buildGoalList()
               ),
             ),
             FloatingActionButton.extended(
@@ -128,10 +130,10 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  List<GestureDetector> _buildGoalList(int count){
+  List<GestureDetector> _buildGoalList(){
     List<GestureDetector> goals = List.generate(
-      count, 
-      (index) => 
+      _goals.length,
+      (index) =>
       GestureDetector(
         onTap: () {
           Navigator.push(
@@ -144,8 +146,8 @@ class _DashboardState extends State<Dashboard> {
           child: Row(
             children: [
               Expanded(
-                child: Text('ซื้อมือถือ'),
-                ),
+                child: Text(_goals[index]['name']),
+              ),
               Expanded(
                 child: LinearPercentIndicator(
                   lineHeight: 20,
@@ -154,14 +156,14 @@ class _DashboardState extends State<Dashboard> {
                   center: Text('300/500 บาท'),
                   progressColor: Colors.green[400],
                   backgroundColor: Colors.red[400],
-                  ),
                 ),
+              ),
             ],
-            ),
+          ),
         ),
-      )
-      );
-      return goals;
+      ),
+    );
+    return goals;
   }
 
   List<Container> _buildSpendHistory(int count){

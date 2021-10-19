@@ -14,7 +14,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final DatabaseHandler _database = DatabaseHandler();
-  var _profiles = ['A', 'B', 'C', 'D'];   // XXX dummy data within code
+  var _profiles = [];
 
   @override
   void initState() {
@@ -34,15 +34,15 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisCount: 2,
           padding: const EdgeInsets.all(16.0),
           childAspectRatio: 8.0 / 9.0,
-          children: _buildGridCards(4, context),
+          children: _buildGridCards(context),
         ),
       ),
     );
   }
 
-  List<Card> _buildGridCards(int count, BuildContext context) {
-    List<Card> cards = List.generate(
-      count,
+  List<Card> _buildGridCards(BuildContext context) {
+    return List.generate(
+      _profiles.length,
       (int index) => Card(
         child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
@@ -57,8 +57,9 @@ class _LoginPageState extends State<LoginPage> {
           },
           child: Column(
             children: <Widget>[
-              AspectRatio(aspectRatio: 18.0/11.0,
-              child: Image.asset('assets/dummy-profile.png'),
+              AspectRatio(
+                aspectRatio: 18.0/11.0,
+                child: Image.asset('assets/dummy-profile.png'),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
@@ -69,6 +70,5 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-    return cards;
   }
 }
