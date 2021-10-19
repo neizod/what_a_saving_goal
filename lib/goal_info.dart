@@ -84,11 +84,12 @@ class GoalInfo extends StatelessWidget{
   List<GestureDetector> _buildSavingHistory(BuildContext context){
     Random rng = Random();
     List<GestureDetector> saves = List.generate(
-      4, 
+      4,
       (index) => GestureDetector(
         onTap: () {
-          Navigator.push(context, 
-          MaterialPageRoute(builder: (context) => InstallmentInfo())
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => InstallmentInfo()),
           );
         },
         child: Container(

@@ -1,21 +1,7 @@
-// Copyright 2018-present the Flutter authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-
 import 'package:flutter/material.dart';
+
+import 'database_handler.dart';
+import 'dashboard.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -27,35 +13,17 @@ class LoginPage extends StatefulWidget {
 
 
 class _LoginPageState extends State<LoginPage> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _unfocusedColor = Colors.grey[600];
-  final _usernameFocusNode = FocusNode();
-  final _passwordFocusNode = FocusNode();
+  final DatabaseHandler _database = DatabaseHandler();
   var _profiles = ['A', 'B', 'C', 'D'];   // XXX dummy data within code
 
   @override
   void initState() {
     super.initState();
-
-    _usernameFocusNode.addListener(() {
-      setState(() {
-        // Redraw so that the username label reflects the focus state
-      });
-    });
-
-    _passwordFocusNode.addListener(() {
-      setState(() {
-        // Redraw so that the password label reflects the focus state
-      });
-    });
-
     getProfiles().whenComplete(() => setState((){}));
   }
 
   Future<void> getProfiles() async {
-    var box = await Hive.openBox('data');
-    _profiles = box.get('profiles');
+    _profiles = await _database.listProfiles();
   }
 
   @override
@@ -79,7 +47,11 @@ class _LoginPageState extends State<LoginPage> {
         child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
           onTap: () {
-            Navigator.pop(context);
+            _database.indexProfile = index;
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MyHomePage(title: 'Saving Goal Dashboard')),
+            );
           },
           child: Column(
             children: <Widget>[
