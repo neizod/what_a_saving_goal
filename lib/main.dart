@@ -22,6 +22,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: LoginPage(),
+      /*
+      routes: {
+        // '/': (context) => const MyHomePage(title: 'Saving Goal Home Page'),
+        // '/add_cash': (context) => AddCash(),
+        AddGoal.routeName: (context) => AddGoal(),
+        GoalInfo.routeName: (context) => GoalInfo(),
+      },
+      */
       onGenerateRoute: _getRoute,
     );
   }
