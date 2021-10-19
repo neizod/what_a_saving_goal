@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:what_a_saving_goal/database_handler.dart';
 
 class InstallmentInfo extends StatefulWidget{
   const InstallmentInfo({Key? key, required this.title}): super(key: key);
   final String title;
   
-
   @override
   _InstallmentInfo createState() => _InstallmentInfo();
+
 }
 
 class _InstallmentInfo extends State<InstallmentInfo>{
+  final DatabaseHandler _database = DatabaseHandler();
+  List _goals = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getData().whenComplete(() => setState((){}));
+  }
+
+  Future<void> getData() async {
+    _goals = await _database.listProfileGoals();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +62,7 @@ class _InstallmentInfo extends State<InstallmentInfo>{
               Expanded(
                 child: Column(
                   children: [
-                  
+                    
                   ],
                   ),
               ),

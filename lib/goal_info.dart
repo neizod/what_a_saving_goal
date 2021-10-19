@@ -2,23 +2,48 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:what_a_saving_goal/database_handler.dart';
 import 'package:what_a_saving_goal/installment_info.dart';
 
-class GoalInfo extends StatelessWidget{
-  const GoalInfo({Key? key, required this.title}): super(key: key); 
+class GoalInfo extends StatefulWidget{
+  const GoalInfo({Key? key, required this.title, required this.goal_index}): super(key: key); 
+  final int goal_index;
   final String title;
-  static const routeName = "/goalInfo";
+  @override
+  State<GoalInfo> createState() => _GoalInfo();
+}
+
+class _GoalInfo extends State<GoalInfo>{
   static String _goalDesc = "This is goal desciption from database";
   static int _goalPrice = 5000;
   static int _sumPaid = 3700;
   static int _installmentPrice = 5000~/4;
   static List<int> _paidHist = [1250, 1250, 800, 400];
 
+  final DatabaseHandler _database = DatabaseHandler();
+  List _goals = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getData().whenComplete(() => setState((){
+      _goalPrice = _goals[widget.goal_index]['price'];
+      _sumPaid = _goals[widget.goal_index]['paids'].fold(0, (a, b) => a + b);
+      _installmentPrice = _goals[widget.goal_index]['price_per_period'];
+      _paidHist = _goals[widget.goal_index]['paids'];
+    }));
+  }
+
+  Future<void> getData() async {
+    _goals = await _database.listProfileGoals();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.title),
         ),
       body: Container(
         padding: EdgeInsets.all(20),
@@ -35,7 +60,7 @@ class GoalInfo extends StatelessWidget{
                           children: [
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                              child: Text(title),
+                              child: Text(widget.title),
                             ),
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -100,14 +125,14 @@ class GoalInfo extends StatelessWidget{
   }
 
   List<GestureDetector> _buildSavingHistory(BuildContext context){
-    Random rng = Random();
+    int count = _paidHist.length;
     List<GestureDetector> saves = List.generate(
-      4,
+      count,
       (index) => GestureDetector(
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => InstallmentInfo(title: title,)),
+            MaterialPageRoute(builder: (context) => InstallmentInfo(title: widget.title,)),
           );
         },
         child: Container(
@@ -117,7 +142,7 @@ class GoalInfo extends StatelessWidget{
               Container(
                 width: 70,
                 // padding: EdgeInsets.only(right: 15),
-                child: Text('งวดที่ ${index+1}'),
+                child: Text('งวดที่ ${count-index}'),
               ),
               Expanded(
                 child: _buildSavingGuage(_paidHist[index], _installmentPrice)

@@ -139,7 +139,7 @@ class _DashboardState extends State<Dashboard> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => GoalInfo(title: _goals[index]['name'])),
+              MaterialPageRoute(builder: (context) => GoalInfo(title: _goals[index]['name'], goal_index: index,)),
             );
           },
           child: Container(
