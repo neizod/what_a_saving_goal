@@ -1,3 +1,5 @@
+import 'package:hive/hive.dart';
+
 import 'package:flutter/material.dart';
 
 class AddGoalForm extends StatefulWidget{
@@ -118,7 +120,7 @@ class _AddGoalForm extends State<AddGoalForm>{
       )
     );
   }
-  void addGoal(bool _debug){
+  Future<void> addGoal(bool _debug) async {
     if(_debug){
       print("Objective Name: ${formController['objectName']?.text}");
       print("Price: ${formController['price']?.text}");
@@ -126,20 +128,28 @@ class _AddGoalForm extends State<AddGoalForm>{
       print("Installment: ${formController['installment']?.text}");
       print("Creditor Name: ${formController['creditorName']?.text}");
     }
-    //Create box.push here with asynchronus method
+    var box = await Hive.openBox('data');
+    var goals = box.get('goals') ?? [];
+    goals.add({
+      'title': formController['objectName']?.text,
+      'price': int.parse(formController['price']!.text),
+      'date': _datetime,
+      'paids': [],
+      'done': false,
+    });
+    box.put('goals', goals);
+  } //Create box.push here with asynchronus method
 
-  }
 }
 
 class AddGoal extends StatefulWidget{
   @override
   _AddGoal createState() => _AddGoal();
-
 }
 
 class _AddGoal extends State<AddGoal>{
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('เพิ่มเป้าหมาย'),
