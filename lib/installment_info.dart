@@ -3,8 +3,10 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:what_a_saving_goal/database_handler.dart';
 
 class InstallmentInfo extends StatefulWidget{
-  const InstallmentInfo({Key? key, required this.title}): super(key: key);
+  const InstallmentInfo({Key? key, required this.title, required this.installmentIndex, required this.goalIndex}): super(key: key);
   final String title;
+  final int installmentIndex;
+  final int goalIndex;
   
   @override
   _InstallmentInfo createState() => _InstallmentInfo();
@@ -14,11 +16,18 @@ class InstallmentInfo extends StatefulWidget{
 class _InstallmentInfo extends State<InstallmentInfo>{
   final DatabaseHandler _database = DatabaseHandler();
   List _goals = [];
+  int installmentPrice = 100;
+  int paid = 50;
+  int installment = 0;
 
   @override
   void initState() {
     super.initState();
-    getData().whenComplete(() => setState((){}));
+    getData().whenComplete(() => setState((){
+      installment = _goals[widget.goalIndex]['paids'].length - widget.installmentIndex;
+      paid = _goals[widget.goalIndex]['paids'][widget.installmentIndex];
+      installmentPrice = _goals[widget.goalIndex]['price_per_period'];
+    }));
   }
 
   Future<void> getData() async {
@@ -38,7 +47,7 @@ class _InstallmentInfo extends State<InstallmentInfo>{
             children: <Widget> [
               Container(
                 padding: EdgeInsets.only(bottom: 20),
-                child: Text('งวดที่ 1: 3 กรกฎาคม - 10 กรกฎาคม',
+                child: Text('งวดที่ ${installment}: 3 กรกฎาคม - 10 กรกฎาคม',
                   style: Theme.of(context).textTheme.headline5,
                   ),
               ),
@@ -47,8 +56,8 @@ class _InstallmentInfo extends State<InstallmentInfo>{
                 child: LinearPercentIndicator(
                   lineHeight: 30,
                   animation: true,
-                  center: Text("300/500 บาท"),
-                  percent: 0.5,
+                  center: Text("${paid}/${installmentPrice} บาท"),
+                  percent: paid/installmentPrice,
                   progressColor: Colors.green[400],
                   backgroundColor: Colors.red[400],
                   ),

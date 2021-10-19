@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:what_a_saving_goal/database_handler.dart';
@@ -132,7 +130,7 @@ class _GoalInfo extends State<GoalInfo>{
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => InstallmentInfo(title: widget.title,)),
+            MaterialPageRoute(builder: (context) => InstallmentInfo(title: widget.title, installmentIndex: index, goalIndex: widget.goal_index,)),
           );
         },
         child: Container(
