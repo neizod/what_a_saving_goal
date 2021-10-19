@@ -4,16 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:what_a_saving_goal/installment_info.dart';
 
-class GoalInfoArguments {
-  final String title;
-  final int goal_index;
-
-  GoalInfoArguments(this.title, this.goal_index);
-}
-
 class GoalInfo extends StatelessWidget{
-  // const GoalInfo({Key? key, required this.title}): super(key: key); 
-  // final String title;
+  const GoalInfo({Key? key, required this.title}): super(key: key); 
+  final String title;
   static const routeName = "/goalInfo";
   static String _goalDesc = "This is goal desciption from database";
   static int _goalPrice = 5000;
@@ -23,10 +16,9 @@ class GoalInfo extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GoalInfoArguments;
     return Scaffold(
       appBar: AppBar(
-        title: Text(args.title),
+        title: Text(title),
         ),
       body: Container(
         padding: EdgeInsets.all(20),
@@ -43,7 +35,7 @@ class GoalInfo extends StatelessWidget{
                           children: [
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                              child: Text(args.title),
+                              child: Text(title),
                             ),
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -115,7 +107,7 @@ class GoalInfo extends StatelessWidget{
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => InstallmentInfo()),
+            MaterialPageRoute(builder: (context) => InstallmentInfo(title: title,)),
           );
         },
         child: Container(

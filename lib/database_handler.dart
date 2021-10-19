@@ -52,16 +52,25 @@ class DatabaseHandler {
     ]);
     box.put('p0-goals', [
       {
-        'name': 'มือถือ',
-        'price': 12000,
+        'name': 'ไมโครเวฟ',
+        'price': 2000,
+        'period': 4,
+        'price_per_period': 500,
+        'paids': [300,500,500,400],
       },
       {
         'name': 'มอเตอร์ไซค์',
         'price': 30000,
+        'period': 10,
+        'price_per_period': 3000,
+        'paids': [0],
       },
       {
         'name': 'คอมพิวเตอร์',
         'price': 50000,
+        'period': 20,
+        'price_per_period': 2500,
+        'paids': [1200,2500,2500],
       },
     ]);
     box.put('p1-goals', [

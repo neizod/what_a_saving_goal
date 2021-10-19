@@ -17,7 +17,6 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-
 class _DashboardState extends State<Dashboard> {
   final DatabaseHandler _database = DatabaseHandler();
   String _profile = '';
@@ -103,7 +102,8 @@ class _DashboardState extends State<Dashboard> {
               alignment: Alignment.centerLeft,
               margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
               child: Text('เป้าหมายรายสัปดาห์',
-                style: Theme.of(context).textTheme.headline5,),
+                style: Theme.of(context).textTheme.headline5,
+              ),
             ),
             const SizedBox(height: 20.0),
             Container(
@@ -133,35 +133,37 @@ class _DashboardState extends State<Dashboard> {
   List<GestureDetector> _buildGoalList(){
     List<GestureDetector> goals = List.generate(
       _goals.length,
-      (index) =>
-      GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => GoalInfo()),
-          );
-        },
-        child: Container(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(_goals[index]['name']),
-              ),
-              Expanded(
-                child: LinearPercentIndicator(
-                  lineHeight: 20,
-                  animation: true,
-                  percent: 3/5,
-                  center: Text('300/500 บาท'),
-                  progressColor: Colors.green[400],
-                  backgroundColor: Colors.red[400],
+      (index) {
+        var sum = _goals[index]['paids'].fold(0, (a, b) => a + b);
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => GoalInfo(title: _goals[index]['name'])),
+            );
+          },
+          child: Container(
+            padding: EdgeInsets.only(bottom: 5),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(_goals[index]['name']),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: LinearPercentIndicator(
+                    lineHeight: 20,
+                    animation: true,
+                    percent: sum/_goals[index]['price'],
+                    center: Text('${sum}/${_goals[index]['price']} บาท'),
+                    progressColor: Colors.green[400],
+                    backgroundColor: Colors.red[400],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      }
     );
     return goals;
   }

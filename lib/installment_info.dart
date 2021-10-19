@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-class InstallmentInfo extends StatelessWidget{
-  static const routeName = "/goalInfo/installmentInfo";
+class InstallmentInfo extends StatefulWidget{
+  const InstallmentInfo({Key? key, required this.title}): super(key: key);
+  final String title;
   
-  
+
+  @override
+  _InstallmentInfo createState() => _InstallmentInfo();
+}
+
+class _InstallmentInfo extends State<InstallmentInfo>{
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('รายละเอียดเป้าหมาย'),
+        title: Text(widget.title),
         ),
       body: Center(
         child: Container(
@@ -39,11 +46,35 @@ class InstallmentInfo extends StatelessWidget{
                   style: Theme.of(context).textTheme.headline5,
                 ),
               ),
-              Container(
+              Expanded(
                 child: Column(
-                  children: [],
+                  children: [
+                  
+                  ],
                   ),
               ),
+              FloatingActionButton.extended(
+                onPressed: (){
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text("กรุณาระบุจำนวนเงิน"),
+                        content: TextField(),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: (){
+                              
+                            }, 
+                            child: Text("ตกลง"),
+                            ),
+                        ],
+                        );
+                    }
+                  );
+                }, 
+                label: Text("ชำระเงิน")
+                ),
             ],
             ),
           ),
