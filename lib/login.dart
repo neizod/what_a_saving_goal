@@ -12,7 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:flutter/material.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -21,7 +25,21 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
+
 class _LoginPageState extends State<LoginPage> {
+  var _profiles = ['A', 'B', 'C', 'D'];   // XXX dummy data within code
+
+  @override
+  void initState() {
+    super.initState();
+    getProfiles().whenComplete(() => setState((){}));
+  }
+
+  Future<void> getProfiles() async {
+    var box = await Hive.openBox('data');
+    _profiles = box.get('profiles');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,32 +53,30 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}
 
-List<Card> _buildGridCards(int count, BuildContext context) {
-  List<Card> cards = List.generate(
-    count,
-    (int index) => Card(
-      child: InkWell(
-        splashColor: Colors.blue.withAlpha(30),
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Column(
-          children: <Widget>[
-            AspectRatio(aspectRatio: 18.0/11.0,
-            child: Image.asset('assets/dummy-profile.png'),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
-              child: Text('Dummy Profile'),
-            ),
-          ],
+  List<Card> _buildGridCards(int count, BuildContext context) {
+    List<Card> cards = List.generate(
+      count,
+      (int index) => Card(
+        child: InkWell(
+          splashColor: Colors.blue.withAlpha(30),
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Column(
+            children: <Widget>[
+              AspectRatio(aspectRatio: 18.0/11.0,
+              child: Image.asset('assets/dummy-profile.png'),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
+                child: Text('${_profiles[index]}'),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-
-  return cards;
+    );
+    return cards;
+  }
 }
-
