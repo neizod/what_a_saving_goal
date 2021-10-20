@@ -142,6 +142,7 @@ class _DashboardState extends State<Dashboard> {
         int price_per_period = _goals[index]['price_per_period'];
         return GestureDetector(
           onTap: () {
+            _database.indexGoal = index;
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => GoalInfo(title: _goals[index]['name'], goal_index: index,)),

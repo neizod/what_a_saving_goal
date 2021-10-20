@@ -120,7 +120,16 @@ class _GoalInfo extends State<GoalInfo>{
               child: Text('ข้อความสรุป เช่นช้ากว่าเป้าไป 2 งวดนะ หรือ ตอนนี้มีเงินพอปิดยอด'),
             )
           ],
-          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await _database.payGoalLatestPeriod(100);
+          _sumPaid += 100;  // XXX
+          setState((){});
+        },
+        tooltip: 'quick pay this goal 100 baht',
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -162,7 +171,7 @@ class _GoalInfo extends State<GoalInfo>{
       center: Text("$save / $goal"),
       progressColor: Colors.green[400],
       backgroundColor: Colors.red[400],
-      percent: save/goal,
+      percent: min(1, save/goal),
       animation: true,
       );
     return saveGuage;
