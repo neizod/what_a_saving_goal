@@ -79,7 +79,7 @@ class DatabaseHandler {
         'price': 300000,
         'period': 30,
         'price_per_period': 10000,
-        'paids': [],
+        'paids': [0],
       },
       {
         'name': 'เกษียณ',
@@ -107,5 +107,17 @@ class DatabaseHandler {
   Future<Map> getProfileGoal() async {
     List goals = await listProfileGoals();
     return goals[indexGoal];
+  }
+
+  Future<void> addGoal({name: String, price: int, period: int}) async {
+    List goals = await listProfileGoals();
+    goals.add(Map<String, Object>.from({
+      'name': name,
+      'price': int.parse(price),
+      'period': int.parse(period),
+      'price_per_period': int.parse(price) ~/ int.parse(period),
+      'paids': [0],
+    }));
+    await box.put(_profileGoals(indexProfile), goals);
   }
 }

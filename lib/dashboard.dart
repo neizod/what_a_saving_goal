@@ -18,6 +18,7 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
+
 class _DashboardState extends State<Dashboard> {
   final DatabaseHandler _database = DatabaseHandler();
   String _profile = '';
@@ -114,11 +115,12 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             FloatingActionButton.extended(
-              onPressed: (){
-                Navigator.push(
+              onPressed: () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddGoal()),
                 );
+                setState((){});
               },
               label: Text('เพิ่มเป้าหมาย',
                 style: Theme.of(context).textTheme.headline5,   
