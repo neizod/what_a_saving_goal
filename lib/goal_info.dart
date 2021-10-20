@@ -122,6 +122,30 @@ class _GoalInfo extends State<GoalInfo>{
           ],
         ),
       ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () async {
+              await _database.addGoalPaidEntry();
+              setState((){});
+            },
+            tooltip: 'quick pay this goal 100 baht',
+            child: const Icon(Icons.navigate_next),
+          ),
+          SizedBox(height: 20),
+          FloatingActionButton(
+            onPressed: () async {
+              await _database.payGoalLatestPeriod(100);
+              _sumPaid += 100;  // XXX
+              setState((){});
+            },
+            tooltip: 'quick pay this goal 100 baht',
+            child: const Icon(Icons.add),
+          ),
+        ],
+      ),
+      /*
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await _database.payGoalLatestPeriod(100);
@@ -131,6 +155,7 @@ class _GoalInfo extends State<GoalInfo>{
         tooltip: 'quick pay this goal 100 baht',
         child: const Icon(Icons.add),
       ),
+      */
     );
   }
 
@@ -176,5 +201,4 @@ class _GoalInfo extends State<GoalInfo>{
       );
     return saveGuage;
   }
-
 }

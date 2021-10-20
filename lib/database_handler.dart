@@ -121,6 +121,12 @@ class DatabaseHandler {
     await box.put(_profileGoals(indexProfile), goals);
   }
 
+  Future<void> addGoalPaidEntry() async {
+    List goals = await listProfileGoals();
+    goals[indexGoal]['paids'].add(0);
+    await box.put(_profileGoals(indexProfile), goals);
+  }
+
   Future<void> payGoalLatestPeriod(int amount) async {
     List goals = await listProfileGoals();
     int length = goals[indexGoal]['paids'].length;
