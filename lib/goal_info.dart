@@ -90,7 +90,7 @@ class _GoalInfo extends State<GoalInfo>{
                     child: LinearPercentIndicator(
                       width: MediaQuery.of(context).size.width - 40,
                       lineHeight: 40,
-                      percent: _sumPaid/_goalPrice,
+                      percent: min(1, _sumPaid/_goalPrice),
                       center: Text("${_sumPaid}/${_goalPrice}"),
                       linearStrokeCap: LinearStrokeCap.roundAll,
                       progressColor: Colors.green[400],
