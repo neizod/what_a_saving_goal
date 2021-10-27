@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'database_handler.dart';
@@ -16,6 +17,7 @@ class Dashboard extends StatefulWidget {
   @override
   State<Dashboard> createState() => _DashboardState();
 }
+
 
 class _DashboardState extends State<Dashboard> {
   final DatabaseHandler _database = DatabaseHandler();
@@ -113,11 +115,12 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             FloatingActionButton.extended(
-              onPressed: (){
-                Navigator.push(
+              onPressed: () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddGoal()),
                 );
+                setState((){});
               },
               label: Text('เพิ่มเป้าหมาย',
                 style: Theme.of(context).textTheme.headline5,   
@@ -134,9 +137,12 @@ class _DashboardState extends State<Dashboard> {
     List<GestureDetector> goals = List.generate(
       _goals.length,
       (index) {
-        var sum = _goals[index]['paids'].fold(0, (a, b) => a + b);
+        int length = _goals[index]['paids'].length;
+        int latest_peroid = _goals[index]['paids'][length-1];
+        int price_per_period = _goals[index]['price_per_period'];
         return GestureDetector(
           onTap: () {
+            _database.indexGoal = index;
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => GoalInfo(title: _goals[index]['name'], goal_index: index,)),
@@ -153,8 +159,8 @@ class _DashboardState extends State<Dashboard> {
                   child: LinearPercentIndicator(
                     lineHeight: 20,
                     animation: true,
-                    percent: sum/_goals[index]['price'],
-                    center: Text('${sum}/${_goals[index]['price']} บาท'),
+                    percent: min(1, latest_peroid/price_per_period),
+                    center: Text('$latest_peroid/$price_per_period บาท'),
                     progressColor: Colors.green[400],
                     backgroundColor: Colors.red[400],
                   ),

@@ -1,13 +1,16 @@
-import 'package:hive/hive.dart';
-
 import 'package:flutter/material.dart';
+
+import 'database_handler.dart';
+
 
 class AddGoalForm extends StatefulWidget{
   @override
   _AddGoalForm createState() => _AddGoalForm();
 }
 
+
 class _AddGoalForm extends State<AddGoalForm>{
+  final DatabaseHandler _database = DatabaseHandler();
   DateTime? _datetime = null;
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> formController = {
@@ -41,29 +44,32 @@ class _AddGoalForm extends State<AddGoalForm>{
           ),
           TextFormField(
             controller: formController['price'],
+            keyboardType: TextInputType.number,
             validator: (value) {
               return (value == null || value.isEmpty) ? 'กรุณากรอกราคา' : null;
             },
             decoration: InputDecoration(
-              labelText: "ราคา", 
+              labelText: "ราคา",
             ),
           ),
           TextFormField(
             controller: formController['duration'],
+            keyboardType: TextInputType.number,
             validator: (value) {
               return (value == null || value.isEmpty) ? 'กรุณากรอกระยะเวลา' : null;
             },
             decoration: InputDecoration(
-              labelText: "ระยะเวลา", 
+              labelText: "จำนวนงวด (สัปดาห์)",
             ),
           ),
+          /*
           TextFormField(
             controller: formController['installment'],
             validator: (value) {
               return (value == null || value.isEmpty) ? 'กรุณากรอกงวด' : null;
             },
             decoration: InputDecoration(
-              labelText: "งวด(วัน/สัปดาห์/เดือน)", 
+              labelText: "งวด(วัน/สัปดาห์/เดือน)",
             ),
           ),
           Row(
@@ -84,16 +90,16 @@ class _AddGoalForm extends State<AddGoalForm>{
               IconButton(
                 onPressed: () {
                   showDatePicker(
-                    context: context, 
-                    initialDate: DateTime.now(), 
-                    firstDate: DateTime(2020), 
-                    lastDate: DateTime(2022), 
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2022),
                     ).then((date) {
                       setState(() {
                         _datetime = date;
                       });
                     });
-                }, 
+                },
                 icon: Icon(Icons.calendar_today),
               ),
             ],
@@ -107,6 +113,7 @@ class _AddGoalForm extends State<AddGoalForm>{
               labelText: "ชื่อเจ้าหนี้", 
             ),
           ),
+          */
           SizedBox(
             height: 20,
           ),
@@ -125,25 +132,31 @@ class _AddGoalForm extends State<AddGoalForm>{
       )
     );
   }
-  
+
   Future<void> addGoal(bool _debug) async {
-    if(_debug){
+    if (_debug){
       print("Objective Name: ${formController['objectName']?.text}");
       print("Price: ${formController['price']?.text}");
       print("Duration: ${formController['duration']?.text}");
       print("Installment: ${formController['installment']?.text}");
       print("Creditor Name: ${formController['creditorName']?.text}");
     }
-     //Create box.push here with asynchronus method
+    _database.addGoal(
+        name: formController['objectName']?.text,
+        price: formController['price']?.text,
+        period: formController['duration']?.text,
+    );
+    //Create box.push here with asynchronus method
   }
-
 }
+
 
 class AddGoal extends StatefulWidget{
   static const routeName = '/addGoal';
   @override
   _AddGoal createState() => _AddGoal();
 }
+
 
 class _AddGoal extends State<AddGoal>{
   @override
@@ -182,6 +195,7 @@ class _AddGoal extends State<AddGoal>{
     );
   }
 }
+
 
 class DisabledFocusNode extends FocusNode{
   @override

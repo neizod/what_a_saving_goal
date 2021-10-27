@@ -77,15 +77,21 @@ class DatabaseHandler {
       {
         'name': 'งานแต่ง',
         'price': 300000,
+        'period': 30,
+        'price_per_period': 10000,
+        'paids': [0],
       },
       {
         'name': 'เกษียณ',
         'price': 3000000,
+        'period': 400,
+        'price_per_period': 7500,
+        'paids': [3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3500, 3500, 3500],
       }
     ]);
   }
 
-  Future<List<String>> listProfiles() async {
+  Future<List> listProfiles() async {
     return await box.get('profiles');
   }
 
@@ -94,12 +100,37 @@ class DatabaseHandler {
   }
 
   Future<String> getProfile() async {
-    List<String> profiles = await listProfiles();
+    List profiles = await listProfiles();
     return profiles[indexProfile];
   }
 
   Future<Map> getProfileGoal() async {
     List goals = await listProfileGoals();
     return goals[indexGoal];
+  }
+
+  Future<void> addGoal({name: String, price: int, period: int}) async {
+    List goals = await listProfileGoals();
+    goals.add(Map<String, Object>.from({
+      'name': name,
+      'price': int.parse(price),
+      'period': int.parse(period),
+      'price_per_period': int.parse(price) ~/ int.parse(period),
+      'paids': [0],
+    }));
+    await box.put(_profileGoals(indexProfile), goals);
+  }
+
+  Future<void> addGoalPaidEntry() async {
+    List goals = await listProfileGoals();
+    goals[indexGoal]['paids'].add(0);
+    await box.put(_profileGoals(indexProfile), goals);
+  }
+
+  Future<void> payGoalLatestPeriod(int amount) async {
+    List goals = await listProfileGoals();
+    int length = goals[indexGoal]['paids'].length;
+    goals[indexGoal]['paids'][length-1] += amount;
+    await box.put(_profileGoals(indexProfile), goals);
   }
 }

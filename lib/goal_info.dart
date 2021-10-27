@@ -4,12 +4,13 @@ import 'package:what_a_saving_goal/database_handler.dart';
 import 'package:what_a_saving_goal/installment_info.dart';
 
 class GoalInfo extends StatefulWidget{
-  const GoalInfo({Key? key, required this.title, required this.goal_index}): super(key: key); 
+  const GoalInfo({Key? key, required this.title, required this.goal_index}): super(key: key);
   final int goal_index;
   final String title;
   @override
   State<GoalInfo> createState() => _GoalInfo();
 }
+
 
 class _GoalInfo extends State<GoalInfo>{
   static String _goalDesc = "This is goal desciption from database";
@@ -46,7 +47,7 @@ class _GoalInfo extends State<GoalInfo>{
       body: Container(
         padding: EdgeInsets.all(20),
         child: Column(
-          children: <Widget> [ 
+          children: <Widget> [
             Container(
               child: Column(
                 children: <Widget>[
@@ -87,7 +88,7 @@ class _GoalInfo extends State<GoalInfo>{
                     child: LinearPercentIndicator(
                       width: MediaQuery.of(context).size.width - 40,
                       lineHeight: 40,
-                      percent: _sumPaid/_goalPrice,
+                      percent: min(1, _sumPaid/_goalPrice),
                       center: Text("${_sumPaid}/${_goalPrice}"),
                       linearStrokeCap: LinearStrokeCap.roundAll,
                       progressColor: Colors.green[400],
@@ -117,8 +118,42 @@ class _GoalInfo extends State<GoalInfo>{
               child: Text('ข้อความสรุป เช่นช้ากว่าเป้าไป 2 งวดนะ หรือ ตอนนี้มีเงินพอปิดยอด'),
             )
           ],
-          ),
+        ),
       ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () async {
+              await _database.addGoalPaidEntry();
+              setState((){});
+            },
+            tooltip: 'quick pay this goal 100 baht',
+            child: const Icon(Icons.navigate_next),
+          ),
+          SizedBox(height: 20),
+          FloatingActionButton(
+            onPressed: () async {
+              await _database.payGoalLatestPeriod(100);
+              _sumPaid += 100;  // XXX
+              setState((){});
+            },
+            tooltip: 'quick pay this goal 100 baht',
+            child: const Icon(Icons.add),
+          ),
+        ],
+      ),
+      /*
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await _database.payGoalLatestPeriod(100);
+          _sumPaid += 100;  // XXX
+          setState((){});
+        },
+        tooltip: 'quick pay this goal 100 baht',
+        child: const Icon(Icons.add),
+      ),
+      */
     );
   }
 
@@ -143,14 +178,13 @@ class _GoalInfo extends State<GoalInfo>{
                 child: Text('งวดที่ ${count-index}'),
               ),
               Expanded(
-                child: _buildSavingGuage(_paidHist[index], _installmentPrice)
+                child: _buildSavingGuage(_paidHist[count-index-1], _installmentPrice)
                 ),
             ],
             ),
           ),
-      )
+        )
       );
-
     return saves;
   }
 
@@ -160,10 +194,9 @@ class _GoalInfo extends State<GoalInfo>{
       center: Text("$save / $goal"),
       progressColor: Colors.green[400],
       backgroundColor: Colors.red[400],
-      percent: save/goal,
+      percent: min(1, save/goal),
       animation: true,
       );
     return saveGuage;
   }
-
 }
