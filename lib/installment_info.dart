@@ -24,7 +24,7 @@ class _InstallmentInfo extends State<InstallmentInfo>{
   void initState() {
     super.initState();
     getData().whenComplete(() => setState((){
-      installment = _goals[widget.goalIndex]['paids'].length - widget.installmentIndex;
+      installment = widget.installmentIndex+1;
       paid = _goals[widget.goalIndex]['paids'][widget.installmentIndex];
       installmentPrice = _goals[widget.goalIndex]['price_per_period'];
     }));
@@ -36,6 +36,7 @@ class _InstallmentInfo extends State<InstallmentInfo>{
 
   @override
   Widget build(BuildContext context) {
+    print("On init function ${paid}");
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -86,7 +87,7 @@ class _InstallmentInfo extends State<InstallmentInfo>{
                         actions: <Widget>[
                           TextButton(
                             onPressed: (){
-                              
+                              Navigator.of(context).pop();
                             }, 
                             child: Text("ตกลง"),
                             ),

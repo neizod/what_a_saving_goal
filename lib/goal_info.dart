@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:what_a_saving_goal/database_handler.dart';
 import 'package:what_a_saving_goal/installment_info.dart';
@@ -103,10 +104,14 @@ class _GoalInfo extends State<GoalInfo>{
               padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
               child: Text('ประวัติการออมแบ่งตามเป้าหมายย่อย'),
             ),
-            Column(
-              children: _buildSavingHistory(context),
-              // Saving for Goal History Generator,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: _buildSavingHistory(context),
+                  // Saving for Goal History Generator,
+                ),
               ),
+            ),
             Container(
               alignment: Alignment.centerLeft,
               child: IconButton(
@@ -130,16 +135,18 @@ class _GoalInfo extends State<GoalInfo>{
             },
             tooltip: 'quick pay this goal 100 baht',
             child: const Icon(Icons.navigate_next),
+            heroTag: null,
           ),
           SizedBox(height: 20),
           FloatingActionButton(
             onPressed: () async {
               await _database.payGoalLatestPeriod(100);
-              _sumPaid += 100;  // XXX
+              // _sumPaid += 100;  // XXX
               setState((){});
             },
             tooltip: 'quick pay this goal 100 baht',
             child: const Icon(Icons.add),
+            heroTag: null,
           ),
         ],
       ),
@@ -165,7 +172,7 @@ class _GoalInfo extends State<GoalInfo>{
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => InstallmentInfo(title: widget.title, installmentIndex: index, goalIndex: widget.goal_index,)),
+            MaterialPageRoute(builder: (context) => InstallmentInfo(title: widget.title, installmentIndex: count-index-1, goalIndex: widget.goal_index,)),
           );
         },
         child: Container(

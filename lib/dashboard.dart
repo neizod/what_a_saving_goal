@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:what_a_saving_goal/account_summary.dart';
+import 'package:what_a_saving_goal/goal_planing.dart';
 
 import 'database_handler.dart';
 import 'add_cash.dart';
@@ -82,10 +84,18 @@ class _DashboardState extends State<Dashboard> {
             ),
             const SizedBox(height: 20.0),
             Container(
-            child: Column(
-                children: _buildSpendHistory(5),
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AccountSummary()),
+                  );
+                },
+                child: Column(
+                  children: _buildSpendHistory(5),
+                  ),
+                ),
               ),
-            ),
             const SizedBox(height: 20.0),
             FloatingActionButton.extended(
               onPressed: (){
@@ -118,7 +128,7 @@ class _DashboardState extends State<Dashboard> {
               onPressed: () async {
                 await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddGoal()),
+                  MaterialPageRoute(builder: (context) => GoalPlaning()),
                 );
                 setState((){});
               },
