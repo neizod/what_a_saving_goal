@@ -127,26 +127,53 @@ class _GoalInfo extends State<GoalInfo>{
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           FloatingActionButton(
             onPressed: () async {
               await _database.addGoalPaidEntry();
               setState((){});
             },
-            tooltip: 'quick pay this goal 100 baht',
+            tooltip: '(for debug)',
+            mini: true,
+            backgroundColor: Colors.red,
             child: const Icon(Icons.navigate_next),
             heroTag: null,
           ),
           SizedBox(height: 20),
-          FloatingActionButton(
-            onPressed: () async {
-              await _database.payGoalLatestPeriod(100);
-              // _sumPaid += 100;  // XXX
-              setState((){});
-            },
-            tooltip: 'quick pay this goal 100 baht',
-            child: const Icon(Icons.add),
-            heroTag: null,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              FloatingActionButton(
+                onPressed: () async {
+                  await _database.payGoalLatestPeriod(10);
+                  _sumPaid += 10;  // XXX
+                  setState((){});
+                },
+                tooltip: 'quick pay',
+                child: const Text('10'),
+              ),
+              SizedBox(width: 20),
+              FloatingActionButton(
+                onPressed: () async {
+                  await _database.payGoalLatestPeriod(100);
+                  _sumPaid += 100;  // XXX
+                  setState((){});
+                },
+                tooltip: 'quick pay',
+                child: const Text('100'),
+              ),
+              SizedBox(width: 20),
+              FloatingActionButton(
+                onPressed: () async {
+                  await _database.payGoalLatestPeriod(1000);
+                  _sumPaid += 1000;  // XXX
+                  setState((){});
+                },
+                tooltip: 'quick pay',
+                child: const Text('1000'),
+              ),
+            ],
           ),
         ],
       ),
