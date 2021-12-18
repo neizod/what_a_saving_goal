@@ -95,11 +95,18 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
           ),
           TextFormField(
             onChanged: (string){
+              int priceInstallment = int.parse(formController['moneyPerInstallment']!.text);
+              int price = int.parse(formController['price']!.text);
+              int duration = (price/priceInstallment).ceil();
+              int day_duration = typeToDays[installmentType]*duration;
+              _enddate = _startdate!.add(Duration(days: day_duration));
+              formController['endDate']!.text = '${_enddate?.day}-${_enddate?.month}-${_enddate?.year}';
+              formController['duration']!.text = duration.toString();              
               setState(() {});
             },
             controller: formController['moneyPerInstallment'],
             keyboardType: TextInputType.number,
-            focusNode: (!(formController['duration']!.text.isEmpty) || !(formController['endDate']!.text.isEmpty)) ? new DisabledFocusNode() : null,
+            focusNode: (formController['price']!.text.isEmpty) ? new DisabledFocusNode() : null,
             validator: (value) {
               return (value == null || value.isEmpty) ? 'กรุณาระบุจำนวนเงินต่องวด' : null;
             },
@@ -114,11 +121,18 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
                 child: TextFormField(
                   controller: formController['duration'],
                   onChanged: (string){
+                    int duration = int.parse(formController['duration']!.text);
+                    int price = int.parse(formController['price']!.text);
+                    int priceInstallment = (price/duration).ceil();
+                    int day_duration = typeToDays[installmentType]*duration;
+                    _enddate = _startdate!.add(Duration(days: day_duration));
+                    formController['endDate']!.text = '${_enddate?.day}-${_enddate?.month}-${_enddate?.year}';
+                    formController['moneyPerInstallment']!.text = priceInstallment.toString();
                     setState(() {
                     });
                   },
                   keyboardType: TextInputType.number,
-                  focusNode: (!(formController['moneyPerInstallment']!.text.isEmpty) ||  !(formController['endDate']!.text.isEmpty)) ? new DisabledFocusNode() : null,
+                  focusNode: (formController['price']!.text.isEmpty) ? new DisabledFocusNode() : null,
                   validator: (value) {
                     return (value == null || value.isEmpty) ? 'กรุณาระบุจำนวนงวด' : null;
                   },
@@ -131,6 +145,12 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
                 onTap: (){
                   setState(() {
                     installmentType = 'week';
+                    if(_startdate!=null && formController['duration']!.text.isNotEmpty){
+                      int duration = int.parse(formController['duration']!.text);
+                      int day_duration = typeToDays[installmentType]*duration;
+                      _enddate = _startdate!.add(Duration(days: day_duration));
+                      formController['endDate']!.text = '${_enddate?.day}-${_enddate?.month}-${_enddate?.year}';
+                    }
                   });
                 },
                 child: Container(
@@ -149,6 +169,12 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
                 onTap: (){
                   setState(() {
                     installmentType = 'month';
+                    if(_startdate!=null && formController['duration']!.text.isNotEmpty){
+                      int duration = int.parse(formController['duration']!.text);
+                      int day_duration = typeToDays[installmentType]*duration;
+                      _enddate = _startdate!.add(Duration(days: day_duration));
+                      formController['endDate']!.text = '${_enddate?.day}-${_enddate?.month}-${_enddate?.year}';
+                    }
                   });
                 },
                 child: Container(
@@ -167,6 +193,12 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
                 onTap: (){
                   setState(() {
                     installmentType = 'year';                  
+                    if(_startdate!=null && formController['duration']!.text.isNotEmpty){
+                      int duration = int.parse(formController['duration']!.text);
+                      int day_duration = typeToDays[installmentType]*duration;
+                      _enddate = _startdate!.add(Duration(days: day_duration));
+                      formController['endDate']!.text = '${_enddate?.day}-${_enddate?.month}-${_enddate?.year}';
+                    }
                   });
                 },
                 child: Container(
@@ -209,7 +241,12 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
                     ).then((date) {
                       setState(() {
                         _enddate = date;
+                        int day_duration = _enddate!.difference(_startdate!).inDays;
+                        int duration = (day_duration/typeToDays[installmentType]).ceil();
+                        double priceInstallment = double.parse(formController['price']!.text)/duration;
                         formController['endDate']!.text = '${_enddate?.day}-${_enddate?.month}-${_enddate?.year}';
+                        formController['duration']!.text = duration.toString();
+                        formController['moneyPerInstallment']!.text = priceInstallment.toString();
                       });
                     });
                 },
@@ -220,59 +257,72 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
           SizedBox(
             height: 20,
           ),
-          Row( 
-            children: [
-              Expanded(
-                child: FloatingActionButton.extended(
-                    onPressed: (){
-                      print(_enddate);
-                      if(formController['endDate']!.text.isNotEmpty){
-                        int day_duration = _enddate!.difference(_startdate!).inDays;
-                        int duration = 0;
-                        duration = day_duration~/typeToDays[installmentType]; //Transform day to week/month/year
-                        formController['duration']!.text = duration.toString();
-                        double priceInstallment = (double.parse(formController['price']!.text)/duration);
-                        formController['moneyPerInstallment']!.text = priceInstallment.ceil().toString();
-                      }
-                      else if(formController['moneyPerInstallment']!.text.isNotEmpty){
-                        print("case 2");
-                        int priceInstallment = int.parse(formController['moneyPerInstallment']!.text);
-                        int price = int.parse(formController['price']!.text);
-                        int duration = (price/priceInstallment).ceil();
-                        int day_duration = typeToDays[installmentType]*duration;
-                        _enddate = _startdate!.add(Duration(days: day_duration));
-                        formController['endDate']!.text = '${_enddate?.day}-${_enddate?.month}-${_enddate?.year}';
-                        formController['duration']!.text = duration.toString();
-                      }
-                      setState(() {});
-                      if(_formKey.currentState!.validate()){
-                          // addGoal(true);
-                        // Navigator.pop(context);
-                      }
-                    },
-                    label: Text('ช่วยวางแผน',
-                      style: Theme.of(context).textTheme.headline5,
-                    ),
-                    heroTag: null,
-                  ),
-                ),
-              Expanded(
-                child: FloatingActionButton.extended(
-                  onPressed: (){
-                    setState(() {});
-                    if(_formKey.currentState!.validate()){
-                      // addGoal(true);
-                      // Navigator.pop(context);
-                    }
-                  },
-                  label: Text('ตั้งเป้าหมาย',
-                    style: Theme.of(context).textTheme.headline5,
-                    ),
-                  heroTag: null,
-                ),
+          FloatingActionButton.extended(
+            onPressed: (){
+              setState(() {});
+              if(_formKey.currentState!.validate()){
+                // addGoal(true);
+                // Navigator.pop(context);
+              }
+            },
+            label: Text('ตั้งเป้าหมาย',
+              style: Theme.of(context).textTheme.headline5,
               ),
-            ],
+            heroTag: null,
           ),
+          // Row( 
+          //   children: [
+          //     Expanded(
+          //       child: FloatingActionButton.extended(
+          //           onPressed: (){
+          //             print(_enddate);
+          //             if(formController['endDate']!.text.isNotEmpty){
+          //               int day_duration = _enddate!.difference(_startdate!).inDays;
+          //               int duration = 0;
+          //               duration = day_duration~/typeToDays[installmentType]; //Transform day to week/month/year
+          //               formController['duration']!.text = duration.toString();
+          //               double priceInstallment = (double.parse(formController['price']!.text)/duration);
+          //               formController['moneyPerInstallment']!.text = priceInstallment.ceil().toString();
+          //             }
+          //             else if(formController['moneyPerInstallment']!.text.isNotEmpty){
+          //               print("case 2");
+          //               int priceInstallment = int.parse(formController['moneyPerInstallment']!.text);
+          //               int price = int.parse(formController['price']!.text);
+          //               int duration = (price/priceInstallment).ceil();
+          //               int day_duration = typeToDays[installmentType]*duration;
+          //               _enddate = _startdate!.add(Duration(days: day_duration));
+          //               formController['endDate']!.text = '${_enddate?.day}-${_enddate?.month}-${_enddate?.year}';
+          //               formController['duration']!.text = duration.toString();
+          //             }
+          //             setState(() {});
+          //             if(_formKey.currentState!.validate()){
+          //                 // addGoal(true);
+          //               // Navigator.pop(context);
+          //             }
+          //           },
+          //           label: Text('ช่วยวางแผน',
+          //             style: Theme.of(context).textTheme.headline5,
+          //           ),
+          //           heroTag: null,
+          //         ),
+          //       ),
+          //     Expanded(
+          //       child: FloatingActionButton.extended(
+          //         onPressed: (){
+          //           setState(() {});
+          //           if(_formKey.currentState!.validate()){
+          //             // addGoal(true);
+          //             // Navigator.pop(context);
+          //           }
+          //         },
+          //         label: Text('ตั้งเป้าหมาย',
+          //           style: Theme.of(context).textTheme.headline5,
+          //           ),
+          //         heroTag: null,
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       )
     );

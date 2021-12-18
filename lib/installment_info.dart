@@ -15,10 +15,12 @@ class InstallmentInfo extends StatefulWidget{
 
 class _InstallmentInfo extends State<InstallmentInfo>{
   final DatabaseHandler _database = DatabaseHandler();
+  final paidStatementController = TextEditingController();
   List _goals = [];
   int installmentPrice = 100;
   int paid = 50;
   int installment = 0;
+  
 
   @override
   void initState() {
@@ -32,6 +34,12 @@ class _InstallmentInfo extends State<InstallmentInfo>{
 
   Future<void> getData() async {
     _goals = await _database.listProfileGoals();
+  }
+
+  @override
+  void dispose(){
+    paidStatementController.dispose();
+    super.dispose();
   }
 
   @override
@@ -83,11 +91,15 @@ class _InstallmentInfo extends State<InstallmentInfo>{
                     builder: (context) {
                       return AlertDialog(
                         title: Text("กรุณาระบุจำนวนเงิน"),
-                        content: TextField(),
+                        content: TextField(
+                          controller: paidStatementController,
+                        ),
                         actions: <Widget>[
                           TextButton(
                             onPressed: (){
-                              Navigator.of(context).pop();
+                              //Add this statment to database
+                              print(paidStatementController.text);
+                              // Navigator.of(context).pop();
                             }, 
                             child: Text("ตกลง"),
                             ),

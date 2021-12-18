@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: _getRoute,
     );
   }
-
+  
   Route<dynamic>? _getRoute(RouteSettings settings) {
     if (settings.name != '/login') {
       return null;
