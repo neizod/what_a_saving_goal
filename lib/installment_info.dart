@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:what_a_saving_goal/database_handler.dart';
+import 'package:what_a_saving_goal/models/paid_history.dart';
 
 class InstallmentInfo extends StatefulWidget{
   const InstallmentInfo({Key? key, required this.title, required this.installmentIndex, required this.goalIndex}): super(key: key);
@@ -20,7 +21,7 @@ class _InstallmentInfo extends State<InstallmentInfo>{
   int installmentPrice = 100;
   int paid = 50;
   int installment = 0;
-  List paidHistory = [];
+  List<historyPaid> paidHistory = [];
   DateTime now_date = DateTime.now();
 
   @override
@@ -80,9 +81,7 @@ class _InstallmentInfo extends State<InstallmentInfo>{
               ),
               Expanded(
                 child: Column(
-                  children: [
-                    
-                  ],
+                  children: _buildPaidHistory(context)
                   ),
               ),
               FloatingActionButton.extended(
@@ -100,7 +99,13 @@ class _InstallmentInfo extends State<InstallmentInfo>{
                             onPressed: (){
                               //Add this statment to database
                               print(paidStatementController.text);
-                              // Navigator.of(context).pop();
+                              DateTime nowDate = DateTime.now();
+                              historyPaid transection = historyPaid(dateToString(nowDate), int.parse(paidStatementController.text));
+                              paidHistory.add(transection);
+                              print('${paidHistory.first.paidDate} ${paidHistory.first.money}');
+                              setState(() {
+                                Navigator.of(context).pop();                              
+                              });
                             }, 
                             child: Text("ตกลง"),
                             ),
@@ -118,4 +123,30 @@ class _InstallmentInfo extends State<InstallmentInfo>{
     );
   }
   
+  List<Widget> _buildPaidHistory(BuildContext context){
+    int count = paidHistory.length;
+    List<Row> paid_hist = List.generate(
+      count,
+      (index) => Row(
+        children: [
+          Container(
+            width: 200,
+            child: Text("${paidHistory[index].paidDate}")
+          ),
+          Expanded(
+            child: Container(
+              child: Text("${paidHistory[index].money} บาท")
+            )
+          ),
+        ],
+      ),
+    );
+    return paid_hist;
+  }
+
+  String dateToString(DateTime datetime){
+    String datetimeString = '${datetime.day}-${datetime.month}-${datetime.year}';
+    return datetimeString;
+  }
+
 }
