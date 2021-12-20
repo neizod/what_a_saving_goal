@@ -20,7 +20,8 @@ class _InstallmentInfo extends State<InstallmentInfo>{
   int installmentPrice = 100;
   int paid = 50;
   int installment = 0;
-  
+  List paidHistory = [];
+  DateTime now_date = DateTime.now();
 
   @override
   void initState() {
