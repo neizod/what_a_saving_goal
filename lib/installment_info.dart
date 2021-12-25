@@ -31,6 +31,8 @@ class _InstallmentInfo extends State<InstallmentInfo>{
       installment = widget.installmentIndex+1;
       paid = _goals[widget.goalIndex]['paids'][widget.installmentIndex];
       installmentPrice = _goals[widget.goalIndex]['price_per_period'];
+      // print("Goal Index: ${widget.installmentIndex}");
+      paidHistory = _goals[widget.goalIndex]['paids_history'][widget.installmentIndex];
     }));
   }
 
@@ -102,6 +104,8 @@ class _InstallmentInfo extends State<InstallmentInfo>{
                               DateTime nowDate = DateTime.now();
                               historyPaid transection = historyPaid(dateToString(nowDate), int.parse(paidStatementController.text));
                               paidHistory.add(transection);
+                              _goals[widget.goalIndex]['paids'][widget.installmentIndex]+=int.parse(paidStatementController.text);
+                              paid = _goals[widget.goalIndex]['paids'][widget.installmentIndex];
                               print('${paidHistory.first.paidDate} ${paidHistory.first.money}');
                               setState(() {
                                 Navigator.of(context).pop();                              

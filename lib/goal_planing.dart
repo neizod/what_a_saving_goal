@@ -261,8 +261,8 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
             onPressed: (){
               setState(() {});
               if(_formKey.currentState!.validate()){
-                // addGoal(true);
-                // Navigator.pop(context);
+                addGoal(true);
+                Navigator.pop(context);
               }
             },
             label: Text('ตั้งเป้าหมาย',
@@ -335,11 +335,16 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
       print("Duration: ${formController['duration']?.text}");
       print("Installment: ${formController['installment']?.text}");
       print("Creditor Name: ${formController['creditorName']?.text}");
+      print("Start Date: ${formController['startDate']?.text}");
+      print("End Date: ${formController['startDate']?.text}");
     }
     _database.addGoal(
         name: formController['objectName']?.text,
         price: formController['price']?.text,
         period: formController['duration']?.text,
+        start_date: formController['startDate']?.text,
+        price_per_period: formController['moneyPerInstallment']?.text,
+        end_date: formController['endDate']?.text,
     );
     //Create box.push here with asynchronus method
   }

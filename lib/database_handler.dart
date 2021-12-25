@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:what_a_saving_goal/models/paid_history.dart';
 
 
 class DatabaseHandler {
@@ -109,14 +110,26 @@ class DatabaseHandler {
     return goals[indexGoal];
   }
 
-  Future<void> addGoal({name: String, price: int, period: int}) async {
-    List goals = await listProfileGoals();
+  Future<void> addGoal({name: String, price: int, period: int, price_per_period:int,
+                        start_date: String, end_date: String}) async {
+    List goals = await listProfileGoals();  
+    Map<int, List<historyPaid>> paids_history = {};
+    period = int.parse(period);
+    price = int.parse(price);
+    print(period.runtimeType);
+    List<int> paids = List<int>.generate(period, (index) => 0);
+    for(int i=0;i<period;i++){
+      paids_history[i] = [];
+    }
     goals.add(Map<String, Object>.from({
       'name': name,
-      'price': int.parse(price),
-      'period': int.parse(period),
-      'price_per_period': int.parse(price) ~/ int.parse(period),
-      'paids': [0],
+      'price': price,
+      'period': period,
+      'price_per_period': int.parse(price_per_period),
+      'paids': paids,
+      'paids_history': paids_history,
+      'start_date': start_date,
+      'end_date': end_date,
     }));
     await box.put(_profileGoals(indexProfile), goals);
   }
