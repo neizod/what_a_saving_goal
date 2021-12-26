@@ -110,6 +110,13 @@ class DatabaseHandler {
     return goals[indexGoal];
   }
 
+  Future<void> addProfile({name: String}) async {
+    List profiles = await listProfiles();
+    profiles.add(name);
+    await box.put('profiles', profiles);
+    await ensureGoals();
+  }
+
   Future<void> addGoal({name: String, price: int, period: int, price_per_period:int,
                         start_date: String, end_date: String}) async {
     List goals = await listProfileGoals();  
