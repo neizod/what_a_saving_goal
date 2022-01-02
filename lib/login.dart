@@ -20,11 +20,9 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    getProfiles().whenComplete(() => setState((){}));
-  }
-
-  Future<void> getProfiles() async {
-    _profiles = await _database.listProfiles();
+    _database.listProfiles().then((result) => setState((){
+      _profiles = result;
+    }));
   }
 
   @override
@@ -37,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(16),
         itemCount: _profiles.length + 1,
         itemBuilder: (BuildContext context, int index) => (
-            index < _profiles.length ? itemProfile(index) : newProfile()
+          (index < _profiles.length) ? itemProfile(index) : addProfile()
         ),
         separatorBuilder: (BuildContext context, int index) => const Divider(),
       ),
@@ -56,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void routeProfile(BuildContext context, int index) {
-    _database.indexProfile = index; // TODO use setter
+    _database.focusProfile(index);
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => Dashboard(
@@ -65,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget newProfile() {
+  Widget addProfile() {
     return Container(
       height: 50,
       child: InkWell(
@@ -77,10 +75,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void routeAddProfile(BuildContext context) async {
-    await Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AddProfile()),
-    );
-    setState((){});
+    ).whenComplete(() => setState((){}));
   }
 }

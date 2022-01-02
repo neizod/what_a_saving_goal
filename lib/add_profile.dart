@@ -19,19 +19,8 @@ class _AddProfile extends State<AddProfile> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.fromLTRB(20, 10, 10, 0),
-          alignment: Alignment.topLeft,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget> [
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                  child: AddProfileForm(),
-                ),
-              ),
-            ],
-          ),
+          padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+          child: AddProfileForm(),
         ),
       ),
     );
@@ -49,7 +38,8 @@ class _AddProfileForm extends State<AddProfileForm> {
   final DatabaseHandler _database = DatabaseHandler();
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> formController = {
-    'profileName': TextEditingController(),
+    'name': TextEditingController(),
+    'current': TextEditingController(),
   };
 
   @override
@@ -58,24 +48,46 @@ class _AddProfileForm extends State<AddProfileForm> {
       key: _formKey,
       child: Column(
         children: <Widget> [
-          TextFormField(
-            controller: formController['profileName'],
-            decoration: InputDecoration(
-              labelText: 'ชื่อบัญชี',
-            ),
-          ),
-          FloatingActionButton.extended(
-            onPressed: (){
-              setState((){});
-              _database.addProfile(
-                name: formController['profileName']?.text,
-              );
-              Navigator.pop(context);
-            },
-            label: Text('บันทึก'),
-          ),
+          nameField(),
+          currentField(),
+          saveButton(),
         ],
       ),
+    );
+  }
+
+  TextFormField nameField() {
+    return TextFormField(
+      controller: formController['name'],
+      validator: (value) => ((value == null || value.isEmpty) ? 'กรุณากรอกชื่อ' : null),
+      decoration: InputDecoration(
+        labelText: 'ชื่อบัญชี',
+      ),
+    );
+  }
+
+  TextFormField currentField() {
+    return TextFormField(
+      controller: formController['current'],
+      keyboardType: TextInputType.number,
+      validator: (value) => ((value == null || value.isEmpty) ? 'กรุณากรอกยอดเงิน' : null),
+      decoration: InputDecoration(
+        labelText: 'ยอดเงินปัจจุบัน',
+      ),
+    );
+  }
+
+  FloatingActionButton saveButton() {
+    return FloatingActionButton.extended(
+      onPressed: (){
+        if (_formKey.currentState!.validate()) {
+          _database.addProfile(
+            name: formController['name']?.text,
+            current: formController['current']?.text,
+          ).whenComplete(() => Navigator.pop(context));
+        }
+      },
+      label: Text('บันทึก'),
     );
   }
 }

@@ -17,19 +17,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'What a Saving Goal',
+      title: 'KebTang',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
       home: LoginPage(),
-      /*
-      routes: {
-        // '/': (context) => const MyHomePage(title: 'Saving Goal Home Page'),
-        // '/add_cash': (context) => AddCash(),
-        AddGoal.routeName: (context) => AddGoal(),
-        GoalInfo.routeName: (context) => GoalInfo(),
-      },
-      */
       onGenerateRoute: _getRoute,
     );
   }
@@ -38,7 +30,6 @@ class MyApp extends StatelessWidget {
     if (settings.name != '/login') {
       return null;
     }
-
     return MaterialPageRoute<void>(
       settings: settings,
       builder: (BuildContext context) => const LoginPage(),

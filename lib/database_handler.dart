@@ -10,10 +10,7 @@ class DatabaseHandler {
   int indexGoal = -1;
   var box;
 
-  factory DatabaseHandler() {
-    return _singleton;
-  }
-
+  factory DatabaseHandler() => _singleton;
   DatabaseHandler._internal();
 
   String _profileGoals(int i) {
@@ -44,6 +41,23 @@ class DatabaseHandler {
         await box.put(_profileGoals(i), []);
       }
     }
+  }
+
+  Future<void> focusProfile(int index) async {
+    indexProfile = index;
+  }
+
+  Future<void> unfocusProfile() async {
+    unfocusGoal();
+    indexProfile = -1;
+  }
+
+  Future<void> focusGoal(int index) async {
+    indexGoal = index;
+  }
+
+  Future<void> unfocusGoal() async {
+    indexGoal = -1;
   }
 
   Future<void> populateExampleData() async {
@@ -117,23 +131,24 @@ class DatabaseHandler {
     return goals[indexGoal];
   }
 
-  Future<void> addProfile({name: String}) async {
+  Future<void> addProfile({name: String, current: int}) async {
     List profiles = await listProfiles();
     profiles.add(Map<String, Object>.from({
         'name': name,
-        'current': 0,
+        'current': current,
     }));
     await box.put('profiles', profiles);
     await ensureGoals();
   }
 
-  Future<void> addGoal({name: String, price: int, period: int, price_per_period:int,
+  Future<void> addGoal({name: String, price: int,
+                        period: int, price_per_period:int,
                         start_date: String, end_date: String}) async {
-    List goals = await listProfileGoals();  
+    List goals = await listProfileGoals();
     Map<int, List<historyPaid>> paids_history = {};
     period = int.parse(period);
     price = int.parse(price);
-    print(period.runtimeType);
+    //print(period.runtimeType);
     List<int> paids = List<int>.generate(period, (index) => 0);
     for(int i=0;i<period;i++){
       paids_history[i] = [];
