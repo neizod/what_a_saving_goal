@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'database_handler.dart';
 import 'dashboard.dart';
-import 'new_profile.dart';
+import 'add_profile.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -71,15 +71,15 @@ class _LoginPageState extends State<LoginPage> {
       child: InkWell(
         child: Center(child: Text('เพิ่มผู้ใช้ใหม่')),
         splashColor: Colors.blue.withAlpha(30),
-        onTap: () => routeNewProfile(context),
+        onTap: () => routeAddProfile(context),
       ),
     );
   }
 
-  void routeNewProfile(BuildContext context) async {
+  void routeAddProfile(BuildContext context) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NewProfile()),
+      MaterialPageRoute(builder: (context) => AddProfile()),
     );
     setState((){});
   }

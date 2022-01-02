@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'database_handler.dart';
 
 
-class NewProfile extends StatefulWidget {
-  static const routeName = '/newProfile';
+class AddProfile extends StatefulWidget {
+  static const routeName = '/addProfile';
   @override
-  _NewProfile createState() => _NewProfile();
+  _AddProfile createState() => _AddProfile();
 }
 
 
-class _NewProfile extends State<NewProfile> {
+class _AddProfile extends State<AddProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +27,7 @@ class _NewProfile extends State<NewProfile> {
               Expanded(
                 child: Container(
                   padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                  child: NewProfileForm(),
+                  child: AddProfileForm(),
                 ),
               ),
             ],
@@ -39,13 +39,13 @@ class _NewProfile extends State<NewProfile> {
 }
 
 
-class NewProfileForm extends StatefulWidget {
+class AddProfileForm extends StatefulWidget {
   @override
-  _NewProfileForm createState() => _NewProfileForm();
+  _AddProfileForm createState() => _AddProfileForm();
 }
 
 
-class _NewProfileForm extends State<NewProfileForm> {
+class _AddProfileForm extends State<AddProfileForm> {
   final DatabaseHandler _database = DatabaseHandler();
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> formController = {
