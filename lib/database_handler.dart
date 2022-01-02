@@ -48,8 +48,14 @@ class DatabaseHandler {
   Future<void> populateExampleData() async {
     await box.clear();
     box.put('profiles', [
-      'นางสาว ตั้งใจ เก็บเงิน',
-      'นาย ประหยัด มัธยัสถ์'
+      {
+        'name': 'นางสาว ตั้งใจ เก็บเงิน',
+        'current': 52196,
+      },
+      {
+        'name': 'นาย ประหยัด มัธยัสถ์',
+        'current': 777,
+      },
     ]);
     box.put('p0-goals', [
       {
@@ -100,7 +106,7 @@ class DatabaseHandler {
     return await box.get(_profileGoals(indexProfile));
   }
 
-  Future<String> getProfile() async {
+  Future<Map> getProfile() async {
     List profiles = await listProfiles();
     return profiles[indexProfile];
   }
@@ -112,7 +118,10 @@ class DatabaseHandler {
 
   Future<void> addProfile({name: String}) async {
     List profiles = await listProfiles();
-    profiles.add(name);
+    profiles.add(Map<String, Object>.from({
+        'name': name,
+        'current': 0,
+    }));
     await box.put('profiles', profiles);
     await ensureGoals();
   }

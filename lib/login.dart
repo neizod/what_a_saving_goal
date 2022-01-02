@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       height: 50,
       child: InkWell(
-        child: Center(child: Text('${_profiles[index % _profiles.length]}')),
+        child: Center(child: Text('${_profiles[index]['name']}')),
         splashColor: Colors.blue.withAlpha(30),
         onTap: () => routeProfile(context, index),
       ),
@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => Dashboard(
-        title: 'Dashboard: ${_profiles[index]}',
+        title: 'Dashboard: ${_profiles[index]['name']}',
       )),
     );
   }

@@ -23,9 +23,8 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final DatabaseHandler _database = DatabaseHandler();
-  String _profile = '';
+  Map _profile = {};
   List _goals = [];
-  int _current_balance = 435000;
 
   @override
   void initState() {
@@ -50,7 +49,7 @@ class _DashboardState extends State<Dashboard> {
           children: <Widget>[
             Container(
               child:  Text(
-              'ยอดเงินปัจจุบัน: $_current_balance บาท',
+              'ยอดเงินปัจจุบัน: ${_profile['current']} บาท',
               style: Theme.of(context).textTheme.headline5,
               ),
               alignment: Alignment.topCenter,
