@@ -2,21 +2,23 @@ import 'package:flutter/material.dart';
 
 DateTime? _dateTime = DateTime.now();
 
+
 class PaymentButton extends StatefulWidget{
   @override
   _PaymentButton createState() => _PaymentButton();
 }
+
+
 class _PaymentButton extends State<PaymentButton>{
   bool _income = true;
   bool _outcome = false;
 
   void _handleTap(int index){
     setState(() {
-      if(index == 0){
+      if (index == 0) {
         _income = true;
         _outcome = false;
-      }
-      else{
+      } else {
         _outcome = true;
         _income = false;
       }
@@ -39,7 +41,7 @@ class _PaymentButton extends State<PaymentButton>{
                 borderRadius: BorderRadius.circular(100),
                 color: _income ? Colors.black : Colors.white ,
               ),
-              child: Text("รายรับ",          
+              child: Text("รายรับ",
                 style: TextStyle(
                   color: _income ? Colors.white : Colors.black),
                 ),
@@ -58,10 +60,10 @@ class _PaymentButton extends State<PaymentButton>{
                 borderRadius: BorderRadius.circular(100),
                 color: _outcome ? Colors.black : Colors.white ,
               ),
-              child: Text("รายจ่าย",          
+              child: Text("รายจ่าย",
                 style: TextStyle(
                   color: _outcome ? Colors.white : Colors.black),
-                ),
+              ),
             ),
           ),
         ),
@@ -70,10 +72,13 @@ class _PaymentButton extends State<PaymentButton>{
   }
 }
 
+
 class CategoryButton extends StatefulWidget{
   @override
   _CategoryButton createState() => _CategoryButton();
 }
+
+
 class _CategoryButton extends State<CategoryButton>{
   List<String> _categories = ['cat1','cat2','cat3','cat4'];
   List<bool> _selection = List.generate(4, (index) => false);
@@ -81,12 +86,11 @@ class _CategoryButton extends State<CategoryButton>{
 
   void _handleTap(int index){
     setState(() {
-      for(int i = 0; i< _selection.length; i++){
-        if(i == index){
+      for (int i = 0; i< _selection.length; i++) {
+        if (i == index) {
           _selection[i] = true;
           tag = _categories[i];
-        }
-        else{
+        } else {
           _selection[i] = false;
         }
       }
@@ -102,7 +106,7 @@ class _CategoryButton extends State<CategoryButton>{
         childAspectRatio: 10/2,
         mainAxisSpacing: 10,
         crossAxisSpacing: 2,
-        children: List.generate(_categories.length, 
+        children: List.generate(_categories.length,
           (index) => GestureDetector(
             onTap: () {
               _handleTap(index);
@@ -113,24 +117,27 @@ class _CategoryButton extends State<CategoryButton>{
                 color: _selection[index] ? Colors.black : Colors.white,
                 borderRadius: BorderRadius.circular(100),
                 border: Border.all(color: Colors.black),
-                ),
+              ),
               child: Text(_categories[index],
                 style: TextStyle(
                   color: _selection[index] ? Colors.white : Colors.black,
-                  ),
                 ),
               ),
-          )
+            ),
           ),
         ),
-      );
+      ),
+    );
   }
 }
+
 
 class DateTimeButton extends StatefulWidget{
   @override
   _DateTimeButton createState() => _DateTimeButton();
 }
+
+
 class _DateTimeButton extends State<DateTimeButton>{
   @override
   Widget build(BuildContext context){
@@ -146,10 +153,10 @@ class _DateTimeButton extends State<DateTimeButton>{
         IconButton(
           onPressed: (){
             showDatePicker(
-              context: context, 
-              initialDate: DateTime.now(), 
-              firstDate: DateTime(2020), 
-              lastDate: DateTime(2022), 
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2020),
+              lastDate: DateTime(2022),
               ).then((date) {
                 setState(() {
                   _dateTime = date;
@@ -158,10 +165,11 @@ class _DateTimeButton extends State<DateTimeButton>{
           },
           icon: Icon(Icons.calendar_today)
         ),
-    ],
+      ],
     );
   }
 }
+
 
 class AddCash extends StatelessWidget{
   @override
@@ -169,7 +177,7 @@ class AddCash extends StatelessWidget{
     return Scaffold(
       appBar: AppBar(
         title: Text('เพิ่มรายรับรายจ่าย'),
-        ),
+      ),
       body: Container(
         padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Column(
@@ -206,7 +214,6 @@ class AddCash extends StatelessWidget{
                     ],
                   ),
                   DateTimeButton(),
-
                 ],
               ),
             ),
@@ -238,5 +245,4 @@ class AddCash extends StatelessWidget{
       ),
     );
   }
-
 }

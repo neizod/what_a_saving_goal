@@ -2,13 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:what_a_saving_goal/account_summary.dart';
-import 'package:what_a_saving_goal/goal_planing.dart';
 
 import 'database_handler.dart';
+import 'account_summary.dart';
 import 'add_cash.dart';
-import 'add_goal.dart';
 import 'goal_info.dart';
+import 'goal_planing.dart';
+import 'add_goal.dart';
 
 
 class Dashboard extends StatefulWidget {
@@ -132,7 +132,7 @@ class _DashboardState extends State<Dashboard> {
                 setState((){});
               },
               label: Text('เพิ่มเป้าหมาย',
-                style: Theme.of(context).textTheme.headline5,   
+                style: Theme.of(context).textTheme.headline5,
               ),
               heroTag: null,
             ),
@@ -154,7 +154,10 @@ class _DashboardState extends State<Dashboard> {
             _database.indexGoal = index;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => GoalInfo(title: _goals[index]['name'], goal_index: index,)),
+              MaterialPageRoute(builder: (context) => GoalInfo(
+                title: _goals[index]['name'],
+                goal_index: index,
+              )),
             );
           },
           child: Container(
@@ -169,7 +172,7 @@ class _DashboardState extends State<Dashboard> {
                     lineHeight: 20,
                     animation: true,
                     percent: min(1, latest_peroid/price_per_period),
-                    center: Text('$latest_peroid/$price_per_period บาท'),
+                    center: Text('${latest_peroid}/${price_per_period} บาท'),
                     progressColor: Colors.green[400],
                     backgroundColor: Colors.red[400],
                   ),

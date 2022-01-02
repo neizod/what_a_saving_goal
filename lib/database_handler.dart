@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:what_a_saving_goal/models/paid_history.dart';
+
+import 'models/paid_history.dart';
 
 
 class DatabaseHandler {

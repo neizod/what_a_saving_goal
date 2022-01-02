@@ -39,7 +39,7 @@ class _AddGoalForm extends State<AddGoalForm>{
               return (value == null || value.isEmpty) ? 'กรุณากรอกเป้าหมาย' : null;
             },
             decoration: InputDecoration(
-              labelText: "ชื่อเป้าหมาย", 
+              labelText: "ชื่อเป้าหมาย",
             ),
           ),
           TextFormField(
@@ -146,7 +146,7 @@ class _AddGoalForm extends State<AddGoalForm>{
         price: formController['price']?.text,
         period: formController['duration']?.text,
     );
-    //Create box.push here with asynchronus method
+    // TODO Create box.push here with asynchronus method
   }
 }
 
@@ -187,11 +187,11 @@ class _AddGoal extends State<AddGoal>{
                   child: Text("Image Icon"),
                   color: Colors.grey[700],
                 ),
-              )
+              ),
             ],
           ),
-        )
-      )
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:what_a_saving_goal/add_cash.dart';
-import 'package:what_a_saving_goal/database_handler.dart';
+
+import 'add_cash.dart';
+import 'database_handler.dart';
+
 
 class AccountSummary extends StatefulWidget{
   const AccountSummary({Key? key}): super(key: key);
@@ -9,12 +11,13 @@ class AccountSummary extends StatefulWidget{
   _AccountSummary createState() => _AccountSummary();
 }
 
+
 class _AccountSummary extends State<AccountSummary>{
   @override
   Widget build(BuildContext context){
     return MaterialApp(
       home: DefaultTabController(
-        length: 3, 
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             title: Text("สรุป"),
@@ -33,11 +36,8 @@ class _AccountSummary extends State<AccountSummary>{
             Text("Tab3"),
             ],
           ),
-        )
-      )
+        ),
+      ),
     );
   }
 }
-
-
-

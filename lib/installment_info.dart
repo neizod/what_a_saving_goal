@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:what_a_saving_goal/database_handler.dart';
-import 'package:what_a_saving_goal/models/paid_history.dart';
+
+import 'models/paid_history.dart';
+import 'database_handler.dart';
+
 
 class InstallmentInfo extends StatefulWidget{
   const InstallmentInfo({Key? key, required this.title, required this.installmentIndex, required this.goalIndex}): super(key: key);
   final String title;
   final int installmentIndex;
   final int goalIndex;
-  
+
   @override
   _InstallmentInfo createState() => _InstallmentInfo();
 
@@ -108,25 +110,25 @@ class _InstallmentInfo extends State<InstallmentInfo>{
                               paid = _goals[widget.goalIndex]['paids'][widget.installmentIndex];
                               print('${paidHistory.first.paidDate} ${paidHistory.first.money}');
                               setState(() {
-                                Navigator.of(context).pop();                              
+                                Navigator.of(context).pop();
                               });
-                            }, 
+                            },
                             child: Text("ตกลง"),
-                            ),
+                          ),
                         ],
-                        );
+                      );
                     }
                   );
-                }, 
+                },
                 label: Text("ชำระเงิน")
-                ),
+              ),
             ],
-            ),
           ),
         ),
+      ),
     );
   }
-  
+
   List<Widget> _buildPaidHistory(BuildContext context){
     int count = paidHistory.length;
     List<Row> paid_hist = List.generate(

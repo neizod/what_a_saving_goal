@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'What a Saving Goal',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
       home: LoginPage(),
       /*
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: _getRoute,
     );
   }
-  
+
   Route<dynamic>? _getRoute(RouteSettings settings) {
     if (settings.name != '/login') {
       return null;

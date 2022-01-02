@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'database_handler.dart';
 
-class GoalPlaningForm extends StatefulWidget{
+
+class GoalPlaningForm extends StatefulWidget {
   @override
   _GoalPlaningForm createState() => _GoalPlaningForm();
 }
 
-class _GoalPlaningForm extends State<GoalPlaningForm>{
+
+class _GoalPlaningForm extends State<GoalPlaningForm> {
   final DatabaseHandler _database = DatabaseHandler();
   DateTime? _startdate = null;
   DateTime? _enddate = null;
@@ -30,13 +32,13 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
   };
 
   @override
-  void dispose(){
-    formController.forEach((key, value) {value.dispose();});
+  void dispose() {
+    formController.forEach((key, value) => value.dispose());
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Column(
@@ -47,7 +49,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
               return (value == null || value.isEmpty) ? 'กรุณาระบุเป้าหมาย' : null;
             },
             decoration: InputDecoration(
-              labelText: "เป้าหมาย", 
+              labelText: "เป้าหมาย",
             ),
           ),
           TextFormField(
@@ -101,7 +103,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
               int day_duration = typeToDays[installmentType]*duration;
               _enddate = _startdate!.add(Duration(days: day_duration));
               formController['endDate']!.text = '${_enddate?.day}-${_enddate?.month}-${_enddate?.year}';
-              formController['duration']!.text = duration.toString();              
+              formController['duration']!.text = duration.toString();
               setState(() {});
             },
             controller: formController['moneyPerInstallment'],
@@ -159,7 +161,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                   ),
-                  child: Text("สัปดาห์",          
+                  child: Text("สัปดาห์",
                     style: TextStyle(
                       color: installmentType=='week' ? Colors.red : Colors.black),
                     ),
@@ -183,7 +185,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                   ),
-                  child: Text("เดือน",          
+                  child: Text("เดือน",
                     style: TextStyle(
                       color: installmentType=='month' ? Colors.red : Colors.black),
                     ),
@@ -192,7 +194,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
               GestureDetector(
                 onTap: (){
                   setState(() {
-                    installmentType = 'year';                  
+                    installmentType = 'year';
                     if(_startdate!=null && formController['duration']!.text.isNotEmpty){
                       int duration = int.parse(formController['duration']!.text);
                       int day_duration = typeToDays[installmentType]*duration;
@@ -207,7 +209,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                   ),
-                  child: Text("ปี",          
+                  child: Text("ปี",
                     style: TextStyle(
                       color: installmentType=='year' ? Colors.red : Colors.black),
                     ),
@@ -227,7 +229,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
                     return _enddate == null ? 'กรุณาเลือกวันสิ้นสุด' : null;
                   },
                   decoration: InputDecoration(
-                    labelText: 'วันสิ้นสุดการออม', 
+                    labelText: 'วันสิ้นสุดการออม',
                   ),
                 ),
               ),
@@ -270,7 +272,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
               ),
             heroTag: null,
           ),
-          // Row( 
+          // Row(
           //   children: [
           //     Expanded(
           //       child: FloatingActionButton.extended(
@@ -350,11 +352,13 @@ class _GoalPlaningForm extends State<GoalPlaningForm>{
   }
 }
 
-class GoalPlaning extends StatefulWidget{
+
+class GoalPlaning extends StatefulWidget {
   static const routeName = '/goalPlan';
   @override
   _GoalPlaning createState() => _GoalPlaning();
 }
+
 
 class _GoalPlaning extends State<GoalPlaning>{
   @override
@@ -400,6 +404,7 @@ class DisabledFocusNode extends FocusNode{
   @override
   bool get hasFocus => false;
 }
+
 
 class EnabledFocusNode extends FocusNode{
   @override

@@ -1,8 +1,11 @@
-import 'package:flutter/material.dart';
 import 'dart:math';
+
+import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:what_a_saving_goal/database_handler.dart';
-import 'package:what_a_saving_goal/installment_info.dart';
+
+import 'database_handler.dart';
+import 'installment_info.dart';
+
 
 class GoalInfo extends StatefulWidget{
   const GoalInfo({Key? key, required this.title, required this.goal_index}): super(key: key);
@@ -37,7 +40,6 @@ class _GoalInfo extends State<GoalInfo>{
   Future<void> getData() async {
     _goals = await _database.listProfileGoals();
   }
-
 
   @override
   Widget build(BuildContext context) {
