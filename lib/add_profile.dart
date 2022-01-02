@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 import 'database_handler.dart';
+import 'misc.dart';
 
 
 class AddProfile extends StatefulWidget {
-  static const routeName = '/addProfile';
   @override
-  _AddProfile createState() => _AddProfile();
+  _AddProfileState createState() => _AddProfileState();
 }
 
 
-class _AddProfile extends State<AddProfile> {
+class _AddProfileState extends State<AddProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,11 +30,11 @@ class _AddProfile extends State<AddProfile> {
 
 class AddProfileForm extends StatefulWidget {
   @override
-  _AddProfileForm createState() => _AddProfileForm();
+  _AddProfileFormState createState() => _AddProfileFormState();
 }
 
 
-class _AddProfileForm extends State<AddProfileForm> {
+class _AddProfileFormState extends State<AddProfileForm> {
   final DatabaseHandler _database = DatabaseHandler();
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> formController = {
@@ -43,13 +43,20 @@ class _AddProfileForm extends State<AddProfileForm> {
   };
 
   @override
+  void dispose() {
+    formController.forEach((_, value) => value.dispose());
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Column(
-        children: <Widget> [
+        children: [
           nameField(),
           currentField(),
+          SizedBox(height: 20),
           saveButton(),
         ],
       ),
@@ -59,7 +66,7 @@ class _AddProfileForm extends State<AddProfileForm> {
   TextFormField nameField() {
     return TextFormField(
       controller: formController['name'],
-      validator: (value) => ((value == null || value.isEmpty) ? 'กรุณากรอกชื่อ' : null),
+      validator: refuse([empty('กรุณากรอกชื่อ')]),
       decoration: InputDecoration(
         labelText: 'ชื่อบัญชี',
       ),
@@ -70,7 +77,7 @@ class _AddProfileForm extends State<AddProfileForm> {
     return TextFormField(
       controller: formController['current'],
       keyboardType: TextInputType.number,
-      validator: (value) => ((value == null || value.isEmpty) ? 'กรุณากรอกยอดเงิน' : null),
+      validator: refuse([empty('กรุณากรอกยอดเงิน'), notInt('ยอดเงินต้องเป็นจำนวนเต็ม')]),
       decoration: InputDecoration(
         labelText: 'ยอดเงินปัจจุบัน',
       ),
