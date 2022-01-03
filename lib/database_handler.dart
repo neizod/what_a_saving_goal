@@ -134,34 +134,31 @@ class DatabaseHandler {
   Future<void> addProfile({name: String, current: int}) async {
     List profiles = await listProfiles();
     profiles.add(Map<String, Object>.from({
-        'name': name,
-        'current': current,
+      'name': name,
+      'current': current,
     }));
     await box.put('profiles', profiles);
     await ensureGoals();
   }
 
   Future<void> addGoal({name: String, price: int,
-                        period: int, price_per_period:int,
+                        num_period: int, per_period:int,
                         start_date: String, end_date: String}) async {
     List goals = await listProfileGoals();
     Map<int, List<historyPaid>> paids_history = {};
-    period = int.parse(period);
-    price = int.parse(price);
-    //print(period.runtimeType);
-    List<int> paids = List<int>.generate(period, (index) => 0);
-    for(int i=0;i<period;i++){
+    List<int> paids = List<int>.generate(num_period, (index) => 0);
+    for (int i=0; i<num_period; i++) {
       paids_history[i] = [];
     }
     goals.add(Map<String, Object>.from({
       'name': name,
       'price': price,
-      'period': period,
-      'price_per_period': int.parse(price_per_period),
-      'paids': paids,
-      'paids_history': paids_history,
+      'num_period': num_period,
+      'per_period': per_period,
       'start_date': start_date,
       'end_date': end_date,
+      'paids': paids,
+      'paids_history': paids_history,
     }));
     await box.put(_profileGoals(indexProfile), goals);
   }

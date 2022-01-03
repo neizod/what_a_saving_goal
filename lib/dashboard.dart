@@ -8,7 +8,6 @@ import 'account_summary.dart';
 import 'add_cash.dart';
 import 'goal_info.dart';
 import 'goal_planing.dart';
-import 'add_goal.dart';
 
 
 class Dashboard extends StatefulWidget {

@@ -88,9 +88,10 @@ class _AddProfileFormState extends State<AddProfileForm> {
     return FloatingActionButton.extended(
       onPressed: (){
         if (_formKey.currentState!.validate()) {
-          _database.addProfile(
-            name: formController['name']?.text,
-            current: formController['current']?.text,
+          Function.apply(
+            _database.addProfile,
+            [],
+            formController.map((key, value) => MapEntry(Symbol(key), value.text)),
           ).whenComplete(() => Navigator.pop(context));
         }
       },

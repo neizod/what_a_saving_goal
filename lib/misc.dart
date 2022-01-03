@@ -1,3 +1,22 @@
+import 'package:flutter/material.dart';
+
+// focus node ================================================================
+
+class DisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
+}
+
+
+class EnabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => true;
+}
+
+
+
+// validator =================================================================
+
 String? Function(String?) empty(String reason) {
   return (value) => ((value == null || value.isEmpty) ? reason : null);
 }
