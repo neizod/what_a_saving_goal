@@ -8,6 +8,7 @@ import 'account_summary.dart';
 import 'add_cash.dart';
 import 'goal_info.dart';
 import 'goal_planing.dart';
+import 'misc.dart';
 
 
 class Dashboard extends StatefulWidget {
@@ -151,8 +152,9 @@ class _DashboardState extends State<Dashboard> {
     return List.generate(
       _goals.length,
       (index) {
-        int lastestPaid = _paids[index][_paids[index].length-1];
         int perPeriod = _goals[index]['perPeriod'];
+        int currentPeriod = getSumPaidOfCurrentPeriod(_goals[index]['startDate'],
+                                                      _goals[index]['periodType'], _paids[index]);
         return GestureDetector(
           onTap: () {
             _database.indexGoal = index;  // XXX use setter
@@ -169,16 +171,14 @@ class _DashboardState extends State<Dashboard> {
             child: Row(
               children: [
                 Expanded(
-                  // TODO th text
-                  child: Text('(ราย${_goals[index]['periodType']}) ${_goals[index]['name']}'),
+                  child: Text('(ราย${periodTypeText[_goals[index]['periodType']]}) ${_goals[index]['name']}'),
                 ),
                 Expanded(
                   child: LinearPercentIndicator(
                     lineHeight: 20,
                     animation: true,
-                    percent: min(1, lastestPaid/perPeriod),
-                    center:
-                    Text('${lastestPaid}/${perPeriod} บาท'),
+                    percent: min(1, currentPeriod/perPeriod),
+                    center: Text('${currentPeriod}/${perPeriod} บาท'),
                     progressColor: Colors.green[400],
                     backgroundColor: Colors.red[400],
                   ),

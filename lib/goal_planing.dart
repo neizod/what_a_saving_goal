@@ -51,13 +51,6 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
     'endDate': TextEditingController(),
   };
 
-  final Map periodTypeText = {
-    'day': 'วัน',
-    'week': 'สัปดาห์',
-    'month': 'เดือน',
-    'year': 'ปี',
-  };
-
   int? _price;
   int? _numPeriod;
   int? _perPeriod;
@@ -308,40 +301,10 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
   }
 
   void updateStartDate() {
-    switch (_periodType) {
-      case 'day':
-        return makeStartDate(_endDate!.subtract(Duration(days: _numPeriod!)));
-      case 'week':
-        return makeStartDate(_endDate!.subtract(Duration(days: 7*_numPeriod!)));
-      case 'month':
-        return makeStartDate(nextMonths(_endDate!, -_numPeriod!));
-      case 'year':
-        return makeStartDate(nextYear(_endDate!, -_numPeriod!));
-      default:
-    }
+    return makeStartDate(nextTime(_endDate!, -_numPeriod!, _periodType!));
   }
 
   void updateEndDate() {
-    switch (_periodType) {
-      case 'day':
-        return makeEndDate(_startDate!.add(Duration(days: _numPeriod!)));
-      case 'week':
-        return makeEndDate(_startDate!.add(Duration(days: 7*_numPeriod!)));
-      case 'month':
-        return makeEndDate(nextMonths(_startDate!, _numPeriod!));
-      case 'year':
-        return makeEndDate(nextYear(_startDate!, _numPeriod!));
-      default:
-    }
-  }
-
-  DateTime nextMonths(DateTime date, int months) {
-    int dayLimit = DateTime(date.year, date.month+months+1, 0).day;
-    return DateTime(date.year, date.month+months, min(date.day, dayLimit));
-  }
-
-  DateTime nextYear(DateTime date, int years) {
-    int dayLimit = DateTime(date.year+years, date.month+1, 0).day;
-    return DateTime(date.year+years, date.month, min(date.day, dayLimit));
+    return makeEndDate(nextTime(_startDate!, _numPeriod!, _periodType!));
   }
 }

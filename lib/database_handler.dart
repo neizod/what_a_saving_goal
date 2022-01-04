@@ -96,34 +96,48 @@ class DatabaseHandler {
       {
         'name': 'ไมโครเวฟ',
         'price': 2000,
-        'numPeriod': 4,
-        'perPeriod': 500,
-        'periodType': 'week',
-        'startDate': DateTime(2021, 10, 01),
-        'endDate': DateTime(2022, 05, 20),
+        'numPeriod': 20,
+        'perPeriod': 100,
+        'periodType': 'day',
+        'startDate': DateTime(2021, 12, 30),
+        'endDate': DateTime(2022, 01, 25),
       },
       {
         'name': 'มอเตอร์ไซค์',
         'price': 30000,
-        'numPeriod': 10,
-        'perPeriod': 3000,
-        'periodType': 'month',
+        'numPeriod': 6,
+        'perPeriod': 5000,
+        'periodType': 'quarter',
         'startDate': DateTime(2022, 01, 01),
-        'endDate': DateTime(2023, 01, 01),
+        'endDate': DateTime(2023, 07, 01),
       },
       {
         'name': 'คอมพิวเตอร์',
         'price': 50000,
         'numPeriod': 20,
         'perPeriod': 2500,
-        'periodType': 'month',
-        'startDate': DateTime(2021, 06, 01),
-        'endDate': DateTime(2023, 06, 01),
+        'periodType': 'week',
+        'startDate': DateTime(2021, 12, 10),
+        'endDate': DateTime(2022, 06, 01),
       },
     ]);
-    box.put('p0g0-paids', [300,500,500,400]);
-    box.put('p0g1-paids', [0]);
-    box.put('p0g2-paids', [1200,2500,2500]);
+    box.put('p0g0-paids', [
+      { 'amount': 400, 'date': DateTime(2021, 12, 15) },
+      { 'amount': 200, 'date': DateTime(2021, 12, 30) },
+      { 'amount': 300, 'date': DateTime(2021, 12, 31) },
+      { 'amount': 300, 'date': DateTime(2022, 01, 01) },
+      { 'amount': 100, 'date': DateTime(2022, 01, 03) },
+    ]);
+    box.put('p0g1-paids', [
+      { 'amount': 1500, 'date': DateTime(2022, 01, 01) },
+      { 'amount': 9999, 'date': DateTime(2025, 01, 01) },
+    ]);
+    box.put('p0g2-paids', [
+      { 'amount': 1500, 'date': DateTime(2021, 12, 22) },
+      { 'amount': 3000, 'date': DateTime(2021, 12, 28) },
+      { 'amount': 1000, 'date': DateTime(2022, 01, 01) },
+      { 'amount':  750, 'date': DateTime(2022, 01, 03) },
+    ]);
     box.put('p1-goals', [
       {
         'name': 'งานแต่ง',
@@ -144,8 +158,18 @@ class DatabaseHandler {
         'endDate': DateTime(2050, 01, 01),
       }
     ]);
-    box.put('p1g0-paids', [0]);
-    box.put('p1g1-paids', [3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3500, 3500, 3500]);
+    box.put('p1g0-paids', []);
+    box.put('p1g1-paids', [
+      { 'amount': 3500, 'date': DateTime(2021, 05, 03) },
+      { 'amount': 3500, 'date': DateTime(2021, 06, 03) },
+      { 'amount': 3500, 'date': DateTime(2021, 07, 03) },
+      { 'amount': 3500, 'date': DateTime(2021, 08, 03) },
+      { 'amount': 3500, 'date': DateTime(2021, 09, 03) },
+      { 'amount': 4000, 'date': DateTime(2021, 10, 03) },
+      { 'amount': 4000, 'date': DateTime(2021, 11, 03) },
+      { 'amount': 4000, 'date': DateTime(2021, 12, 03) },
+      { 'amount': 5000, 'date': DateTime(2022, 01, 03) },
+    ]);
   }
 
   Future<List> listProfiles() async {
@@ -210,8 +234,10 @@ class DatabaseHandler {
       'periodType': periodType,
       'startDate': startDate,
       'endDate': endDate,
+      // TODO isComplete: true/false,
     }));
     await box.put(_profileGoals(indexProfile), goals);
+    await ensurePaids();
   }
 
   Future<void> addGoalPaidEntry() async {
