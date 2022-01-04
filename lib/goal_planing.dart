@@ -65,6 +65,13 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    DateTime date = DateTime.now();
+    makeStartDate(DateTime(date.year, date.month, date.day));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
