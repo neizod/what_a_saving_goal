@@ -99,8 +99,8 @@ List<DateTime> listPeriods(DateTime startDate, DateTime endDate, String periodTy
 }
 
 
-List<int> listSumPaidPerPeriods(DateTime startDate, DateTime endDate,
-                                String periodType, List sortedPaids) {
+List<int> listSumPerPeriods(DateTime startDate, DateTime endDate,
+                            String periodType, List sortedPaids) {
   List<DateTime> periods = listPeriods(startDate, endDate, periodType);
   List<int> sums = List<int>.filled(periods.length+1, 0);
   int j = 0;
@@ -127,7 +127,7 @@ int getSumPaidOfCurrentPeriod(DateTime startDate, String periodType, List sorted
     current = startDate;
   }
   List<DateTime> periods = listPeriods(startDate, current, periodType);
-  List<int> sums = listSumPaidPerPeriods(startDate, current, periodType, sortedPaids);
+  List<int> sums = listSumPerPeriods(startDate, current, periodType, sortedPaids);
   for (int i = 0; i < periods.length; i++) {
     if (current.isBefore(periods[i])) {
       return sums[i];

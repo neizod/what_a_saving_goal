@@ -5,9 +5,10 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 import 'database_handler.dart';
 import 'installment_info.dart';
+import 'misc.dart';
 
 
-class GoalInfo extends StatefulWidget{
+class GoalInfo extends StatefulWidget {
   const GoalInfo({Key? key, required this.title, required this.goal_index}): super(key: key);
   final int goal_index;
   final String title;
@@ -16,44 +17,49 @@ class GoalInfo extends StatefulWidget{
 }
 
 
-class _GoalInfo extends State<GoalInfo>{
-  static String _goalDesc = "This is goal desciption from database";
-  static int _goalPrice = 5000;
-  static int _sumPaid = 3700;
-  static int _installmentPrice = 5000~/4;
-  static List<int> _paidHist = [1250, 1250, 800, 400];
-
+class _GoalInfo extends State<GoalInfo> {
   final DatabaseHandler _database = DatabaseHandler();
-  List _goals = [];
+  bool _loading = true;
+  Map _goal = {};
+  List _paids = [];
+  List _periods = [];
+  List _sumPerPeriods = [];
+  int _sumTotal = 0;
 
   @override
   void initState() {
     super.initState();
     getData().whenComplete(() => setState((){
-      _goalPrice = _goals[widget.goal_index]['price'];
-      _sumPaid = _goals[widget.goal_index]['paids'].fold(0, (a, b) => a + b);
-      _installmentPrice = _goals[widget.goal_index]['price_per_period'];
-      _paidHist = _goals[widget.goal_index]['paids'];
+      _periods = listPeriods(_goal['startDate'], _goal['endDate'], _goal['periodType']);
+      _sumPerPeriods = listSumPerPeriods(_goal['startDate'], _goal['endDate'],
+                                         _goal['periodType'], _paids);
+      _sumTotal = _sumPerPeriods.fold(0, (a, b) => a + b as int);
+      _loading = false;
     }));
   }
 
   Future<void> getData() async {
-    _goals = await _database.listProfileGoals();
+    _goal = await _database.getProfileGoal();
+    _paids = await _database.listProfileGoalPaids();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        ),
-      body: Container(
+      appBar: AppBar(title: Text(widget.title)),
+      body: _loading ?
+        Center(child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+         )) :
+        Container(
         padding: EdgeInsets.all(20),
+
         child: Column(
-          children: <Widget> [
+          children: [
             Container(
               child: Column(
-                children: <Widget>[
+                children: [
+
                   Row(
                     children: [
                       Expanded(
@@ -66,11 +72,11 @@ class _GoalInfo extends State<GoalInfo>{
                             ),
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                              child: Text(_goalDesc),
+                              child: Text('${_goal['name']}'),
                             ),
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                              child: Text("${_goalPrice}"),
+                              child: Text('${_goal['price']}'),
                             ),
                           ],
                           ),
@@ -87,20 +93,22 @@ class _GoalInfo extends State<GoalInfo>{
                       ),
                     ],
                   ),
+
                   Container(
                     child: LinearPercentIndicator(
                       width: MediaQuery.of(context).size.width - 40,
                       lineHeight: 40,
-                      percent: min(1, _sumPaid/_goalPrice),
-                      center: Text("${_sumPaid}/${_goalPrice}"),
+                      percent: min(1, _sumTotal/_goal['price']),
+                      center: Text('${_sumTotal}/${_goal['price']}'),
                       linearStrokeCap: LinearStrokeCap.roundAll,
                       progressColor: Colors.green[400],
                       backgroundColor: Colors.red[400],
                     ),
                     padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
                   ),
+
                 ],
-                )
+              ),
             ),
             Container(
               padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
@@ -127,6 +135,7 @@ class _GoalInfo extends State<GoalInfo>{
             )
           ],
         ),
+
       ),
       // floatingActionButton: Column(
       //   mainAxisAlignment: MainAxisAlignment.end,
@@ -150,7 +159,7 @@ class _GoalInfo extends State<GoalInfo>{
       //         FloatingActionButton(
       //           onPressed: () async {
       //             await _database.payGoalLatestPeriod(10);
-      //             _sumPaid += 10;  // XXX
+      //             _sumTotal += 10;  // XXX
       //             setState((){});
       //           },
       //           tooltip: 'quick pay',
@@ -160,7 +169,7 @@ class _GoalInfo extends State<GoalInfo>{
       //         FloatingActionButton(
       //           onPressed: () async {
       //             await _database.payGoalLatestPeriod(100);
-      //             _sumPaid += 100;  // XXX
+      //             _sumTotal += 100;  // XXX
       //             setState((){});
       //           },
       //           tooltip: 'quick pay',
@@ -170,7 +179,7 @@ class _GoalInfo extends State<GoalInfo>{
       //         FloatingActionButton(
       //           onPressed: () async {
       //             await _database.payGoalLatestPeriod(1000);
-      //             _sumPaid += 1000;  // XXX
+      //             _sumTotal += 1000;  // XXX
       //             setState((){});
       //           },
       //           tooltip: 'quick pay',
@@ -184,7 +193,7 @@ class _GoalInfo extends State<GoalInfo>{
   }
 
   List<GestureDetector> _buildSavingHistory(BuildContext context){
-    int count = _paidHist.length;
+    int count = _sumPerPeriods.length;
     List<GestureDetector> saves = List.generate(
       count,
       (index) => GestureDetector(
@@ -204,7 +213,7 @@ class _GoalInfo extends State<GoalInfo>{
                 child: Text('งวดที่ ${count-index}'),
               ),
               Expanded(
-                child: _buildSavingGuage(_paidHist[count-index-1], _installmentPrice)
+                child: _buildSavingGuage(_sumPerPeriods[count-index-1], _goal['perPeriod'])
                 ),
             ],
             ),
@@ -217,7 +226,7 @@ class _GoalInfo extends State<GoalInfo>{
   LinearPercentIndicator _buildSavingGuage(int save, int goal){
     LinearPercentIndicator saveGuage = LinearPercentIndicator(
       lineHeight: 30,
-      center: Text("$save / $goal"),
+      center: Text('${save} / ${goal}'),
       progressColor: Colors.green[400],
       backgroundColor: Colors.red[400],
       percent: min(1, save/goal),
