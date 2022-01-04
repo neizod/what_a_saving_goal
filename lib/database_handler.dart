@@ -17,7 +17,14 @@ class DatabaseHandler {
     if (i == -1) {
       throw Exception('profile not found');
     }
-    return 'p$i-goals';
+    return 'p${i}-goals';
+  }
+
+  String _profileGoalPaids(int i, int j) {
+    if (i == -1 || j == -1) {
+      throw Exception('profile/goal not found');
+    }
+    return 'p${i}g${j}-paids';
   }
 
   Future<void> init() async {
@@ -25,6 +32,7 @@ class DatabaseHandler {
     box = await Hive.openBox('data');
     await ensureProfiles();
     await ensureGoals();
+    await ensurePaids();
     await populateExampleData();  // XXX
   }
 
@@ -39,6 +47,18 @@ class DatabaseHandler {
     for (var i = 0; i < profiles.length; i++) {
       if (!box.containsKey(_profileGoals(i))) {
         await box.put(_profileGoals(i), []);
+      }
+    }
+  }
+
+  Future<void> ensurePaids() async {
+    var profiles = await listProfiles();
+    for (var i = 0; i < profiles.length; i++) {
+      var goals = await listProfileGoals(i);
+      for (var j = 0; j < goals.length; j++) {
+        if (!box.containsKey(_profileGoalPaids(i, j))) {
+          await box.put(_profileGoalPaids(i, j), []);
+        }
       }
     }
   }
@@ -76,59 +96,96 @@ class DatabaseHandler {
       {
         'name': 'ไมโครเวฟ',
         'price': 2000,
-        'period': 4,
-        'price_per_period': 500,
-        'paids': [300,500,500,400],
+        'numPeriod': 4,
+        'perPeriod': 500,
+        'periodType': 'week',
+        'startDate': DateTime(2021, 10, 01),
+        'endDate': DateTime(2022, 05, 20),
       },
       {
         'name': 'มอเตอร์ไซค์',
         'price': 30000,
-        'period': 10,
-        'price_per_period': 3000,
-        'paids': [0],
+        'numPeriod': 10,
+        'perPeriod': 3000,
+        'periodType': 'month',
+        'startDate': DateTime(2022, 01, 01),
+        'endDate': DateTime(2023, 01, 01),
       },
       {
         'name': 'คอมพิวเตอร์',
         'price': 50000,
-        'period': 20,
-        'price_per_period': 2500,
-        'paids': [1200,2500,2500],
+        'numPeriod': 20,
+        'perPeriod': 2500,
+        'periodType': 'month',
+        'startDate': DateTime(2021, 06, 01),
+        'endDate': DateTime(2023, 06, 01),
       },
     ]);
+    box.put('p0g0-paids', [300,500,500,400]);
+    box.put('p0g1-paids', [0]);
+    box.put('p0g2-paids', [1200,2500,2500]);
     box.put('p1-goals', [
       {
         'name': 'งานแต่ง',
         'price': 300000,
-        'period': 30,
-        'price_per_period': 10000,
-        'paids': [0],
+        'numPeriod': 3,
+        'perPeriod': 100000,
+        'periodType': 'year',
+        'startDate': DateTime(2010, 01, 01),
+        'endDate': DateTime(2040, 01, 01),
       },
       {
         'name': 'เกษียณ',
         'price': 3000000,
-        'period': 400,
-        'price_per_period': 7500,
-        'paids': [3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3500, 3500, 3500],
+        'numPeriod': 400,
+        'perPeriod': 7500,
+        'periodType': 'month',
+        'startDate': DateTime(2020, 01, 01),
+        'endDate': DateTime(2050, 01, 01),
       }
     ]);
+    box.put('p1g0-paids', [0]);
+    box.put('p1g1-paids', [3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3500, 3500, 3500]);
   }
 
   Future<List> listProfiles() async {
     return await box.get('profiles');
   }
 
-  Future<List> listProfileGoals() async {
-    return await box.get(_profileGoals(indexProfile));
+  Future<List> listProfileGoals([int i = -1]) async {
+    if (i == -1) {
+      i = indexProfile;
+    }
+    return await box.get(_profileGoals(i));
   }
 
-  Future<Map> getProfile() async {
+  Future<List> listProfileGoalPaids([int i = -1, int j = -1]) async {
+    if (i == -1) {
+      i = indexProfile;
+    }
+    if (j == -1) {
+      j = indexGoal;
+    }
+    return await box.get(_profileGoalPaids(i, j));
+  }
+
+  Future<Map> getProfile([int i = -1]) async {
     List profiles = await listProfiles();
-    return profiles[indexProfile];
+    if (i == -1) {
+      i = indexProfile;
+    }
+    return profiles[i];
   }
 
-  Future<Map> getProfileGoal() async {
-    List goals = await listProfileGoals();
-    return goals[indexGoal];
+  Future<Map> getProfileGoal([int i = -1, int j = -1]) async {
+    if (i == -1) {
+      i = indexProfile;
+    }
+    if (j == -1) {
+      j = indexGoal;
+    }
+    List goals = await listProfileGoals(i);
+    return goals[j];
   }
 
   Future<void> addProfile({name: String, current: int}) async {
@@ -142,23 +199,17 @@ class DatabaseHandler {
   }
 
   Future<void> addGoal({name: String, price: int,
-                        num_period: int, per_period:int,
-                        start_date: String, end_date: String}) async {
+                        numPeriod: int, perPeriod:int, periodType: String,
+                        startDate: DateTime, endDate: DateTime}) async {
     List goals = await listProfileGoals();
-    Map<int, List<historyPaid>> paids_history = {};
-    List<int> paids = List<int>.generate(num_period, (index) => 0);
-    for (int i=0; i<num_period; i++) {
-      paids_history[i] = [];
-    }
     goals.add(Map<String, Object>.from({
       'name': name,
       'price': price,
-      'num_period': num_period,
-      'per_period': per_period,
-      'start_date': start_date,
-      'end_date': end_date,
-      'paids': paids,
-      'paids_history': paids_history,
+      'numPeriod': numPeriod,
+      'perPeriod': perPeriod,
+      'periodType': periodType,
+      'startDate': startDate,
+      'endDate': endDate,
     }));
     await box.put(_profileGoals(indexProfile), goals);
   }

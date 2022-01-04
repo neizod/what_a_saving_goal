@@ -45,10 +45,10 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
   final Map<String, TextEditingController> formController = {
     'name': TextEditingController(),
     'price': TextEditingController(),
-    'num_period': TextEditingController(),
-    'per_period': TextEditingController(),
-    'start_date': TextEditingController(),
-    'end_date': TextEditingController(),
+    'numPeriod': TextEditingController(),
+    'perPeriod': TextEditingController(),
+    'startDate': TextEditingController(),
+    'endDate': TextEditingController(),
   };
 
   final Map periodTypeText = {
@@ -61,9 +61,9 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
   int? _price;
   int? _numPeriod;
   int? _perPeriod;
+  String? _periodType = 'week';
   DateTime? _startDate = null;
   DateTime? _endDate = null;
-  String? _periodType = 'week';
 
   @override
   void dispose() {
@@ -120,7 +120,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
       children: [
         Expanded(
           child: TextFormField(
-            controller: formController['num_period'],
+            controller: formController['numPeriod'],
             keyboardType: TextInputType.number,
             onChanged: liveCalculationOnNumPeriod,
             // TODO can not be zero
@@ -145,7 +145,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
 
   Widget perPeriodField() {
     return TextFormField(
-      controller: formController['per_period'],
+      controller: formController['perPeriod'],
       keyboardType: TextInputType.number,
       onChanged: liveCalculationOnPerPeriod,
       // TODO can not be zero
@@ -159,8 +159,8 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
   Widget startDateField() {
     return TextFormField(
       readOnly: true,
-      controller: formController['start_date'],
-      onTap: pickDate('start_date'),
+      controller: formController['startDate'],
+      onTap: pickDate('startDate'),
       validator: refuse([empty('กรุณาเลือกวันเริ่มต้น')]),
       decoration: InputDecoration(
         labelText: 'กำหนดวันเริ่มต้นออม',
@@ -171,8 +171,8 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
   Widget endDateField() {
     return TextFormField(
       readOnly: true,
-      controller: formController['end_date'],
-      onTap: pickDate('end_date'),
+      controller: formController['endDate'],
+      onTap: pickDate('endDate'),
       validator: refuse([empty('กรุณาเลือกวันสิ้นสุด')]),
       decoration: InputDecoration(
         labelText: 'วันสิ้นสุดการออม',
@@ -185,10 +185,14 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
       child: Text('ตั้งเป้าหมาย'),
       onPressed: (){
         if (_formKey.currentState!.validate()) {
-          Function.apply(
-            _database.addGoal,
-            [],
-            formController.map((key, value) => MapEntry(Symbol(key), value.text)),
+          _database.addGoal(
+            name: formController['name']!.text,
+            price: _price,
+            numPeriod: _numPeriod,
+            perPeriod: _perPeriod,
+            periodType: _periodType,
+            startDate: _startDate,
+            endDate: _endDate,
           ).whenComplete(() => Navigator.pop(context));
         }
       },
@@ -204,9 +208,9 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
         lastDate: DateTime(2120),
       ).then((date) {
         switch (which) {
-          case 'start_date':
+          case 'startDate':
             return makeStartDate(date, updateAnother: true);
-          case 'end_date':
+          case 'endDate':
             return makeEndDate(date, updateAnother: true);
           default:
         }
@@ -217,7 +221,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
   void makeStartDate(DateTime? date, {updateAnother: false}) {
     _startDate = date;
     // TODO date format in th locale
-    formController['start_date']!.text = (date == null) ? '' : DateFormat('d/MMM/y').format(date);
+    formController['startDate']!.text = (date == null) ? '' : DateFormat('d/MMM/y').format(date);
     if (updateAnother && _numPeriod != null) {
       updateEndDate();
     }
@@ -225,7 +229,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
 
   void makeEndDate(DateTime? date, {updateAnother: false}) {
     _endDate = date;
-    formController['end_date']!.text = (date == null) ? '' : DateFormat('d/MMM/y').format(date);
+    formController['endDate']!.text = (date == null) ? '' : DateFormat('d/MMM/y').format(date);
     if (updateAnother && _numPeriod != null) {
       updateStartDate();
     }
@@ -233,8 +237,8 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
 
   void extractFormValues() {
     _price = int.tryParse(formController['price']?.text ?? '');
-    _numPeriod = int.tryParse(formController['num_period']?.text ?? '');
-    _perPeriod = int.tryParse(formController['per_period']?.text ?? '');
+    _numPeriod = int.tryParse(formController['numPeriod']?.text ?? '');
+    _perPeriod = int.tryParse(formController['perPeriod']?.text ?? '');
     if (_numPeriod == 0) {
       _numPeriod = null;
     }
@@ -252,6 +256,8 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
       updatePerPeriod();
     } else if (_perPeriod != null) {
       updateNumPeriod();
+    } else {
+      return;
     }
     decideLiveCalculationOnDate();
   }
@@ -290,14 +296,14 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
   void updateNumPeriod() {
     _numPeriod = (_price! / _perPeriod!).ceil();
     setState((){
-      formController['num_period']!.text = _numPeriod.toString();
+      formController['numPeriod']!.text = _numPeriod.toString();
     });
   }
 
   void updatePerPeriod() {
     _perPeriod = (_price! / _numPeriod!).ceil();
     setState((){
-      formController['per_period']!.text = _perPeriod.toString();
+      formController['perPeriod']!.text = _perPeriod.toString();
     });
   }
 

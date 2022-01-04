@@ -24,6 +24,7 @@ class _DashboardState extends State<Dashboard> {
   final DatabaseHandler _database = DatabaseHandler();
   Map _profile = {};
   List _goals = [];
+  List _paids = [];
 
   @override
   void initState() {
@@ -34,6 +35,10 @@ class _DashboardState extends State<Dashboard> {
   Future<void> getData() async {
     _profile = await _database.getProfile();
     _goals = await _database.listProfileGoals();
+    _paids = [];
+    for (int j = 0; j < _goals.length; j++) {
+      _paids.add(await _database.listProfileGoalPaids(-1, j));
+    }
   }
 
   @override
@@ -45,7 +50,7 @@ class _DashboardState extends State<Dashboard> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
+          children: [
             Container(
               child:  Text(
               'ยอดเงินปัจจุบัน: ${_profile['current']} บาท',
@@ -57,7 +62,7 @@ class _DashboardState extends State<Dashboard> {
             const SizedBox(height: 20.0),
             Container(
               child: Row(
-                children: <Widget> [
+                children: [
                   Expanded(
                     flex: 2,
                     child: Container(
@@ -117,11 +122,12 @@ class _DashboardState extends State<Dashboard> {
             ),
             const SizedBox(height: 20.0),
             Container(
-              margin: EdgeInsets.fromLTRB(40, 0, 40, 40),
+              margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Column(
                 children: _buildGoalList()
               ),
             ),
+            const SizedBox(height: 20.0),
             FloatingActionButton.extended(
               onPressed: () async {
                 await Navigator.push(
@@ -141,16 +147,15 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  List<GestureDetector> _buildGoalList(){
-    List<GestureDetector> goals = List.generate(
+  List<GestureDetector> _buildGoalList() {
+    return List.generate(
       _goals.length,
       (index) {
-        int length = _goals[index]['paids'].length;
-        int latest_peroid = _goals[index]['paids'][length-1];
-        int price_per_period = _goals[index]['price_per_period'];
+        int lastestPaid = _paids[index][_paids[index].length-1];
+        int perPeriod = _goals[index]['perPeriod'];
         return GestureDetector(
           onTap: () {
-            _database.indexGoal = index;
+            _database.indexGoal = index;  // XXX use setter
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => GoalInfo(
@@ -160,18 +165,20 @@ class _DashboardState extends State<Dashboard> {
             );
           },
           child: Container(
-            padding: EdgeInsets.only(bottom: 5),
+            margin: EdgeInsets.fromLTRB(1, 1, 1, 1),
             child: Row(
               children: [
                 Expanded(
-                  child: Text(_goals[index]['name']),
+                  // TODO th text
+                  child: Text('(ราย${_goals[index]['periodType']}) ${_goals[index]['name']}'),
                 ),
                 Expanded(
                   child: LinearPercentIndicator(
                     lineHeight: 20,
                     animation: true,
-                    percent: min(1, latest_peroid/price_per_period),
-                    center: Text('${latest_peroid}/${price_per_period} บาท'),
+                    percent: min(1, lastestPaid/perPeriod),
+                    center:
+                    Text('${lastestPaid}/${perPeriod} บาท'),
                     progressColor: Colors.green[400],
                     backgroundColor: Colors.red[400],
                   ),
@@ -182,11 +189,10 @@ class _DashboardState extends State<Dashboard> {
         );
       }
     );
-    return goals;
   }
 
   List<Container> _buildSpendHistory(int count){
-    List<Container> spends = List.generate(
+    return List.generate(
       count,
        (index) => Container(
           margin: EdgeInsets.fromLTRB(40, 0, 40, 0),
@@ -211,6 +217,5 @@ class _DashboardState extends State<Dashboard> {
           )
         ),
     );
-  return spends;
   }
 }
