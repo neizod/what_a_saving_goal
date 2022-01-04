@@ -84,8 +84,9 @@ class _AddProfileFormState extends State<AddProfileForm> {
     );
   }
 
-  FloatingActionButton saveButton() {
-    return FloatingActionButton.extended(
+  ElevatedButton saveButton() {
+    return ElevatedButton(
+      child: Text('บันทึก'),
       onPressed: (){
         if (_formKey.currentState!.validate()) {
           Function.apply(
@@ -95,7 +96,6 @@ class _AddProfileFormState extends State<AddProfileForm> {
           ).whenComplete(() => Navigator.pop(context));
         }
       },
-      label: Text('บันทึก'),
     );
   }
 }
