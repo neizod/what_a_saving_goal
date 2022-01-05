@@ -4,23 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'database_handler.dart';
-import 'account_summary.dart';
-import 'add_cash.dart';
-import 'goal_info.dart';
-import 'goal_planing.dart';
+import 'transaction_summary.dart';
+import 'transaction_creation.dart';
+import 'goal_information.dart';
+import 'goal_creation.dart';
 import 'misc.dart';
 
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key, required this.profileIndex}) : super(key: key);
+class ProfileDashboard extends StatefulWidget {
+  const ProfileDashboard({Key? key, required this.profileIndex}) : super(key: key);
   final int profileIndex;
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<ProfileDashboard> createState() => _ProfileDashboardState();
 }
 
 
-class _DashboardState extends State<Dashboard> {
+class _ProfileDashboardState extends State<ProfileDashboard> {
   final DatabaseHandler _database = DatabaseHandler();
 
   Map _profile = {};
@@ -125,7 +125,7 @@ class _DashboardState extends State<Dashboard> {
         onTap: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AccountSummary()),
+            MaterialPageRoute(builder: (context) => TransactionSummary()),
           );
         },
         child: Column(children: List.generate(5, _transactionItem)),
@@ -166,7 +166,7 @@ class _DashboardState extends State<Dashboard> {
         onPressed: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddCash()),
+            MaterialPageRoute(builder: (context) => TransactionCreation()),
           );
         },
       ),
@@ -199,7 +199,7 @@ class _DashboardState extends State<Dashboard> {
         _database.indexGoal = index;  // XXX use setter
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => GoalInfo(
+          MaterialPageRoute(builder: (context) => GoalInformation(
             title: _goals[index]['name'],
             goal_index: index,
           )),
@@ -234,11 +234,10 @@ class _DashboardState extends State<Dashboard> {
       child: ElevatedButton(
         child: Text('เพิ่มเป้าหมาย'),
         onPressed: () async {
-          await Navigator.push(
+          Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => GoalPlaning()),
-          );
-          setState((){});
+            MaterialPageRoute(builder: (context) => GoalCreation()),
+          ).whenComplete(() => getData()).whenComplete(() => setState((){}));
         },
       ),
     );

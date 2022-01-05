@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'database_handler.dart';
-import 'installment_info.dart';
+import 'period_information.dart';
 import 'misc.dart';
 
 
-class GoalInfo extends StatefulWidget {
-  const GoalInfo({Key? key, required this.title, required this.goal_index}): super(key: key);
+class GoalInformation extends StatefulWidget {
+  const GoalInformation({Key? key, required this.title, required this.goal_index}): super(key: key);
   final int goal_index;
   final String title;
   @override
-  State<GoalInfo> createState() => _GoalInfo();
+  State<GoalInformation> createState() => _GoalInformationState();
 }
 
 
-class _GoalInfo extends State<GoalInfo> {
+class _GoalInformationState extends State<GoalInformation> {
   final DatabaseHandler _database = DatabaseHandler();
   bool _loading = true;
   Map _goal = {};
@@ -200,7 +200,7 @@ class _GoalInfo extends State<GoalInfo> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => InstallmentInfo(title: widget.title, installmentIndex: count-index-1, goalIndex: widget.goal_index,)),
+            MaterialPageRoute(builder: (context) => PeriodInformation(title: widget.title, installmentIndex: count-index-1, goalIndex: widget.goal_index)),
           );
         },
         child: Container(

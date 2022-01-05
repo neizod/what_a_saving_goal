@@ -5,18 +5,18 @@ import 'models/paid_history.dart';
 import 'database_handler.dart';
 
 
-class InstallmentInfo extends StatefulWidget{
-  const InstallmentInfo({Key? key, required this.title, required this.installmentIndex, required this.goalIndex}): super(key: key);
+class PeriodInformation extends StatefulWidget{
+  const PeriodInformation({Key? key, required this.title, required this.installmentIndex, required this.goalIndex}): super(key: key);
   final String title;
   final int installmentIndex;
   final int goalIndex;
 
   @override
-  _InstallmentInfo createState() => _InstallmentInfo();
-
+  State<PeriodInformation> createState() => _PeriodInformationState();
 }
 
-class _InstallmentInfo extends State<InstallmentInfo>{
+
+class _PeriodInformationState extends State<PeriodInformation>{
   final DatabaseHandler _database = DatabaseHandler();
   final paidStatementController = TextEditingController();
   List _goals = [];

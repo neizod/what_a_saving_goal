@@ -171,7 +171,7 @@ class _DateTimeButton extends State<DateTimeButton>{
 }
 
 
-class AddCash extends StatelessWidget{
+class TransactionCreation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

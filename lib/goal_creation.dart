@@ -7,14 +7,13 @@ import 'database_handler.dart';
 import 'misc.dart';
 
 
-// rename
-class GoalPlaning extends StatefulWidget {
+class GoalCreation extends StatefulWidget {
   @override
-  _GoalPlaningState createState() => _GoalPlaningState();
+  State<GoalCreation> createState() => _GoalCreationState();
 }
 
 
-class _GoalPlaningState extends State<GoalPlaning>{
+class _GoalCreationState extends State<GoalCreation>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +31,6 @@ class _GoalPlaningState extends State<GoalPlaning>{
 }
 
 
-// rename to AddGoal
 class GoalPlaningForm extends StatefulWidget {
   @override
   _GoalPlaningForm createState() => _GoalPlaningForm();

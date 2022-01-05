@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-import 'add_cash.dart';
+import 'transaction_creation.dart';
 import 'database_handler.dart';
 
 
-class AccountSummary extends StatefulWidget{
-  const AccountSummary({Key? key}): super(key: key);
+class TransactionSummary extends StatefulWidget{
+  const TransactionSummary({Key? key}): super(key: key);
 
   @override
-  _AccountSummary createState() => _AccountSummary();
+  State<TransactionSummary> createState() => _TransactionSummaryState();
 }
 
 
-class _AccountSummary extends State<AccountSummary>{
+class _TransactionSummaryState extends State<TransactionSummary>{
   @override
   Widget build(BuildContext context){
     return MaterialApp(

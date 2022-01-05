@@ -4,13 +4,13 @@ import 'database_handler.dart';
 import 'misc.dart';
 
 
-class AddProfile extends StatefulWidget {
+class ProfileCreation extends StatefulWidget {
   @override
-  _AddProfileState createState() => _AddProfileState();
+  State<ProfileCreation> createState() => _ProfileCreationState();
 }
 
 
-class _AddProfileState extends State<AddProfile> {
+class _ProfileCreationState extends State<ProfileCreation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

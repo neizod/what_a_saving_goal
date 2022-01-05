@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'database_handler.dart';
-import 'dashboard.dart';
-import 'add_profile.dart';
+import 'profile_dashboard.dart';
+import 'profile_creation.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -35,14 +35,14 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(16),
         itemCount: _profiles.length + 1,
         itemBuilder: (BuildContext context, int index) => (
-          (index < _profiles.length) ? itemProfile(index) : addProfile()
+          (index < _profiles.length) ? _itemProfile(index) : _profileCreationButton()
         ),
         separatorBuilder: (BuildContext context, int index) => const Divider(),
       ),
     );
   }
 
-  Widget itemProfile(int index) {
+  Widget _itemProfile(int index) {
     return Container(
       height: 50,
       child: InkWell(
@@ -57,25 +57,25 @@ class _LoginPageState extends State<LoginPage> {
     _database.focusProfile(index);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Dashboard(profileIndex: index)),
+      MaterialPageRoute(builder: (context) => ProfileDashboard(profileIndex: index)),
     );
   }
 
-  Widget addProfile() {
+  Widget _profileCreationButton() {
     return Container(
       height: 50,
       child: InkWell(
         child: Center(child: Text('เพิ่มผู้ใช้ใหม่')),
-        splashColor: Colors.blue.withAlpha(30),
-        onTap: () => routeAddProfile(context),
+        splashColor: Colors.blue.withAlpha(30), // theme primaryColor
+        onTap: () => routeToProfileCreation(context),
       ),
     );
   }
 
-  void routeAddProfile(BuildContext context) async {
+  void routeToProfileCreation(BuildContext context) async {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddProfile()),
+      MaterialPageRoute(builder: (context) => ProfileCreation()),
     ).whenComplete(() => setState((){}));
   }
 }
