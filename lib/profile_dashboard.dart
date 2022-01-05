@@ -22,29 +22,28 @@ class ProfileDashboard extends StatefulWidget {
 
 class _ProfileDashboardState extends State<ProfileDashboard> {
   final DatabaseHandler _database = DatabaseHandler();
+  bool _loading = true;
+  String _title = 'กำลังโหลดข้อมูล';
 
   Map _profile = {};
   List _goals = [];
   List _paids = [];
 
-  bool _loading = true;
-  String _title = 'กำลังโหลดข้อมูล';
-
   @override
   void initState() {
     super.initState();
     getData().whenComplete(() => setState((){
-      _loading = false;
       _title = _profile['name'];
+      _loading = false;
     }));
   }
 
   Future<void> getData() async {
     _profile = await _database.getProfile(widget.profileIndex);
-    _goals = await _database.listProfileGoals();
+    _goals = await _database.listProfileGoals(widget.profileIndex);
     _paids = [];
     for (int j = 0; j < _goals.length; j++) {
-      _paids.add(await _database.listProfileGoalPaids(-1, j));
+      _paids.add(await _database.listProfileGoalPaids(widget.profileIndex, j));
     }
   }
 
@@ -58,11 +57,13 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            /*
             _showTransactionHeader(),
             _showTransactionGuage(),
             _showLatestTransactions(),
             _showQuickAddTransactionButton(),
             Divider(height: 1),
+            */
             _showGoalHeadline(),
             _showActiveGoals(),
             _showQuickAddGoalButton(),
@@ -196,12 +197,11 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                                                   _goals[index]['periodType'], _paids[index]);
     return GestureDetector(
       onTap: () {
-        _database.indexGoal = index;  // XXX use setter
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => GoalInformation(
-            title: _goals[index]['name'],
-            goal_index: index,
+            profileIndex: widget.profileIndex,
+            goalIndex: index,
           )),
         );
       },
@@ -236,7 +236,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         onPressed: () async {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => GoalCreation()),
+            MaterialPageRoute(builder: (context) => GoalCreation(profileIndex: widget.profileIndex)),
           ).whenComplete(() => getData()).whenComplete(() => setState((){}));
         },
       ),

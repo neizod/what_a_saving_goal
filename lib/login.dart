@@ -54,7 +54,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void routeProfile(BuildContext context, int index) {
-    _database.focusProfile(index);
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ProfileDashboard(profileIndex: index)),
@@ -76,6 +75,6 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ProfileCreation()),
-    ).whenComplete(() => setState((){}));
+    ).whenComplete(() => setState((){})); // TODO rebuild with new data
   }
 }

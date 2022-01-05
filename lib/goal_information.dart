@@ -9,9 +9,10 @@ import 'misc.dart';
 
 
 class GoalInformation extends StatefulWidget {
-  const GoalInformation({Key? key, required this.title, required this.goal_index}): super(key: key);
-  final int goal_index;
-  final String title;
+  const GoalInformation({Key? key, required this.profileIndex, required this.goalIndex}): super(key: key);
+  final int profileIndex;
+  final int goalIndex;
+
   @override
   State<GoalInformation> createState() => _GoalInformationState();
 }
@@ -20,6 +21,9 @@ class GoalInformation extends StatefulWidget {
 class _GoalInformationState extends State<GoalInformation> {
   final DatabaseHandler _database = DatabaseHandler();
   bool _loading = true;
+  String _title = 'กำลังโหลดข้อมูล';
+
+
   Map _goal = {};
   List _paids = [];
   List _periods = [];
@@ -30,23 +34,24 @@ class _GoalInformationState extends State<GoalInformation> {
   void initState() {
     super.initState();
     getData().whenComplete(() => setState((){
-      _periods = listPeriods(_goal['startDate'], _goal['endDate'], _goal['periodType']);
-      _sumPerPeriods = listSumPerPeriods(_goal['startDate'], _goal['endDate'],
-                                         _goal['periodType'], _paids);
+      DateTime date = DateTime.now();
+      _periods = listPeriods(_goal['startDate'], date, _goal['periodType']);
+      _sumPerPeriods = listSumPerPeriods(_goal['startDate'], date, _goal['periodType'], _paids);
       _sumTotal = _sumPerPeriods.fold(0, (a, b) => a + b as int);
+      _title = _goal['name'];
       _loading = false;
     }));
   }
 
   Future<void> getData() async {
-    _goal = await _database.getProfileGoal();
-    _paids = await _database.listProfileGoalPaids();
+    _goal = await _database.getProfileGoal(widget.profileIndex, widget.goalIndex);
+    _paids = await _database.listProfileGoalPaids(widget.profileIndex, widget.goalIndex);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: AppBar(title: Text('เป้าหมาย: ${_title}')),  // TODO
       body: _loading ?
         Center(child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
@@ -60,6 +65,7 @@ class _GoalInformationState extends State<GoalInformation> {
               child: Column(
                 children: [
 
+                  /*
                   Row(
                     children: [
                       Expanded(
@@ -68,7 +74,7 @@ class _GoalInformationState extends State<GoalInformation> {
                           children: [
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                              child: Text(widget.title),
+                              child: Text('TODO'),  //TODO
                             ),
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -93,6 +99,7 @@ class _GoalInformationState extends State<GoalInformation> {
                       ),
                     ],
                   ),
+                  */
 
                   Container(
                     child: LinearPercentIndicator(
@@ -137,6 +144,7 @@ class _GoalInformationState extends State<GoalInformation> {
         ),
 
       ),
+
       // floatingActionButton: Column(
       //   mainAxisAlignment: MainAxisAlignment.end,
       //   crossAxisAlignment: CrossAxisAlignment.end,
@@ -189,6 +197,7 @@ class _GoalInformationState extends State<GoalInformation> {
       //     ),
       //   ],
       // ),
+
     );
   }
 
@@ -200,7 +209,11 @@ class _GoalInformationState extends State<GoalInformation> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => PeriodInformation(title: widget.title, installmentIndex: count-index-1, goalIndex: widget.goal_index)),
+            MaterialPageRoute(builder: (context) => PeriodInformation(
+              profileIndex: widget.profileIndex,
+              goalIndex: widget.goalIndex,
+              periodIndex: count-index-1, //TODO
+            )),
           );
         },
         child: Container(

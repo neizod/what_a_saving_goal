@@ -22,18 +22,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       home: LoginPage(),
-      onGenerateRoute: _getRoute,
-    );
-  }
-
-  Route<dynamic>? _getRoute(RouteSettings settings) {
-    if (settings.name != '/login') {
-      return null;
-    }
-    return MaterialPageRoute<void>(
-      settings: settings,
-      builder: (BuildContext context) => const LoginPage(),
-      fullscreenDialog: true,
+      //debugShowCheckedModeBanner: false,
     );
   }
 }

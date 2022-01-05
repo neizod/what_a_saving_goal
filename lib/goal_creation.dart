@@ -8,6 +8,9 @@ import 'misc.dart';
 
 
 class GoalCreation extends StatefulWidget {
+  const GoalCreation({Key? key, required this.profileIndex}): super(key: key);
+  final int profileIndex;
+
   @override
   State<GoalCreation> createState() => _GoalCreationState();
 }
@@ -23,21 +26,12 @@ class _GoalCreationState extends State<GoalCreation>{
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-          child: GoalPlaningForm(),
+          child: fuck(),
         ),
       ),
     );
   }
-}
 
-
-class GoalPlaningForm extends StatefulWidget {
-  @override
-  _GoalPlaningForm createState() => _GoalPlaningForm();
-}
-
-
-class _GoalPlaningForm extends State<GoalPlaningForm> {
   final DatabaseHandler _database = DatabaseHandler();
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> formController = {
@@ -69,8 +63,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
     makeStartDate(DateTime(date.year, date.month, date.day));
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget fuck() { // TODO
     return Form(
       key: _formKey,
       child: Column(
@@ -184,6 +177,7 @@ class _GoalPlaningForm extends State<GoalPlaningForm> {
       onPressed: (){
         if (_formKey.currentState!.validate()) {
           _database.addGoal(
+            widget.profileIndex,
             name: formController['name']!.text,
             price: _price,
             numPeriod: _numPeriod,

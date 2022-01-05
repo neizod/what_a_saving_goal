@@ -6,10 +6,11 @@ import 'database_handler.dart';
 
 
 class PeriodInformation extends StatefulWidget{
-  const PeriodInformation({Key? key, required this.title, required this.installmentIndex, required this.goalIndex}): super(key: key);
-  final String title;
-  final int installmentIndex;
+  const PeriodInformation({Key? key, required this.profileIndex,
+                           required this.goalIndex, required this.periodIndex}): super(key: key);
+  final int profileIndex;
   final int goalIndex;
+  final int periodIndex;
 
   @override
   State<PeriodInformation> createState() => _PeriodInformationState();
@@ -30,16 +31,16 @@ class _PeriodInformationState extends State<PeriodInformation>{
   void initState() {
     super.initState();
     getData().whenComplete(() => setState((){
-      installment = widget.installmentIndex+1;
-      paid = _goals[widget.goalIndex]['paids'][widget.installmentIndex];
+      installment = widget.periodIndex+1;
+      paid = _goals[widget.goalIndex]['paids'][widget.periodIndex];
       installmentPrice = _goals[widget.goalIndex]['price_per_period'];
-      // print("Goal Index: ${widget.installmentIndex}");
-      paidHistory = _goals[widget.goalIndex]['paids_history'][widget.installmentIndex];
+      // print("Goal Index: ${widget.periodIndex}");
+      paidHistory = _goals[widget.goalIndex]['paids_history'][widget.periodIndex];
     }));
   }
 
   Future<void> getData() async {
-    _goals = await _database.listProfileGoals();
+    _goals = await _database.listProfileGoals(widget.profileIndex);
   }
 
   @override
@@ -53,7 +54,7 @@ class _PeriodInformationState extends State<PeriodInformation>{
     print("On init function ${paid}");
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('title'), // TODO
         ),
       body: Center(
         child: Container(
@@ -106,8 +107,8 @@ class _PeriodInformationState extends State<PeriodInformation>{
                               DateTime nowDate = DateTime.now();
                               historyPaid transection = historyPaid(dateToString(nowDate), int.parse(paidStatementController.text));
                               paidHistory.add(transection);
-                              _goals[widget.goalIndex]['paids'][widget.installmentIndex]+=int.parse(paidStatementController.text);
-                              paid = _goals[widget.goalIndex]['paids'][widget.installmentIndex];
+                              _goals[widget.goalIndex]['paids'][widget.periodIndex]+=int.parse(paidStatementController.text);
+                              paid = _goals[widget.goalIndex]['paids'][widget.periodIndex];
                               print('${paidHistory.first.paidDate} ${paidHistory.first.money}');
                               setState(() {
                                 Navigator.of(context).pop();
