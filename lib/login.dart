@@ -57,9 +57,7 @@ class _LoginPageState extends State<LoginPage> {
     _database.focusProfile(index);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Dashboard(
-        title: 'Dashboard: ${_profiles[index]['name']}',
-      )),
+      MaterialPageRoute(builder: (context) => Dashboard(profileIndex: index)),
     );
   }
 
