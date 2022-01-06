@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'database_handler.dart';
-//import 'period_information.dart';
+import 'period_information.dart';
 import 'misc.dart';
 
 
@@ -22,102 +22,41 @@ class GoalInformation extends StatefulWidget {
 class _GoalInformationState extends State<GoalInformation> {
   final DatabaseHandler _database = DatabaseHandler();
 
-  /*
-  late final List _periods;
-  late final List _paidsPerPeriods;
-  */
-  int _sumTotal = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    //DateTime date = DateTime.now();
-    //_periods = listPeriods(widget.goal['startDate'], date, widget.goal['periodType']);
-    //_paidsPerPeriods = listPaidsPerPeriods(widget.goal['startDate'], date, widget.goal['periodType'], widget.goal['paids']);  // TODO passing only widget.goal
-    //_periods;
-    /*
-    _paidsPerPeriods = listSumPerPeriods(
-    */
-    //_sumTotal = widget.paidsPerPeriods.fold(0, (acc, x) => acc + x['amount'] as int);
-    // TODO _sumTotal = sum of sum (2d list)
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('เป้าหมาย: ${widget.goal['name']}')),
+      appBar: AppBar(
+        title: Text('เป้าหมาย: ${widget.goal['name']}')
+      ),
       body: Container(
-        padding: EdgeInsets.all(20),
-
         child: Column(
           children: [
+
+            // summary
             Container(
               child: Column(
                 children: [
-
-                  /*
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                              child: Text('TODO'),  //TODO
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                              child: Text('${_goal['name']}'),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                              child: Text('${_goal['price']}'),
-                            ),
-                          ],
-                          ),
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: 100,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey[700],
-                          ),
-                        child: Text('Image Icon'),
-                      ),
-                    ],
-                  ),
-                  */
-
-                  Container(
-                    child: LinearPercentIndicator(
-                      width: MediaQuery.of(context).size.width - 40,
-                      lineHeight: 40,
-                      percent: min(1, _sumTotal/widget.goal['price']),
-                      center: Text('${_sumTotal}/${widget.goal['price']}'),
-                      linearStrokeCap: LinearStrokeCap.roundAll,
-                      progressColor: Colors.green[400],
-                      backgroundColor: Colors.red[400],
-                    ),
-                    padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
-                  ),
-
+                  _showGoalBasicInformation(),
+                  _showTotalProgress(),
                 ],
               ),
             ),
+
+            /*
             Container(
               padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
               child: Text('ประวัติการออมแบ่งตามเป้าหมายย่อย'),
             ),
+            */
+
             Expanded(
-              child: SingleChildScrollView(
+              child: SingleChildScrollView( // TODO haha no, just use listview
                 child: Column(
-                  children: _buildSavingHistory(context),
+                  children: List.generate(widget.paidsPerPeriods.length, _periodItem),
                 ),
               ),
             ),
+
           ],
         ),
 
@@ -179,47 +118,83 @@ class _GoalInformationState extends State<GoalInformation> {
     );
   }
 
-  List<GestureDetector> _buildSavingHistory(BuildContext context){
-    int count = widget.paidsPerPeriods.length;
-    List<GestureDetector> saves = List.generate(
-      count,
-      (index) => GestureDetector(
-        onTap: () {
-
-          /*
-          => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PeriodInformation(
-              goal: widget.goal,
-              period: _periods[index],
-              //periodIndex: index, //count - index - 1,
-            )).whenComplete((){ // .then((???){
-              // TODO recalculate periods
-
-            }),
-          );
-          */
-
-        },
-        child: Container(
-          padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-          child: Row(
+  Widget _showGoalBasicInformation() {
+    return Text('TODO');
+    /*
+    Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 70,
-                // padding: EdgeInsets.only(right: 15),
-                child: Text('งวดที่ ${count-index-1}'),
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: Text('TODO'),  //TODO
               ),
-              Expanded(
-                child: _buildSavingGuage(widget.paidsPerPeriods[count-index-1], widget.goal['perPeriod'])
-                ),
+              Container(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: Text('${_goal['name']}'),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: Text('${_goal['price']}'),
+              ),
             ],
             ),
-          ),
-        )
-      );
-    return saves;
+        ),
+        Container(
+          alignment: Alignment.center,
+          width: 100,
+          height: 80,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.grey[700],
+            ),
+          child: Text('Image Icon'),
+        ),
+      ],
+    ),
+    */
   }
+
+  Widget _showTotalProgress() {
+    int total = widget.goal['paids'].fold(0, (acc, x) => acc + x['amount'] as int);
+    return Container(
+      margin: EdgeInsets.all(20),
+      child: LinearPercentIndicator(
+        lineHeight: 40,
+        percent: min(1, total/widget.goal['price']),
+        center: Text('${total}/${widget.goal['price']}'),
+        linearStrokeCap: LinearStrokeCap.roundAll,
+        progressColor: Colors.green[400],
+        backgroundColor: Colors.red[400],
+      ),
+    );
+  }
+
+  Widget _periodItem(int revIndex) {
+    int index = widget.periods.length - revIndex;
+    return GestureDetector(
+      onTap: _routeToPeriodInformation(revIndex),
+      child: Container(
+        margin: EdgeInsets.fromLTRB(20, 5, 20, 0),
+        child: Row(
+          children: [
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
+              //width: 70,
+              // padding: EdgeInsets.only(right: 15),
+              child: Text(makePeriodTitle(index, widget.periods)),
+            ),
+            Expanded(
+              child: _buildSavingGuage(widget.paidsPerPeriods[index], widget.goal['perPeriod'])
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildSavingGuage(List<Map> paidsPerPeriod, int perPeriod){
     int sumPeriod = paidsPerPeriod.fold(0, (acc, x) => acc + x['amount'] as int);
@@ -231,5 +206,21 @@ class _GoalInformationState extends State<GoalInformation> {
       percent: min(1, sumPeriod/perPeriod),
       animation: true,
     );
+  }
+
+  void Function() _routeToPeriodInformation(int revIndex) {
+    return () => Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PeriodInformation(
+          goal: widget.goal,
+          periods: widget.periods,
+          paidsPerPeriods: widget.paidsPerPeriods,
+          index: widget.periods.length - revIndex,
+        ),
+      ),
+    ).whenComplete((){ // .then((???){
+      // TODO recalculate periods
+    });
   }
 }

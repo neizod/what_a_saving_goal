@@ -1,16 +1,19 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'models/paid_history.dart';
 import 'database_handler.dart';
+import 'misc.dart';
 
 
 class PeriodInformation extends StatefulWidget{
-  const PeriodInformation({Key? key, required this.profileIndex,
-                           required this.goalIndex, required this.periodIndex}): super(key: key);
-  final int profileIndex;
-  final int goalIndex;
-  final int periodIndex;
+  const PeriodInformation({Key? key, required this.goal, required this.periods,
+                           required this.paidsPerPeriods, required this.index}) : super(key: key);
+  final Map goal;
+  final List periods;
+  final List paidsPerPeriods;
+  final int index;
 
   @override
   State<PeriodInformation> createState() => _PeriodInformationState();
@@ -19,29 +22,9 @@ class PeriodInformation extends StatefulWidget{
 
 class _PeriodInformationState extends State<PeriodInformation>{
   final DatabaseHandler _database = DatabaseHandler();
+
   final paidStatementController = TextEditingController();
-  List _goals = [];
-  int installmentPrice = 100;
-  int paid = 50;
-  int installment = 0;
   List<historyPaid> paidHistory = [];
-  DateTime now_date = DateTime.now();
-
-  @override
-  void initState() {
-    super.initState();
-    getData().whenComplete(() => setState((){
-      installment = widget.periodIndex+1;
-      paid = _goals[widget.goalIndex]['paids'][widget.periodIndex];
-      installmentPrice = _goals[widget.goalIndex]['price_per_period'];
-      // print("Goal Index: ${widget.periodIndex}");
-      paidHistory = _goals[widget.goalIndex]['paids_history'][widget.periodIndex];
-    }));
-  }
-
-  Future<void> getData() async {
-    _goals = await _database.listProfileGoals(widget.profileIndex);
-  }
 
   @override
   void dispose(){
@@ -51,45 +34,58 @@ class _PeriodInformationState extends State<PeriodInformation>{
 
   @override
   Widget build(BuildContext context) {
-    print("On init function ${paid}");
+    int paid = widget.paidsPerPeriods[widget.index].fold(0, (acc, x) => acc + x['amount'] as int);
     return Scaffold(
       appBar: AppBar(
-        title: Text('title'), // TODO
-        ),
+        title: Text(makePeriodTitle(widget.index, widget.periods)),
+      ),
       body: Center(
         child: Container(
-          padding: EdgeInsets.all(20),
+          //padding: EdgeInsets.all(20),
           child: Column(
-            children: <Widget> [
+            children: [
+
+              // _showDateRange
               Container(
-                padding: EdgeInsets.only(bottom: 20),
-                child: Text('งวดที่ ${installment}: 3 กรกฎาคม - 10 กรกฎาคม',
+                margin: EdgeInsets.all(20),
+                child: Text(
+                  makePeriodRange(widget.index, widget.periods),
                   style: Theme.of(context).textTheme.headline5,
-                  ),
+                ),
               ),
+
+              // _showPeriodProgress
               Container(
+                margin: EdgeInsets.all(20),
                 padding: EdgeInsets.only(bottom: 20),
                 child: LinearPercentIndicator(
                   lineHeight: 30,
                   animation: true,
-                  center: Text("${paid}/${installmentPrice} บาท"),
-                  percent: paid/installmentPrice,
+                  center: Text('${paid}/${widget.goal['perPeriod']} บาท'),
+                  percent: min(1, paid/widget.goal['perPeriod']),
                   progressColor: Colors.green[400],
                   backgroundColor: Colors.red[400],
-                  ),
+                ),
               ),
+
+              // _showHistoryHeader
               Container(
+                margin: EdgeInsets.all(20),
                 alignment: Alignment.centerLeft,
-                child: Text('ประวัติการออมเงินประจำงวด',
+                child: Text(
+                  'ประวัติการออมเงินประจำงวด',
                   style: Theme.of(context).textTheme.headline5,
                 ),
               ),
+
+              // _showPaidHistory
               Expanded(
                 child: Column(
-                  children: _buildPaidHistory(context)
+                  children: _buildPaidHistory()
                   ),
               ),
-              FloatingActionButton.extended(
+
+              FloatingActionButton.extended( // haha no
                 onPressed: (){
                   showDialog(
                     context: context,
@@ -102,17 +98,19 @@ class _PeriodInformationState extends State<PeriodInformation>{
                         actions: <Widget>[
                           TextButton(
                             onPressed: (){
+                              /*
                               //Add this statment to database
                               print(paidStatementController.text);
                               DateTime nowDate = DateTime.now();
                               historyPaid transection = historyPaid(dateToString(nowDate), int.parse(paidStatementController.text));
                               paidHistory.add(transection);
-                              _goals[widget.goalIndex]['paids'][widget.periodIndex]+=int.parse(paidStatementController.text);
-                              paid = _goals[widget.goalIndex]['paids'][widget.periodIndex];
+                              //widget.goal['paids'][widget.periodIndex] += int.parse(paidStatementController.text);
+                              //paid = widget.goal['paids'][widget.periodIndex];
                               print('${paidHistory.first.paidDate} ${paidHistory.first.money}');
                               setState(() {
                                 Navigator.of(context).pop();
                               });
+                              */
                             },
                             child: Text("ตกลง"),
                           ),
@@ -123,6 +121,7 @@ class _PeriodInformationState extends State<PeriodInformation>{
                 },
                 label: Text("ชำระเงิน")
               ),
+
             ],
           ),
         ),
@@ -130,27 +129,27 @@ class _PeriodInformationState extends State<PeriodInformation>{
     );
   }
 
-  List<Widget> _buildPaidHistory(BuildContext context){
-    int count = paidHistory.length;
-    List<Row> paid_hist = List.generate(
-      count,
+  List<Widget> _buildPaidHistory(){
+    List paids = widget.paidsPerPeriods[widget.index];
+    return List.generate(
+      paids.length,
       (index) => Row(
         children: [
           Container(
             width: 200,
-            child: Text("${paidHistory[index].paidDate}")
+            child: Text("${paids[index]['date']}")
           ),
           Expanded(
             child: Container(
-              child: Text("${paidHistory[index].money} บาท")
-            )
+              child: Text("${paids[index]['amount']} บาท")
+            ),
           ),
         ],
       ),
     );
-    return paid_hist;
   }
 
+  // TODO use locale
   String dateToString(DateTime datetime){
     String datetimeString = '${datetime.day}-${datetime.month}-${datetime.year}';
     return datetimeString;

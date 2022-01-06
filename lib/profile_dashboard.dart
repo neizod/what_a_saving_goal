@@ -166,8 +166,8 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   Widget _goalItem(int index) {
     Map goal = widget.profile['goals'][index];
     int perPeriod = goal['perPeriod'];
-    List periods = listPeriods(goal['startDate'], DateTime.now(), goal['periodType']);
-    List paidsPerPeriods = listPaidsPerPeriods(goal['startDate'], DateTime.now(), goal['periodType'], goal['paids']);
+    List periods = listPeriods(goal);
+    List paidsPerPeriods = listPaidsPerPeriods(goal, periods);
     int currentPeriod = paidsPerPeriods[paidsPerPeriods.length-2].fold(0, (acc, x) => acc + x['amount'] as int);
     return GestureDetector(
       onTap: _routeToGoalInformation(index, periods, paidsPerPeriods),

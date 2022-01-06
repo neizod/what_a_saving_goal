@@ -89,13 +89,14 @@ DateTime nextYear(DateTime date, int years) {
 }
 
 
-List<DateTime> listPeriods(DateTime startDate, DateTime endDate, String periodType,
-                           {bool expandToToday: true, bool includeLastEntry: true}) {
-  if (startDate.isAfter(endDate)) {
-    throw Exception('startDate can not happen after endDate.');
-  }
-  if (expandToToday && endDate.isBefore(DateTime.now())) {
+List<DateTime> listPeriods(Map goal, {bool endDateIsNow: true, bool includeLastEntry: true}) {
+  DateTime startDate = goal['startDate'];
+  DateTime endDate = goal['endDate'];
+  if (endDateIsNow) {
     endDate = DateTime.now();
+  }
+  if (startDate.isAfter(endDate)) {
+    endDate = startDate;
   }
   List<DateTime> periods = [];
   DateTime date = startDate;
@@ -103,7 +104,7 @@ List<DateTime> listPeriods(DateTime startDate, DateTime endDate, String periodTy
   while (date.isBefore(endDate)) {
     periods.add(date);
     i += 1;
-    date = nextTime(startDate, i, periodType);
+    date = nextTime(startDate, i, goal['periodType']);
   }
   if (includeLastEntry) {
     periods.add(date);
@@ -112,27 +113,45 @@ List<DateTime> listPeriods(DateTime startDate, DateTime endDate, String periodTy
 }
 
 
-// TODO accept periods as first argument
-List<List<Map>> listPaidsPerPeriods(DateTime startDate, DateTime endDate,
-                                    String periodType, List sortedPaids) {
-  List<DateTime> periods = listPeriods(startDate, endDate, periodType);
+List<List<Map>> listPaidsPerPeriods(Map goal, List periods) {
   List<List<Map>> ls = [];
   for (int i = 0; i < periods.length+1; i++) {
     ls.add([]);
   }
   int j = 0;
   for (int i = 0; i < periods.length; i++) {
-    while (j < sortedPaids.length && sortedPaids[j]['date'].isBefore(periods[i])) {
-      ls[i].add(sortedPaids[j]);
+    while (j < goal['paids'].length && goal['paids'][j]['date'].isBefore(periods[i])) {
+      ls[i].add(goal['paids'][j]);
       j += 1;
     }
-    if (j == sortedPaids.length) {
-      break;
-    }
   }
-  while (j < sortedPaids.length) {
-    ls[periods.length].add(sortedPaids[j]);
+  while (j < goal['paids'].length) {
+    ls[periods.length].add(goal['paids'][j]);
     j += 1;
   }
   return ls;
+}
+
+
+// ===========================================================================
+
+String makePeriodTitle(int index, List periods) {
+  if (index == 0) {
+    return 'ก่อนออม';
+  } else if (index == periods.length) {
+    return 'อนาคต';
+  } // TODO == periods.length - 1 => ปัจจุบัน ???
+  return 'งวดที่ ${index}';
+}
+
+
+String makePeriodRange(int index, List periods) {
+  // TODO need to sub the second date by 1 day !
+  if (index == 0) {
+    //DateFormat()
+    return '??? -- ${periods[0]}';
+  } if (index == periods.length) {
+    return '${periods.last} -- ???';
+  }
+  return '${periods[index-1]} -- ${periods[index]}';
 }
