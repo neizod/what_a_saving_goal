@@ -21,26 +21,65 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('เก็บตังค์'),
+        centerTitle: true,
+        title: Text('เก็บตังค์'),
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: widget.profiles.length + 1,
-        itemBuilder: (BuildContext context, int index) => (
-          (index < widget.profiles.length) ? _itemProfile(index) : _profileCreationButton()
-        ),
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
+      body: Column(
+        children: [
+          _coverImage(context),
+          _profilesListView(context),
+        ],
       ),
     );
   }
 
-  Widget _itemProfile(int index) {
+  Widget _coverImage(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(16),
+      child: Image.asset(
+        'assets/appfeature.png',
+        height: 100,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
+
+  Widget _profilesListView(BuildContext context) {
+    return Expanded(
+      child: ListView.separated(
+        padding: const EdgeInsets.all(24),
+        itemCount: widget.profiles.length + 1,
+        itemBuilder: _decisionBuildingItem,
+        separatorBuilder: (context, index) => const Divider(),
+      ),
+    );
+  }
+
+  Widget _decisionBuildingItem(BuildContext context, int index) {
+    if (index < widget.profiles.length) {
+      return _profileItem(context, index);
+    }
+    return _profileCreationButton(context);
+  }
+
+  Widget _profileItem(BuildContext context, int index) {
     return Container(
       height: 50,
       child: InkWell(
-        child: Center(child: Text('${widget.profiles[index]['name']}')),
-        splashColor: Colors.blue.withAlpha(30),
+        splashColor: Theme.of(context).primaryColor.withAlpha(60),
         onTap: () => _routeToProfile(context, index),
+        child: Center(child: Text('${widget.profiles[index]['name']}')),
+      ),
+    );
+  }
+
+  Widget _profileCreationButton(BuildContext context) {
+    return Container(
+      height: 50,
+      child: InkWell(
+        child: Center(child: Text('เพิ่มผู้ใช้ใหม่')),
+        splashColor: Theme.of(context).primaryColor.withAlpha(60),
+        onTap: () => _routeToProfileCreation(context),
       ),
     );
   }
@@ -50,17 +89,6 @@ class _LoginPageState extends State<LoginPage> {
       context,
       MaterialPageRoute(builder: (context) => ProfileDashboard(profile: widget.profiles[index])),
     ).whenComplete(() => setState((){}));
-  }
-
-  Widget _profileCreationButton() {
-    return Container(
-      height: 50,
-      child: InkWell(
-        child: Center(child: Text('เพิ่มผู้ใช้ใหม่')),
-        splashColor: Colors.blue.withAlpha(30), // TODO theme primaryColor
-        onTap: () => _routeToProfileCreation(context),
-      ),
-    );
   }
 
   void _routeToProfileCreation(BuildContext context) {

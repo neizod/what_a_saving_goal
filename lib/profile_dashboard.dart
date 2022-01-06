@@ -42,9 +42,9 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
             _showQuickAddTransactionButton(),
             Divider(height: 1),
             */
-            _showGoalHeadline(),
-            _showActiveGoals(),
-            _showQuickAddGoalButton(),
+            _goalHeadline(context),
+            _activeGoalsListView(context),
+            _goalCreationButton(context),
           ],
         ),
       ),
@@ -146,7 +146,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   }
   */
 
-  Widget _showGoalHeadline() {
+  Widget _goalHeadline(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(20),
       child: Text(
@@ -156,56 +156,70 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     );
   }
 
-  Widget _showActiveGoals() {
-    return Container(
-      margin: EdgeInsets.all(20),
-      child: Column(children: List.generate(widget.profile['goals'].length, _goalItem)),
+  Widget _activeGoalsListView(BuildContext context) {
+    return Expanded(
+      child: ListView.separated(
+        padding: EdgeInsets.all(24), // TODO tb 8, lr 24
+        itemCount: widget.profile['goals'].length,
+        itemBuilder: _goalItem,
+        separatorBuilder: (context, index) => const Divider(),
+      ),
     );
   }
 
-  Widget _goalItem(int index) {
+  Widget _goalItem(BuildContext context, int index) {
     Map goal = widget.profile['goals'][index];
-    int perPeriod = goal['perPeriod'];
     List periods = listPeriods(goal);
     List paidsPerPeriods = listPaidsPerPeriods(goal, periods);
-    int currentPeriod = paidsPerPeriods[paidsPerPeriods.length-2].fold(0, (acc, x) => acc + x['amount'] as int);
-    return GestureDetector(
-      onTap: _routeToGoalInformation(index, periods, paidsPerPeriods),
-      child: Container(
-        margin: EdgeInsets.all(1),
+    return Container(
+      height: 40,
+      child: InkWell(
+        splashColor: Theme.of(context).primaryColor.withAlpha(60),
+        onTap: () => _routeToGoalInformation(context, index, periods, paidsPerPeriods),
         child: Row(
           children: [
-            Expanded(
-              child: Text('(ราย${periodTypeText[goal['periodType']]}) ${goal['name']}'),
-            ),
-            Expanded(
-              child: LinearPercentIndicator(
-                lineHeight: 20,
-                animation: true,
-                percent: min(1, currentPeriod/perPeriod),
-                center: Text('${currentPeriod}/${perPeriod} บาท'),
-                progressColor: Colors.green[400],
-                backgroundColor: Colors.red[400],
-              ),
-            ),
+            _goalTitle(goal),
+            _goalCurrentProgress(goal, paidsPerPeriods),
           ],
         ),
       ),
     );
   }
 
-  Widget _showQuickAddGoalButton() {
-    return Container(
-      margin: EdgeInsets.all(20),
-      child: ElevatedButton(
-        child: Text('เพิ่มเป้าหมาย'),
-        onPressed: _routeToGoalCreation(),
+  Widget _goalTitle(Map goal) {
+    return Expanded(
+      child: Text('(ราย${periodTypeText[goal['periodType']]}) ${goal['name']}'),
+    );
+  }
+
+  Widget _goalCurrentProgress(Map goal, List paidsPerPeriods) {
+    List currentPeriod = paidsPerPeriods[paidsPerPeriods.length-2];
+    int paidCurrentPeriod = currentPeriod.fold(0, (acc, x) => acc + x['amount'] as int);
+    return Expanded(
+      child: LinearPercentIndicator(
+        lineHeight: 20,
+        animation: true,
+        percent: min(1, paidCurrentPeriod/goal['perPeriod']),
+        center: Text('${paidCurrentPeriod}/${goal['perPeriod']} บาท'),
+        progressColor: Colors.green[400],
+        backgroundColor: Colors.red[400],
       ),
     );
   }
 
-  void Function() _routeToGoalInformation(int index, List periods, List paidsPerPeriods) {
-    return () => Navigator.push(
+  Widget _goalCreationButton(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(20),
+      child: ElevatedButton(
+        child: Text('เพิ่มเป้าหมาย'),
+        onPressed: () => _routeToGoalCreation(context),
+      ),
+    );
+  }
+
+  void _routeToGoalInformation(BuildContext context, int index,
+                               List periods, List paidsPerPeriods) {
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => GoalInformation(
@@ -217,8 +231,8 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     ).whenComplete(() => setState((){}));
   }
 
-  void Function() _routeToGoalCreation() {
-    return () => Navigator.push(
+  void _routeToGoalCreation(BuildContext context) {
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => GoalCreation(

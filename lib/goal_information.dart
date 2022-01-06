@@ -31,95 +31,23 @@ class _GoalInformationState extends State<GoalInformation> {
       body: Container(
         child: Column(
           children: [
-
-            // summary
-            Container(
-              child: Column(
-                children: [
-                  _showGoalBasicInformation(),
-                  _showTotalProgress(),
-                ],
-              ),
-            ),
-
+            _goalBasicInformation(context),
+            _goalProgress(context),
             /*
             Container(
               padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
               child: Text('ประวัติการออมแบ่งตามเป้าหมายย่อย'),
             ),
             */
-
-            Expanded(
-              child: SingleChildScrollView( // TODO haha no, just use listview
-                child: Column(
-                  children: List.generate(widget.paidsPerPeriods.length, _periodItem),
-                ),
-              ),
-            ),
-
+            _periodsListView(context),
           ],
         ),
-
       ),
-
-      // floatingActionButton: Column(
-      //   mainAxisAlignment: MainAxisAlignment.end,
-      //   crossAxisAlignment: CrossAxisAlignment.end,
-      //   children: [
-      //     FloatingActionButton(
-      //       onPressed: () async {
-      //         await _database.addGoalPaidEntry();
-      //         setState((){});
-      //       },
-      //       tooltip: '(for debug)',
-      //       mini: true,
-      //       backgroundColor: Colors.red,
-      //       child: const Icon(Icons.navigate_next),
-      //       heroTag: null,
-      //     ),
-      //     SizedBox(height: 20),
-      //     Row(
-      //       mainAxisAlignment: MainAxisAlignment.end,
-      //       children: [
-      //         FloatingActionButton(
-      //           onPressed: () async {
-      //             await _database.payGoalLatestPeriod(10);
-      //             _sumTotal += 10;  // XXX
-      //             setState((){});
-      //           },
-      //           tooltip: 'quick pay',
-      //           child: const Text('10'),
-      //         ),
-      //         SizedBox(width: 20),
-      //         FloatingActionButton(
-      //           onPressed: () async {
-      //             await _database.payGoalLatestPeriod(100);
-      //             _sumTotal += 100;  // XXX
-      //             setState((){});
-      //           },
-      //           tooltip: 'quick pay',
-      //           child: const Text('100'),
-      //         ),
-      //         SizedBox(width: 20),
-      //         FloatingActionButton(
-      //           onPressed: () async {
-      //             await _database.payGoalLatestPeriod(1000);
-      //             _sumTotal += 1000;  // XXX
-      //             setState((){});
-      //           },
-      //           tooltip: 'quick pay',
-      //           child: const Text('1000'),
-      //         ),
-      //       ],
-      //     ),
-      //   ],
-      // ),
-
     );
   }
 
-  Widget _showGoalBasicInformation() {
-    return Text('TODO');
+  Widget _goalBasicInformation(BuildContext context) {
+    return Text('');  // TODO
     /*
     Row(
       children: [
@@ -157,7 +85,7 @@ class _GoalInformationState extends State<GoalInformation> {
     */
   }
 
-  Widget _showTotalProgress() {
+  Widget _goalProgress(BuildContext context) {
     int total = widget.goal['paids'].fold(0, (acc, x) => acc + x['amount'] as int);
     return Container(
       margin: EdgeInsets.all(20),
@@ -172,22 +100,35 @@ class _GoalInformationState extends State<GoalInformation> {
     );
   }
 
-  Widget _periodItem(int revIndex) {
+  Widget _periodsListView(BuildContext context) {
+    return Expanded(
+      child: ListView.separated(
+        padding: const EdgeInsets.all(24),
+        itemCount: widget.paidsPerPeriods.length,
+        itemBuilder: _periodItem,
+        separatorBuilder: (context, index) => const Divider(),
+      ),
+    );
+  }
+
+  Widget _periodItem(BuildContext context, int revIndex) {
     int index = widget.periods.length - revIndex;
     return GestureDetector(
-      onTap: _routeToPeriodInformation(revIndex),
+      onTap: () => _routeToPeriodInformation(context, revIndex),
       child: Container(
         margin: EdgeInsets.fromLTRB(20, 5, 20, 0),
         child: Row(
           children: [
-            Container(
-              margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
-              //width: 70,
-              // padding: EdgeInsets.only(right: 15),
-              child: Text(makePeriodTitle(index, widget.periods)),
+            Expanded(
+              child: Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
+                //width: 70,
+                // padding: EdgeInsets.only(right: 15),
+                child: Text(makePeriodTitle(index, widget.periods)),
+              ),
             ),
             Expanded(
-              child: _buildSavingGuage(widget.paidsPerPeriods[index], widget.goal['perPeriod'])
+              child: _periodProgress(widget.paidsPerPeriods[index], widget.goal['perPeriod'])
             ),
           ],
         ),
@@ -195,8 +136,7 @@ class _GoalInformationState extends State<GoalInformation> {
     );
   }
 
-
-  Widget _buildSavingGuage(List<Map> paidsPerPeriod, int perPeriod){
+  Widget _periodProgress(List<Map> paidsPerPeriod, int perPeriod){
     int sumPeriod = paidsPerPeriod.fold(0, (acc, x) => acc + x['amount'] as int);
     return LinearPercentIndicator(
       lineHeight: 30,
@@ -208,8 +148,8 @@ class _GoalInformationState extends State<GoalInformation> {
     );
   }
 
-  void Function() _routeToPeriodInformation(int revIndex) {
-    return () => Navigator.push(
+  void _routeToPeriodInformation(BuildContext context, int revIndex) {
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PeriodInformation(
