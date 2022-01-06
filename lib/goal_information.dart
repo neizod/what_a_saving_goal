@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'database_handler.dart';
-import 'period_information.dart';
+//import 'period_information.dart';
 import 'misc.dart';
 
 
 class GoalInformation extends StatefulWidget {
-  const GoalInformation({Key? key, required this.profileIndex, required this.goalIndex}): super(key: key);
-  final int profileIndex;
-  final int goalIndex;
+  const GoalInformation({Key? key, required this.goal, required this.periods, required this.paidsPerPeriods}): super(key: key);
+  final Map goal;
+  final List periods;
+  final List paidsPerPeriods;
 
   @override
   State<GoalInformation> createState() => _GoalInformationState();
@@ -20,43 +21,32 @@ class GoalInformation extends StatefulWidget {
 
 class _GoalInformationState extends State<GoalInformation> {
   final DatabaseHandler _database = DatabaseHandler();
-  bool _loading = true;
-  String _title = 'กำลังโหลดข้อมูล';
 
-
-  Map _goal = {};
-  List _paids = [];
-  List _periods = [];
-  List _sumPerPeriods = [];
+  /*
+  late final List _periods;
+  late final List _paidsPerPeriods;
+  */
   int _sumTotal = 0;
 
   @override
   void initState() {
     super.initState();
-    getData().whenComplete(() => setState((){
-      DateTime date = DateTime.now();
-      _periods = listPeriods(_goal['startDate'], date, _goal['periodType']);
-      _sumPerPeriods = listSumPerPeriods(_goal['startDate'], date, _goal['periodType'], _paids);
-      _sumTotal = _sumPerPeriods.fold(0, (a, b) => a + b as int);
-      _title = _goal['name'];
-      _loading = false;
-    }));
-  }
-
-  Future<void> getData() async {
-    _goal = await _database.getProfileGoal(widget.profileIndex, widget.goalIndex);
-    _paids = await _database.listProfileGoalPaids(widget.profileIndex, widget.goalIndex);
+    //DateTime date = DateTime.now();
+    //_periods = listPeriods(widget.goal['startDate'], date, widget.goal['periodType']);
+    //_paidsPerPeriods = listPaidsPerPeriods(widget.goal['startDate'], date, widget.goal['periodType'], widget.goal['paids']);  // TODO passing only widget.goal
+    //_periods;
+    /*
+    _paidsPerPeriods = listSumPerPeriods(
+    */
+    //_sumTotal = widget.paidsPerPeriods.fold(0, (acc, x) => acc + x['amount'] as int);
+    // TODO _sumTotal = sum of sum (2d list)
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('เป้าหมาย: ${_title}')),  // TODO
-      body: _loading ?
-        Center(child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-         )) :
-        Container(
+      appBar: AppBar(title: Text('เป้าหมาย: ${widget.goal['name']}')),
+      body: Container(
         padding: EdgeInsets.all(20),
 
         child: Column(
@@ -105,8 +95,8 @@ class _GoalInformationState extends State<GoalInformation> {
                     child: LinearPercentIndicator(
                       width: MediaQuery.of(context).size.width - 40,
                       lineHeight: 40,
-                      percent: min(1, _sumTotal/_goal['price']),
-                      center: Text('${_sumTotal}/${_goal['price']}'),
+                      percent: min(1, _sumTotal/widget.goal['price']),
+                      center: Text('${_sumTotal}/${widget.goal['price']}'),
                       linearStrokeCap: LinearStrokeCap.roundAll,
                       progressColor: Colors.green[400],
                       backgroundColor: Colors.red[400],
@@ -125,21 +115,9 @@ class _GoalInformationState extends State<GoalInformation> {
               child: SingleChildScrollView(
                 child: Column(
                   children: _buildSavingHistory(context),
-                  // Saving for Goal History Generator,
                 ),
               ),
             ),
-            Container(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.more_horiz_sharp),
-                ),
-            ),
-            Container(
-              height: 100,
-              child: Text('ข้อความสรุป เช่นช้ากว่าเป้าไป 2 งวดนะ หรือ ตอนนี้มีเงินพอปิดยอด'),
-            )
           ],
         ),
 
@@ -202,19 +180,26 @@ class _GoalInformationState extends State<GoalInformation> {
   }
 
   List<GestureDetector> _buildSavingHistory(BuildContext context){
-    int count = _sumPerPeriods.length;
+    int count = widget.paidsPerPeriods.length;
     List<GestureDetector> saves = List.generate(
       count,
       (index) => GestureDetector(
         onTap: () {
-          Navigator.push(
+
+          /*
+          => Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => PeriodInformation(
-              profileIndex: widget.profileIndex,
-              goalIndex: widget.goalIndex,
-              periodIndex: count-index-1, //TODO
-            )),
+              goal: widget.goal,
+              period: _periods[index],
+              //periodIndex: index, //count - index - 1,
+            )).whenComplete((){ // .then((???){
+              // TODO recalculate periods
+
+            }),
           );
+          */
+
         },
         child: Container(
           padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
@@ -223,10 +208,10 @@ class _GoalInformationState extends State<GoalInformation> {
               Container(
                 width: 70,
                 // padding: EdgeInsets.only(right: 15),
-                child: Text('งวดที่ ${count-index}'),
+                child: Text('งวดที่ ${count-index-1}'),
               ),
               Expanded(
-                child: _buildSavingGuage(_sumPerPeriods[count-index-1], _goal['perPeriod'])
+                child: _buildSavingGuage(widget.paidsPerPeriods[count-index-1], widget.goal['perPeriod'])
                 ),
             ],
             ),
@@ -236,15 +221,15 @@ class _GoalInformationState extends State<GoalInformation> {
     return saves;
   }
 
-  LinearPercentIndicator _buildSavingGuage(int save, int goal){
-    LinearPercentIndicator saveGuage = LinearPercentIndicator(
+  Widget _buildSavingGuage(List<Map> paidsPerPeriod, int perPeriod){
+    int sumPeriod = paidsPerPeriod.fold(0, (acc, x) => acc + x['amount'] as int);
+    return LinearPercentIndicator(
       lineHeight: 30,
-      center: Text('${save} / ${goal}'),
+      center: Text('${sumPeriod} / ${perPeriod}'),
       progressColor: Colors.green[400],
       backgroundColor: Colors.red[400],
-      percent: min(1, save/goal),
+      percent: min(1, sumPeriod/perPeriod),
       animation: true,
-      );
-    return saveGuage;
+    );
   }
 }

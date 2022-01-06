@@ -5,36 +5,15 @@ import 'misc.dart';
 
 
 class ProfileCreation extends StatefulWidget {
+  const ProfileCreation({Key? key, required this.profiles}) : super(key: key);
+  final List profiles;
+
   @override
   State<ProfileCreation> createState() => _ProfileCreationState();
 }
 
 
 class _ProfileCreationState extends State<ProfileCreation> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('เพิ่มบัญชีใหม่'),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-          child: AddProfileForm(),
-        ),
-      ),
-    );
-  }
-}
-
-
-class AddProfileForm extends StatefulWidget {
-  @override
-  _AddProfileFormState createState() => _AddProfileFormState();
-}
-
-
-class _AddProfileFormState extends State<AddProfileForm> {
   final DatabaseHandler _database = DatabaseHandler();
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> formController = {
@@ -43,24 +22,34 @@ class _AddProfileFormState extends State<AddProfileForm> {
   };
 
   @override
-  void dispose() {
-    formController.forEach((_, value) => value.dispose());
-    super.dispose();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('เพิ่มบัญชีใหม่'),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                nameField(),
+                currentField(),
+                SizedBox(height: 20),
+                saveButton(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          nameField(),
-          currentField(),
-          SizedBox(height: 20),
-          saveButton(),
-        ],
-      ),
-    );
+  void dispose() {
+    formController.forEach((_, value) => value.dispose());
+    super.dispose();
   }
 
   TextFormField nameField() {
@@ -84,18 +73,21 @@ class _AddProfileFormState extends State<AddProfileForm> {
     );
   }
 
-  ElevatedButton saveButton() {
-    return ElevatedButton(
-      child: Text('บันทึก'),
-      onPressed: (){
-        if (_formKey.currentState!.validate()) {
-          Function.apply(
-            _database.addProfile,
-            [],
-            formController.map((key, value) => MapEntry(Symbol(key), value.text)),
-          ).whenComplete(() => Navigator.pop(context));
-        }
-      },
+  Widget saveButton() {
+    return Container(
+      margin: EdgeInsets.all(20),
+      child: ElevatedButton(
+        child: Text('บันทึก'),
+        onPressed: (){
+          if (_formKey.currentState!.validate()) {
+            Function.apply(
+              _database.addProfile,
+              [widget.profiles],
+              formController.map((key, value) => MapEntry(Symbol(key), value.text)),
+            ).whenComplete(() => Navigator.pop(context));
+          }
+        },
+      ),
     );
   }
 }

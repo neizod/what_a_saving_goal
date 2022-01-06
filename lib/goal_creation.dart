@@ -8,8 +8,8 @@ import 'misc.dart';
 
 
 class GoalCreation extends StatefulWidget {
-  const GoalCreation({Key? key, required this.profileIndex}): super(key: key);
-  final int profileIndex;
+  const GoalCreation({Key? key, required this.goals}): super(key: key);
+  final List goals;
 
   @override
   State<GoalCreation> createState() => _GoalCreationState();
@@ -177,7 +177,7 @@ class _GoalCreationState extends State<GoalCreation>{
       onPressed: (){
         if (_formKey.currentState!.validate()) {
           _database.addGoal(
-            widget.profileIndex,
+            widget.goals,
             name: formController['name']!.text,
             price: _price,
             numPeriod: _numPeriod,

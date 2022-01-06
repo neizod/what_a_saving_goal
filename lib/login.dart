@@ -6,7 +6,8 @@ import 'profile_creation.dart';
 
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key, required this.profiles}) : super(key: key);
+  final List profiles;
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -15,15 +16,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final DatabaseHandler _database = DatabaseHandler();
-  var _profiles = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _database.listProfiles().then((result) => setState((){
-      _profiles = result;
-    }));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +25,9 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
-        itemCount: _profiles.length + 1,
+        itemCount: widget.profiles.length + 1,
         itemBuilder: (BuildContext context, int index) => (
-          (index < _profiles.length) ? _itemProfile(index) : _profileCreationButton()
+          (index < widget.profiles.length) ? _itemProfile(index) : _profileCreationButton()
         ),
         separatorBuilder: (BuildContext context, int index) => const Divider(),
       ),
@@ -46,18 +38,18 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       height: 50,
       child: InkWell(
-        child: Center(child: Text('${_profiles[index]['name']}')),
+        child: Center(child: Text('${widget.profiles[index]['name']}')),
         splashColor: Colors.blue.withAlpha(30),
-        onTap: () => routeProfile(context, index),
+        onTap: () => _routeToProfile(context, index),
       ),
     );
   }
 
-  void routeProfile(BuildContext context, int index) {
+  void _routeToProfile(BuildContext context, int index) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ProfileDashboard(profileIndex: index)),
-    );
+      MaterialPageRoute(builder: (context) => ProfileDashboard(profile: widget.profiles[index])),
+    ).whenComplete(() => setState((){}));
   }
 
   Widget _profileCreationButton() {
@@ -65,16 +57,16 @@ class _LoginPageState extends State<LoginPage> {
       height: 50,
       child: InkWell(
         child: Center(child: Text('เพิ่มผู้ใช้ใหม่')),
-        splashColor: Colors.blue.withAlpha(30), // theme primaryColor
-        onTap: () => routeToProfileCreation(context),
+        splashColor: Colors.blue.withAlpha(30), // TODO theme primaryColor
+        onTap: () => _routeToProfileCreation(context),
       ),
     );
   }
 
-  void routeToProfileCreation(BuildContext context) async {
+  void _routeToProfileCreation(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ProfileCreation()),
-    ).whenComplete(() => setState((){})); // TODO rebuild with new data
+      MaterialPageRoute(builder: (context) => ProfileCreation(profiles: widget.profiles)),
+    ).whenComplete(() => setState((){}));
   }
 }

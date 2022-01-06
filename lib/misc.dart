@@ -2,6 +2,19 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+
+// widgets ===================================================================
+
+Widget showLoadingSplash(BuildContext context) {
+  return Center(
+    child: CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor),
+    ),
+  );
+}
+
+
+
 // focus node ================================================================
 
 class DisabledFocusNode extends FocusNode {
@@ -99,14 +112,18 @@ List<DateTime> listPeriods(DateTime startDate, DateTime endDate, String periodTy
 }
 
 
-List<int> listSumPerPeriods(DateTime startDate, DateTime endDate,
-                            String periodType, List sortedPaids) {
+// TODO accept periods as first argument
+List<List<Map>> listPaidsPerPeriods(DateTime startDate, DateTime endDate,
+                                    String periodType, List sortedPaids) {
   List<DateTime> periods = listPeriods(startDate, endDate, periodType);
-  List<int> sums = List<int>.filled(periods.length+1, 0);
+  List<List<Map>> ls = [];
+  for (int i = 0; i < periods.length+1; i++) {
+    ls.add([]);
+  }
   int j = 0;
   for (int i = 0; i < periods.length; i++) {
     while (j < sortedPaids.length && sortedPaids[j]['date'].isBefore(periods[i])) {
-      sums[i] += sortedPaids[j]['amount'] as int;
+      ls[i].add(sortedPaids[j]);
       j += 1;
     }
     if (j == sortedPaids.length) {
@@ -114,24 +131,8 @@ List<int> listSumPerPeriods(DateTime startDate, DateTime endDate,
     }
   }
   while (j < sortedPaids.length) {
-    sums[periods.length] += sortedPaids[j]['amount'] as int;
+    ls[periods.length].add(sortedPaids[j]);
     j += 1;
   }
-  return sums;
-}
-
-
-int getSumPaidOfCurrentPeriod(DateTime startDate, String periodType, List sortedPaids) {
-  DateTime current = DateTime.now();
-  if (current.isBefore(startDate)) {
-    current = startDate;
-  }
-  List<DateTime> periods = listPeriods(startDate, current, periodType);
-  List<int> sums = listSumPerPeriods(startDate, current, periodType, sortedPaids);
-  for (int i = 0; i < periods.length; i++) {
-    if (current.isBefore(periods[i])) {
-      return sums[i];
-    }
-  }
-  return sums[periods.length];
+  return ls;
 }

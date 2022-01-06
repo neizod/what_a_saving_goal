@@ -5,14 +5,15 @@ import 'login.dart';
 
 
 void main() async {
-  var database = DatabaseHandler();
+  final database = DatabaseHandler();
   await database.init();
-  runApp(const MyApp());
+  runApp(MyApp(data: await database.fetchDatabase()));
 }
 
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key, required this.data}) : super(key: key);
+  final List data;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: LoginPage(),
+      home: LoginPage(profiles: data),
       //debugShowCheckedModeBanner: false,
     );
   }

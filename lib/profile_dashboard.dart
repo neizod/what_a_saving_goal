@@ -4,16 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'database_handler.dart';
+/*
 import 'transaction_summary.dart';
 import 'transaction_creation.dart';
+*/
 import 'goal_information.dart';
 import 'goal_creation.dart';
 import 'misc.dart';
 
 
 class ProfileDashboard extends StatefulWidget {
-  const ProfileDashboard({Key? key, required this.profileIndex}) : super(key: key);
-  final int profileIndex;
+  const ProfileDashboard({Key? key, required this.profile}) : super(key: key);
+  final Map profile;
 
   @override
   State<ProfileDashboard> createState() => _ProfileDashboardState();
@@ -22,38 +24,14 @@ class ProfileDashboard extends StatefulWidget {
 
 class _ProfileDashboardState extends State<ProfileDashboard> {
   final DatabaseHandler _database = DatabaseHandler();
-  bool _loading = true;
-  String _title = 'กำลังโหลดข้อมูล';
-
-  Map _profile = {};
-  List _goals = [];
-  List _paids = [];
-
-  @override
-  void initState() {
-    super.initState();
-    getData().whenComplete(() => setState((){
-      _title = _profile['name'];
-      _loading = false;
-    }));
-  }
-
-  Future<void> getData() async {
-    _profile = await _database.getProfile(widget.profileIndex);
-    _goals = await _database.listProfileGoals(widget.profileIndex);
-    _paids = [];
-    for (int j = 0; j < _goals.length; j++) {
-      _paids.add(await _database.listProfileGoalPaids(widget.profileIndex, j));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ภาพรวมบัญชี: ${_title}'),
+        title: Text('ภาพรวมบัญชี: ${widget.profile['name']}'),
       ),
-      body: _loading ? _showLoadingSplash() : Center( // TODO overflow scroll
+      body: Center( // TODO overflow scroll
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -73,19 +51,12 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     );
   }
 
-  Widget _showLoadingSplash() {
-    return Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor),
-      ),
-    );
-  }
-
+  /*
   Widget _showTransactionHeader() {
     return Container(
       margin: EdgeInsets.all(20),
       child:  Text(
-        'ยอดเงินปัจจุบัน: ${_profile['current']} บาท',
+        'ยอดเงินปัจจุบัน: ${widget.profile['current']} บาท',
         style: Theme.of(context).textTheme.headline5,
       ),
     );
@@ -173,6 +144,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       ),
     );
   }
+  */
 
   Widget _showGoalHeadline() {
     return Container(
@@ -187,30 +159,24 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   Widget _showActiveGoals() {
     return Container(
       margin: EdgeInsets.all(20),
-      child: Column(children: List.generate(_goals.length, _goalItem)),
+      child: Column(children: List.generate(widget.profile['goals'].length, _goalItem)),
     );
   }
 
   Widget _goalItem(int index) {
-    int perPeriod = _goals[index]['perPeriod'];
-    int currentPeriod = getSumPaidOfCurrentPeriod(_goals[index]['startDate'],
-                                                  _goals[index]['periodType'], _paids[index]);
+    Map goal = widget.profile['goals'][index];
+    int perPeriod = goal['perPeriod'];
+    List periods = listPeriods(goal['startDate'], DateTime.now(), goal['periodType']);
+    List paidsPerPeriods = listPaidsPerPeriods(goal['startDate'], DateTime.now(), goal['periodType'], goal['paids']);
+    int currentPeriod = paidsPerPeriods[paidsPerPeriods.length-2].fold(0, (acc, x) => acc + x['amount'] as int);
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => GoalInformation(
-            profileIndex: widget.profileIndex,
-            goalIndex: index,
-          )),
-        );
-      },
+      onTap: _routeToGoalInformation(index, periods, paidsPerPeriods),
       child: Container(
         margin: EdgeInsets.all(1),
         child: Row(
           children: [
             Expanded(
-              child: Text('(ราย${periodTypeText[_goals[index]['periodType']]}) ${_goals[index]['name']}'),
+              child: Text('(ราย${periodTypeText[goal['periodType']]}) ${goal['name']}'),
             ),
             Expanded(
               child: LinearPercentIndicator(
@@ -233,13 +199,32 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       margin: EdgeInsets.all(20),
       child: ElevatedButton(
         child: Text('เพิ่มเป้าหมาย'),
-        onPressed: () async {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => GoalCreation(profileIndex: widget.profileIndex)),
-          ).whenComplete(() => getData()).whenComplete(() => setState((){}));
-        },
+        onPressed: _routeToGoalCreation(),
       ),
     );
+  }
+
+  void Function() _routeToGoalInformation(int index, List periods, List paidsPerPeriods) {
+    return () => Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GoalInformation(
+          goal: widget.profile['goals'][index],
+          periods: periods,
+          paidsPerPeriods: paidsPerPeriods,
+        ),
+      ),
+    ).whenComplete(() => setState((){}));
+  }
+
+  void Function() _routeToGoalCreation() {
+    return () => Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GoalCreation(
+          goals: widget.profile['goals'],
+        ),
+      ),
+    ).whenComplete(() => setState((){}));
   }
 }
