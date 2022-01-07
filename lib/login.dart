@@ -15,8 +15,6 @@ class LoginPage extends StatefulWidget {
 
 
 class _LoginPageState extends State<LoginPage> {
-  final DatabaseHandler _database = DatabaseHandler();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,11 +33,12 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _coverImage(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(16),
-      child: Image.asset(
-        'assets/appfeature.png',
-        height: 100,
-        fit: BoxFit.cover,
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height / 4,
+      padding: EdgeInsets.all(16),
+      color: Theme.of(context).primaryColor,
+      child: FittedBox(
+        child: Image.asset('assets/appfeature.png'),
       ),
     );
   }
