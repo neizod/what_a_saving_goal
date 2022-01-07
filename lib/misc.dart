@@ -1,9 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 
 // widgets ===================================================================
+
+var formatter = DateFormat('d LLLL y');
 
 Widget showLoadingSplash(BuildContext context) {
   return Center(
@@ -149,9 +152,9 @@ String makePeriodRange(int index, List periods) {
   // TODO need to sub the second date by 1 day !
   if (index == 0) {
     //DateFormat()
-    return '??? -- ${periods[0]}';
+    return '??? -- ${formatter.format(periods[0])}';
   } if (index == periods.length) {
-    return '${periods.last} -- ???';
+    return '${formatter.format(periods.last)} -- ???';
   }
-  return '${periods[index-1]} -- ${periods[index]}';
+  return '${formatter.format(periods[index-1])} -- ${formatter.format(periods[index])}';
 }
