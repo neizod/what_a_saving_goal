@@ -172,6 +172,9 @@ class _DateTimeButton extends State<DateTimeButton>{
 
 
 class TransactionCreation extends StatelessWidget {
+  const TransactionCreation({Key? key, required this.transactions}) : super(key: key);
+  final List transactions;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

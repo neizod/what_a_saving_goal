@@ -6,8 +6,8 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'database_handler.dart';
 /*
 import 'transaction_summary.dart';
-import 'transaction_creation.dart';
 */
+import 'transaction_creation.dart';
 import 'goal_information.dart';
 import 'goal_creation.dart';
 import 'misc.dart';
@@ -29,19 +29,19 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ภาพรวมบัญชี: ${widget.profile['name']}'),
+        title: Text('ภาพรวมบัญชี'),
       ),
-      body: Center( // TODO overflow scroll
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            /*
-            _showTransactionHeader(),
-            _showTransactionGuage(),
-            _showLatestTransactions(),
-            _showQuickAddTransactionButton(),
-            Divider(height: 1),
-            */
+            _profileNameHeader(context),
+            _transactionSummaryHeader(context),
+            //_showTransactionGuage(),
+            _recentTransactionHeadline(context),
+            _recentTransactionsListView(context),
+            _transactionCreationButton(context),
+            Divider(height: 3),
             _goalHeadline(context),
             _activeGoalsListView(context),
             _goalCreationButton(context),
@@ -51,17 +51,27 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     );
   }
 
-  /*
-  Widget _showTransactionHeader() {
+  Widget _profileNameHeader(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(20),
-      child:  Text(
-        'ยอดเงินปัจจุบัน: ${widget.profile['current']} บาท',
+      margin: EdgeInsets.all(8),
+      child: Text(
+        '${widget.profile['name']}',
         style: Theme.of(context).textTheme.headline5,
       ),
     );
   }
 
+  Widget _transactionSummaryHeader(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(8),
+      child: Text(
+        'ยอดเงินปัจจุบัน: ${widget.profile['current']} บาท',
+        style: Theme.of(context).textTheme.headline6,
+      ),
+    );
+  }
+
+  /*
   Widget _showTransactionGuage() {
     return Container(
       margin: EdgeInsets.all(20),
@@ -89,35 +99,44 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       ),
     );
   }
+  */
 
-  Widget _showLatestTransactions() {
+  Widget _recentTransactionHeadline(context) {
     return Container(
-      margin: EdgeInsets.all(20),
-      child: GestureDetector(
-        onTap: (){
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => TransactionSummary()),
-          );
-        },
-        child: Column(children: List.generate(5, _transactionItem)),
+      margin: EdgeInsets.all(8),
+      child: Text(
+        'รายการใช้จ่ายล่าสุด',
+        style: Theme.of(context).textTheme.headline6,
       ),
     );
   }
 
-  Widget _transactionItem(int index) {
+  Widget _recentTransactionsListView(BuildContext context) {
+    return ListView.separated(
+      padding: EdgeInsets.all(24),
+      itemCount: min(3, widget.profile['transactions'].length), // TODO
+      itemBuilder: _transactionItem,
+      separatorBuilder: (context, index) => const Divider(),
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+    );
+  }
+
+  Widget _transactionItem(BuildContext context, int tailIndex) {
+    int index = widget.profile['transactions'].length - 1 - tailIndex;
+    Map transaction = widget.profile['transactions'][index];
     return Container(
       margin: EdgeInsets.all(1),
       child: Row(
         children: [
           Container(
             alignment: Alignment.centerLeft,
-            child: Text('ค่าน้ำมันรถ'),
+            child: Text(transaction['name']),
           ),
           Expanded(
             child: Container(
               alignment: Alignment.centerRight,
-              child: Text('500'),
+              child: _transactionAmountText(transaction['amount']),
             ),
           ),
           Container(
@@ -130,40 +149,42 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     );
   }
 
-  Widget _showQuickAddTransactionButton() {
+  Text _transactionAmountText(int amount) {
+    // TODO final formatter = NumberFormat('###.00');
+    if (amount > 0) {
+      return Text('${amount}');
+    }
+    return Text('(${amount.abs()})', style: TextStyle(color: Colors.red));
+  }
+
+  Widget _transactionCreationButton(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(20),
       child: ElevatedButton(
         child: Text('บันทึกรายรับรายจ่าย'),
-        onPressed: (){
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => TransactionCreation()),
-          );
-        },
+        onPressed: () => _routeToTransactionCreation(context),
       ),
     );
   }
-  */
 
   Widget _goalHeadline(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(8),
       child: Text(
         'เป้าหมายปัจจุบัน',
-        style: Theme.of(context).textTheme.headline5,
+        style: Theme.of(context).textTheme.headline6,
       ),
     );
   }
 
   Widget _activeGoalsListView(BuildContext context) {
-    return Expanded(
-      child: ListView.separated(
-        padding: EdgeInsets.all(24), // TODO tb 8, lr 24
-        itemCount: widget.profile['goals'].length,
-        itemBuilder: _goalItem,
-        separatorBuilder: (context, index) => const Divider(),
-      ),
+    return ListView.separated(
+      padding: EdgeInsets.all(24), // TODO tb 8, lr 24
+      itemCount: widget.profile['goals'].length,
+      itemBuilder: _goalItem,
+      separatorBuilder: (context, index) => const Divider(),
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
     );
   }
 
@@ -215,6 +236,17 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         onPressed: () => _routeToGoalCreation(context),
       ),
     );
+  }
+
+  void _routeToTransactionCreation(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TransactionCreation(
+          transactions: widget.profile['transactions'],
+        ),
+      ),
+    ).whenComplete(() => setState((){}));
   }
 
   void _routeToGoalInformation(BuildContext context, int index,

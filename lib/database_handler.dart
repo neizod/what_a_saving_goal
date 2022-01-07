@@ -35,6 +35,23 @@ class DatabaseHandler {
       {
         'name': 'นางสาว ตั้งใจ เก็บเงิน',
         'current': 52196,
+        'transactions': [
+          {
+            'name': 'เงินเดือน',
+            'amount': 20000,
+            'date': DateTime(2022, 01, 01),
+          },
+          {
+            'name': 'ค่าน้ำมันรถ',
+            'amount': -1000,
+            'date': DateTime(2022, 01, 03),
+          },
+          {
+            'name': 'อาหารเย็น',
+            'amount': -500,
+            'date': DateTime(2022, 01, 04),
+          },
+        ],
         'goals': [
           {
             'name': 'ไมโครเวฟ',
@@ -85,6 +102,13 @@ class DatabaseHandler {
       {
         'name': 'นาย ประหยัด มัธยัสถ์',
         'current': 777,
+        'transactions': [
+          {
+            'name': 'ถูกหวย',
+            'amount': 777,
+            'date': DateTime(2007, 07, 07),
+          },
+        ],
         'goals': [
           {
             'name': 'งานแต่ง',
@@ -121,12 +145,18 @@ class DatabaseHandler {
     ]);
   }
 
+  // TODO XXX NOTE: it does NOT enforce the type, we MUST parse it ourselve!
   Future<void> addProfile(List profiles, {name: String, current: int}) async {
+    Map firstEntry = {
+      'name': 'ยอดยกมา',
+      'amount': int.parse(current),
+      'date': DateTime.now(),
+    };
     profiles.add(Map<String, Object>.from({
       'name': name,
-      'current': current,
+      'current': int.parse(current), // TODO remove and just use sum transactions ???
+      'transactions': [firstEntry],
       'goals': [],
-      // TODO 'transactions': [],
     }));
     await writeDatabase();
   }
