@@ -30,6 +30,12 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: Text('ภาพรวมบัญชี: ${widget.profile['name']}'),
+        actions: [
+          IconButton(
+            onPressed: () {}, //Todo Add remove user function
+            icon: const Icon(Icons.manage_accounts_rounded),
+            tooltip: "จัดการแก้ไขบัญชี",)
+        ],
       ),
       body: Center( // TODO overflow scroll
         child: Column(
