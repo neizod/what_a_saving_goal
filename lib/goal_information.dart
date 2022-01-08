@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'database_handler.dart';
-import 'period_information.dart';
+//import 'period_information.dart';
 import 'misc.dart';
 
 
@@ -28,6 +28,7 @@ class _GoalInformationState extends State<GoalInformation> {
       appBar: AppBar(
         title: Text('เป้าหมาย: ${widget.goal['name']}')
       ),
+      floatingActionButton: _quickPayButton(context),
       body: Container(
         child: Column(
           children: [
@@ -113,6 +114,36 @@ class _GoalInformationState extends State<GoalInformation> {
 
   Widget _periodItem(BuildContext context, int revIndex) {
     int index = widget.periods.length - revIndex;
+    List paidsPerPeriods = widget.paidsPerPeriods[index];
+    int sumPeriod = paidsPerPeriods.fold(0, (acc, x) => acc + x['amount'] as int);
+    return ExpansionTile(
+      title: Row(
+        children: [
+          Expanded(child: Text(makePeriodTitle(index, widget.periods))),
+          Expanded(child: _periodProgress(paidsPerPeriods, widget.goal['perPeriod'])),
+        // TODO find way to merge them Text('${paid}/${widget.goal['perPeriod']} บาท'),
+        ],
+      ),
+      subtitle: Text(makePeriodRange(index, widget.periods)),
+      children: List.generate(
+        paidsPerPeriods.length,
+        (index) => ListTile(
+          title: InkWell(
+            splashColor: Theme.of(context).primaryColor.withAlpha(60),
+            onTap: (){},
+            // onTap: () => _routeToEditPaid(context, index),    // TODO enable this
+            child: Row(
+              children: [
+                Expanded(child: Text('${formatter.format(paidsPerPeriods[index]['date'])}')),
+                Expanded(child: Text('${paidsPerPeriods[index]['amount']} บาท', textAlign: TextAlign.right)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    /*
     return GestureDetector(
       onTap: () => _routeToPeriodInformation(context, revIndex),
       child: Container(
@@ -134,13 +165,14 @@ class _GoalInformationState extends State<GoalInformation> {
         ),
       ),
     );
+    */
   }
 
-  Widget _periodProgress(List<Map> paidsPerPeriod, int perPeriod){
+  Widget _periodProgress(List paidsPerPeriod, int perPeriod){
     int sumPeriod = paidsPerPeriod.fold(0, (acc, x) => acc + x['amount'] as int);
     return LinearPercentIndicator(
-      lineHeight: 30,
-      center: Text('${sumPeriod} / ${perPeriod}'),
+      lineHeight: 24,
+      center: Text('${sumPeriod} / ${perPeriod} บาท'),
       progressColor: Colors.green[400],
       backgroundColor: Colors.red[400],
       percent: min(1, sumPeriod/perPeriod),
@@ -148,6 +180,51 @@ class _GoalInformationState extends State<GoalInformation> {
     );
   }
 
+  Widget _quickPayButton(BuildContext context) {
+    return FloatingActionButton(
+      child: const Icon(Icons.add_rounded),
+      onPressed: () {
+
+        // TODO don't use dialog, but create new page ???
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('amount'),
+              actions: [
+                TextButton(
+                  child: Text('ตกลง'),
+                  onPressed: () {
+                    widget.goal['paids'].add({
+                      'amount': 42,
+                      'date': DateTime.now(),
+                    });
+
+                    widget.goal['paids'].sort(
+                      (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime)
+                    );
+                    // TODO save
+                    // TODO update calc variables
+
+                    // what ??? setState((){});
+
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  child: Text('ยกเลิก'),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          },
+        );
+
+      },
+    );
+  }
+
+  /*
   void _routeToPeriodInformation(BuildContext context, int revIndex) {
     Navigator.push(
       context,
@@ -163,4 +240,6 @@ class _GoalInformationState extends State<GoalInformation> {
       // TODO recalculate periods
     });
   }
+  */
+
 }

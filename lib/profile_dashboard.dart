@@ -105,7 +105,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     return Container(
       margin: EdgeInsets.all(8),
       child: Text(
-        'รายการใช้จ่ายล่าสุด',
+        'รายรับรายจ่ายล่าสุด',
         style: Theme.of(context).textTheme.headline6,
       ),
     );
@@ -152,9 +152,9 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   Text _transactionAmountText(int amount) {
     // TODO final formatter = NumberFormat('###.00');
     if (amount > 0) {
-      return Text('${amount}');
+      return Text('+${amount}', style: TextStyle(color: Colors.green[900]));
     }
-    return Text('(${amount.abs()})', style: TextStyle(color: Colors.red));
+    return Text('-${amount.abs()}', style: TextStyle(color: Colors.red[500]));
   }
 
   Widget _transactionCreationButton(BuildContext context) {
