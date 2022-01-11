@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:what_a_saving_goal/profile_creation.dart';
 
 import 'database_handler.dart';
 /*
@@ -14,7 +15,8 @@ import 'misc.dart';
 
 
 class ProfileDashboard extends StatefulWidget {
-  const ProfileDashboard({Key? key, required this.profile}) : super(key: key);
+  const ProfileDashboard({Key? key, required this.profiles, required this.profile}) : super(key: key);
+  final List profiles;
   final Map profile;
 
   @override
@@ -32,7 +34,9 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         title: Text('ภาพรวมบัญชี'),
         actions: [
           IconButton(
-            onPressed: () {}, //Todo Add remove user function
+            onPressed: () {
+              _routeToProfileCreation(this.context);
+            }, //Todo Add remove user function
             icon: const Icon(Icons.manage_accounts_rounded),
             tooltip: "จัดการแก้ไขบัญชี",)
         ],
@@ -277,6 +281,14 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
           goals: widget.profile['goals'],
         ),
       ),
+    ).whenComplete(() => setState((){}));
+  }
+
+  void _routeToProfileCreation(BuildContext context) {
+    debugPrint("Go to profile creation page");
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfileCreation(profiles: widget.profiles, profile: widget.profile,)),
     ).whenComplete(() => setState((){}));
   }
 }

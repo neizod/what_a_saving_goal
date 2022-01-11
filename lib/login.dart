@@ -86,14 +86,14 @@ class _LoginPageState extends State<LoginPage> {
   void _routeToProfile(BuildContext context, int index) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ProfileDashboard(profile: widget.profiles[index])),
+      MaterialPageRoute(builder: (context) => ProfileDashboard(profiles: widget.profiles, profile: widget.profiles[index])),
     ).whenComplete(() => setState((){}));
   }
 
   void _routeToProfileCreation(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ProfileCreation(profiles: widget.profiles)),
+      MaterialPageRoute(builder: (context) => ProfileCreation(profiles: widget.profiles, profile: null,)),
     ).whenComplete(() => setState((){}));
   }
 }
