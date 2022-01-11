@@ -1,29 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:what_a_saving_goal/misc.dart';
 
-DateTime? _dateTime = DateTime.now();
+import 'database_handler.dart';
+import 'misc.dart';
 
 
-class PaymentButton extends StatefulWidget{
+class PaymentButton extends StatefulWidget {
+  bool _income = true;
+  bool _outcome = false;
+
+  bool isIncome() => _income;
+
   @override
   _PaymentButton createState() => _PaymentButton();
 }
 
 
-class _PaymentButton extends State<PaymentButton>{
-  bool _income = true;
-  bool _outcome = false;
+class _PaymentButton extends State<PaymentButton> {
+
 
   void _handleTap(int index){
     setState(() {
       if (index == 0) {
-        _income = true;
-        _outcome = false;
+        widget._income = true;
+        widget._outcome = false;
       } else {
-        _outcome = true;
-        _income = false;
+        widget._outcome = true;
+        widget._income = false;
       }
     });
   }
@@ -31,7 +35,6 @@ class _PaymentButton extends State<PaymentButton>{
   @override
   Widget build(BuildContext context){
     return Row(
-      
       children: [
         Expanded(
           child: GestureDetector(
@@ -43,12 +46,12 @@ class _PaymentButton extends State<PaymentButton>{
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
-                color: _income ? Colors.black : Colors.white ,
+                color: widget._income ? Colors.black : Colors.white ,
                 border: Border.all(),
               ),
               child: Text("รายรับ",
                 style: TextStyle(
-                  color: _income ? Colors.white : Colors.black),
+                  color: widget._income ? Colors.white : Colors.black),
                 ),
             ),
           ),
@@ -66,12 +69,12 @@ class _PaymentButton extends State<PaymentButton>{
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
-                color: _outcome ? Colors.black : Colors.white ,
+                color: widget._outcome ? Colors.black : Colors.white ,
                 border: Border.all(),
               ),
               child: Text("รายจ่าย",
                 style: TextStyle(
-                  color: _outcome ? Colors.white : Colors.black),
+                  color: widget._outcome ? Colors.white : Colors.black),
               ),
             ),
           ),
@@ -82,13 +85,13 @@ class _PaymentButton extends State<PaymentButton>{
 }
 
 
-class CategoryButton extends StatefulWidget{
+class CategoryButton extends StatefulWidget {
   @override
   _CategoryButton createState() => _CategoryButton();
 }
 
 
-class _CategoryButton extends State<CategoryButton>{
+class _CategoryButton extends State<CategoryButton> {
   List<String> _categories = ['cat1','cat2','cat3','cat4'];
   List<bool> _selection = List.generate(4, (index) => false);
   String tag = "";
@@ -142,6 +145,7 @@ class _CategoryButton extends State<CategoryButton>{
 }
 
 
+/*
 class DateTimeButton extends StatefulWidget{
   @override
   _DateTimeButton createState() => _DateTimeButton();
@@ -158,7 +162,7 @@ class _DateTimeButton extends State<DateTimeButton>{
           child: Text("วันที่"),
         ),
         Expanded(
-          child: Text("${_dateTime?.day}-${_dateTime?.month}-${_dateTime?.year}"),
+          child: Text("${_date?.day}-${_date?.month}-${_date?.year}"),
         ),
         IconButton(
           onPressed: (){
@@ -169,7 +173,7 @@ class _DateTimeButton extends State<DateTimeButton>{
               lastDate: DateTime(2122),
               ).then((date) {
                 setState(() {
-                  _dateTime = date;
+                  _date = date;
                 });
               });
           },
@@ -179,47 +183,57 @@ class _DateTimeButton extends State<DateTimeButton>{
     );
   }
 }
+*/
+
 
 class TransactionForm extends StatefulWidget{
-  @override
-  _TransactionForm createState() => _TransactionForm();
-}
-
-class _TransactionForm extends State<TransactionForm>{
-  final NumberFormat numFormat = NumberFormat('#,##0.00');
-  final NumberFormat numSanitizedFormat = NumberFormat('en_US');
-  final TextEditingController priceController = TextEditingController(text: '0.00');
   final TextEditingController descController = TextEditingController();
-  final TextEditingController regDateController = TextEditingController();
+  final TextEditingController priceController = TextEditingController(text: '0.00');
+  DateTime? _date;
 
-  @override
-  void initState(){
-    super.initState();
-    _dateTime = DateTime.now();
-    regDateController.text = (_dateTime == null) ? '' : makeShortDate(_dateTime!);
-  }
+  DateTime getDate() => _date ?? DateTime.now();
+  String getName() => descController.text;
+  int getPrice() => int.parse(
+    priceController.text.replaceAll(RegExp(','), '').replaceAll(RegExp('\\..+'), '')
+    );
 
   @override
   void dispose(){
     priceController.dispose();
     descController.dispose();
-    super.dispose();
+    //super.dispose();
+  }
+
+  @override
+  _TransactionForm createState() => _TransactionForm();
+}
+
+
+class _TransactionForm extends State<TransactionForm>{
+  final NumberFormat numFormat = NumberFormat('#,##0.00');
+  final NumberFormat numSanitizedFormat = NumberFormat('en_US');
+  final TextEditingController regDateController = TextEditingController();
+
+  @override
+  void initState(){
+    super.initState();
+    widget._date = DateTime.now();
+    regDateController.text = (widget._date == null) ? '' : makeShortDate(widget._date!);
   }
 
   @override
   Widget build(BuildContext context){
     return Column(
-      
       children: <Widget> [
         Focus(
           onFocusChange: (hasFocus){
             if(!hasFocus){
               debugPrint('on unFocus');
-              String price = priceController.value.text;
+              String price = widget.priceController.value.text;
               if (price == '') price = '0.0';
               final formattedPrice = numFormat.format(double.parse(price));
               debugPrint('Formatted $formattedPrice');
-              priceController.value = TextEditingValue(
+              widget.priceController.value = TextEditingValue(
                 text: formattedPrice,
                 selection: TextSelection.collapsed(offset: formattedPrice.length)
               );
@@ -228,7 +242,7 @@ class _TransactionForm extends State<TransactionForm>{
           child: TextFormField(
             textAlign: TextAlign.right,
             inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),],
-            controller: priceController,
+            controller: widget.priceController,
             decoration: const InputDecoration(
               suffix: Text('\u0E3F'),
               labelText: "จำนวนเงิน",
@@ -240,10 +254,10 @@ class _TransactionForm extends State<TransactionForm>{
             validator: refuse([empty('กรุณาระบุจำนวนเงิน')]),
             keyboardType: TextInputType.number,
             onTap: () {
-              var textFieldNum = priceController.value.text;
+              var textFieldNum = widget.priceController.value.text;
               var numSanitized = numSanitizedFormat.parse(textFieldNum);
               debugPrint('Formatted $numSanitized');
-              priceController.value = TextEditingValue(
+              widget.priceController.value = TextEditingValue(
                 text: numSanitized == 0 ? '' : '$numSanitized',
                 selection: TextSelection.collapsed(offset: numSanitized == 0 ? 0 : '$numSanitized'.length)
               );
@@ -252,7 +266,7 @@ class _TransactionForm extends State<TransactionForm>{
               if (price == '') price = '0';
               final formattedPrice = numFormat.format(double.parse(price));
               debugPrint('Formatted $formattedPrice');
-              priceController.value = TextEditingValue(
+              widget.priceController.value = TextEditingValue(
                 text: formattedPrice,
                 selection: TextSelection.collapsed(offset: formattedPrice.length)
               );
@@ -262,13 +276,13 @@ class _TransactionForm extends State<TransactionForm>{
         Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: TextFormField(
-            controller: descController,
+            controller: widget.descController,
             decoration: const InputDecoration(
               labelText: 'บันทึกช่วยจำ',
               border: OutlineInputBorder(
                 borderSide: BorderSide(
                   width: 1.0
-                ) 
+                ),
               ),
             ),
             maxLines: 3,
@@ -286,8 +300,7 @@ class _TransactionForm extends State<TransactionForm>{
       );
   }
 
-  
-    void Function() pickDate() {
+  void Function() pickDate() {
     return (){
       showDatePicker(
         context: context,
@@ -296,15 +309,19 @@ class _TransactionForm extends State<TransactionForm>{
         lastDate: DateTime(2120),
       ).then((date) {
         regDateController.text = makeShortDate(date!);
-        }
-      );
+      });
     };
   }
 }
 
+
 class TransactionCreation extends StatelessWidget {
   TransactionCreation({Key? key, required this.transactions}) : super(key: key);
+  DatabaseHandler _database = DatabaseHandler();
+
   final List transactions;
+  PaymentButton _paymentButton = PaymentButton();
+  TransactionForm _transactionForm = TransactionForm();
 
   @override
   Widget build(BuildContext context) {
@@ -318,11 +335,11 @@ class TransactionCreation extends StatelessWidget {
           children: <Widget>[
             Container(
               padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-              child: PaymentButton(),
+              child: _paymentButton,
             ),
             Container(
               padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-              child: TransactionForm(),
+              child: _transactionForm,
             ),
             // Container(
             //   height: 40,
@@ -342,6 +359,15 @@ class TransactionCreation extends StatelessWidget {
               padding: EdgeInsets.only(bottom: 20),
               child: FloatingActionButton.extended(
                 onPressed: (){
+                  // TODO form validate
+                  int sign = _paymentButton.isIncome() ? 1 : -1 ;
+                  transactions.add({
+                    'name': _transactionForm.getName(),
+                    'amount': sign * _transactionForm.getPrice(),
+                    'date': _transactionForm.getDate(),
+                  });
+                  _database.writeDatabase().whenComplete(() => Navigator.pop(context));
+
                   //Todo: Implement add data to database function
                 },
                 label: Text('เพิ่มบันทึก',

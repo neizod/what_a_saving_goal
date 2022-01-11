@@ -2,12 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:what_a_saving_goal/profile_creation.dart';
 
 import 'database_handler.dart';
 /*
 import 'transaction_summary.dart';
 */
+import 'profile_creation.dart';
 import 'transaction_creation.dart';
 import 'goal_information.dart';
 import 'goal_creation.dart';
