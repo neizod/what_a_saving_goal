@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 
 var fullDateFormatter = DateFormat('d LLLL y');
 var shortDateFormatter = DateFormat('d/M/y');
-final NumberFormat numFormat = NumberFormat('#,##0.0#');
+final NumberFormat numFormat = NumberFormat('#,##0.00');
 
 Widget showLoadingSplash(BuildContext context) {
   return Center(

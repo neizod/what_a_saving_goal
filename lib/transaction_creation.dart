@@ -186,7 +186,7 @@ class TransactionForm extends StatefulWidget{
 }
 
 class _TransactionForm extends State<TransactionForm>{
-  final NumberFormat numFormat = NumberFormat('#,##0.0#');
+  final NumberFormat numFormat = NumberFormat('#,##0.00');
   final NumberFormat numSanitizedFormat = NumberFormat('en_US');
   final TextEditingController priceController = TextEditingController(text: '0.00');
   final TextEditingController descController = TextEditingController();
@@ -230,7 +230,7 @@ class _TransactionForm extends State<TransactionForm>{
             inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),],
             controller: priceController,
             decoration: const InputDecoration(
-              icon: Icon(Icons.attach_money_sharp),
+              suffix: Text('\u0E3F'),
               labelText: "จำนวนเงิน",
             ),
             style: const TextStyle(
