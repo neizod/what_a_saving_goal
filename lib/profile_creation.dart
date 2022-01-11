@@ -5,8 +5,9 @@ import 'misc.dart';
 
 
 class ProfileCreation extends StatefulWidget {
-  const ProfileCreation({Key? key, required this.profiles}) : super(key: key);
+  const ProfileCreation({Key? key, required this.profiles, this.profile}) : super(key: key);
   final List profiles;
+  final Map? profile;
 
   @override
   State<ProfileCreation> createState() => _ProfileCreationState();
@@ -20,6 +21,15 @@ class _ProfileCreationState extends State<ProfileCreation> {
     'name': TextEditingController(),
     'current': TextEditingController(),
   };
+
+  @override
+  void initState(){
+    if(widget.profile != null){
+      super.initState();
+      formController['name']!.text = widget.profile!['name'];
+      formController['current']!.text = widget.profile!['current'].toString();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +74,7 @@ class _ProfileCreationState extends State<ProfileCreation> {
 
   TextFormField currentField() {
     return TextFormField(
+      enabled: (widget.profile == null) ? true: false,
       controller: formController['current'],
       keyboardType: TextInputType.number,
       validator: refuse([empty('กรุณากรอกยอดเงิน'), notInt('ยอดเงินต้องเป็นจำนวนเต็ม')]),
@@ -79,15 +90,30 @@ class _ProfileCreationState extends State<ProfileCreation> {
       child: ElevatedButton(
         child: Text('บันทึก'),
         onPressed: (){
-          if (_formKey.currentState!.validate()) {
-            Function.apply(
-              _database.addProfile,
-              [widget.profiles],
-              formController.map((key, value) => MapEntry(Symbol(key), value.text)),
-            ).whenComplete(() => Navigator.pop(context));
+          switch(widget.profile){
+            case null: createProfile(this.context); break;
+            default : updateProfile(this.context); break;
           }
         },
       ),
     );
+  }
+
+  void createProfile(BuildContext context){
+    if (_formKey.currentState!.validate()) {
+      Function.apply(
+        _database.addProfile,
+        [widget.profiles],
+        formController.map((key, value) => MapEntry(Symbol(key), value.text)),
+      ).whenComplete(() => Navigator.pop(context));
+    }
+  }
+
+  void updateProfile(BuildContext context){
+    debugPrint("In update profile function");
+    if (_formKey.currentState!.validate()) {
+      widget.profile!['name'] = formController['name']!.text;
+      _database.writeDatabase().whenComplete(() => Navigator.pop(context));
+    }
   }
 }

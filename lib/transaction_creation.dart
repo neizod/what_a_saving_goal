@@ -312,7 +312,7 @@ class TransactionCreation extends StatelessWidget {
       appBar: AppBar(
         title: Text('เพิ่มรายรับรายจ่าย'),
       ),
-      body: Container(
+      body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Column(
           children: <Widget>[
