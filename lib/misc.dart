@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 
 // widgets ===================================================================
 
-var formatter = DateFormat('d LLLL y');
+var fullDateFormatter = DateFormat('d LLLL y');
+var shortDateFormatter = DateFormat('d/M/y');
 
 Widget showLoadingSplash(BuildContext context) {
   return Center(
@@ -152,9 +153,13 @@ String makePeriodRange(int index, List periods) {
   // TODO need to sub the second date by 1 day !
   if (index == 0) {
     //DateFormat()
-    return '??? -- ${formatter.format(periods[0])}';
+    return '??? -- ${fullDateFormatter.format(periods[0])}';
   } if (index == periods.length) {
-    return '${formatter.format(periods.last)} -- ???';
+    return '${fullDateFormatter.format(periods.last)} -- ???';
   }
-  return '${formatter.format(periods[index-1])} -- ${formatter.format(periods[index])}';
+  return '${fullDateFormatter.format(periods[index-1])} -- ${fullDateFormatter.format(periods[index])}';
+}
+
+String makeShortDate(DateTime date){
+  return '${shortDateFormatter.format(date)}';
 }

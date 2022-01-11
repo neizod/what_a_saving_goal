@@ -134,7 +134,7 @@ class _GoalInformationState extends State<GoalInformation> {
             // onTap: () => _routeToEditPaid(context, index),    // TODO enable this
             child: Row(
               children: [
-                Expanded(child: Text('${formatter.format(paidsPerPeriods[index]['date'])}')),
+                Expanded(child: Text('${fullDateFormatter.format(paidsPerPeriods[index]['date'])}')),
                 Expanded(child: Text('${paidsPerPeriods[index]['amount']} บาท', textAlign: TextAlign.right)),
               ],
             ),
