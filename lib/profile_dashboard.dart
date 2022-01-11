@@ -75,7 +75,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     return Container(
       margin: EdgeInsets.all(8),
       child: Text(
-        'ยอดเงินปัจจุบัน: ${widget.profile['current']} บาท',
+        'ยอดเงินปัจจุบัน: ${makeCurrency(widget.profile['current'])} บาท',
         style: Theme.of(context).textTheme.headline6,
       ),
     );
@@ -162,9 +162,9 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   Text _transactionAmountText(int amount) {
     // TODO final formatter = NumberFormat('###.00');
     if (amount > 0) {
-      return Text('+${amount}', style: TextStyle(color: Colors.green[900]));
+      return Text('+${makeCurrency(amount)}', style: TextStyle(color: Colors.green[900]));
     }
-    return Text('-${amount.abs()}', style: TextStyle(color: Colors.red[500]));
+    return Text('-${makeCurrency(amount.abs())}', style: TextStyle(color: Colors.red[500]));
   }
 
   Widget _transactionCreationButton(BuildContext context) {
@@ -231,7 +231,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         lineHeight: 20,
         animation: true,
         percent: min(1, paidCurrentPeriod/goal['perPeriod']),
-        center: Text('${paidCurrentPeriod}/${goal['perPeriod']} บาท'),
+        center: Text('${makeCurrency(paidCurrentPeriod)}/${makeCurrency(goal['perPeriod'])} บาท'),
         progressColor: Colors.green[400],
         backgroundColor: Colors.red[400],
       ),

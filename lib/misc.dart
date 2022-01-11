@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 var fullDateFormatter = DateFormat('d LLLL y');
 var shortDateFormatter = DateFormat('d/M/y');
+final NumberFormat numFormat = NumberFormat('#,##0.0#');
 
 Widget showLoadingSplash(BuildContext context) {
   return Center(
@@ -162,4 +163,8 @@ String makePeriodRange(int index, List periods) {
 
 String makeShortDate(DateTime date){
   return '${shortDateFormatter.format(date)}';
+}
+
+String makeCurrency(int money){
+  return numFormat.format(money);
 }
