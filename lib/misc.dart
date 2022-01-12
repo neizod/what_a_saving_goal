@@ -169,7 +169,7 @@ String makeShortDate(DateTime date){
 }
 
 String makeCurrency(int money, {bool floating = true}){
-  return floating ? numFormat.format(money/100) : numFormatNoFloating.format(money/100);
+  return floating ? numFormat.format(money.toDouble()/100) : numFormatNoFloating.format(money.toDouble()/100);
 }
 
 int makeCleanCurrency(String money){
