@@ -117,22 +117,28 @@ class _TransactionSummaryState extends State<TransactionSummary> {
     Map transaction = widget.transactions[index];
     return Container(
       margin: EdgeInsets.all(1),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Text(transaction['name']),
-          ),
-          Expanded(
-            child: Container(
-              alignment: Alignment.centerRight,
-              child: _transactionAmountText(transaction['amount']),
-            ),
-          ),
-          Container(
-            alignment: Alignment.centerRight,
-            width: 40,
-            child: Text("บาท"),
+          Text(makeShortDate(transaction['date'])),
+          Row(
+            children: [
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Text(transaction['name']),
+              ),
+              Expanded(
+                child: Container(
+                  alignment: Alignment.centerRight,
+                  child: _transactionAmountText(transaction['amount']),
+                ),
+              ),
+              Container(
+                alignment: Alignment.centerRight,
+                width: 40,
+                child: Text("บาท"),
+              ),
+            ],
           ),
         ],
       ),
