@@ -8,7 +8,10 @@ import 'package:intl/intl.dart';
 
 var fullDateFormatter = DateFormat('d LLLL y');
 var shortDateFormatter = DateFormat('d/M/y');
+final NumberFormat numSanitizedFormat = NumberFormat('en_US');
 final NumberFormat numFormat = NumberFormat('#,##0.00');
+final NumberFormat numFormatNoFloating = NumberFormat('#,##0');
+
 
 Widget showLoadingSplash(BuildContext context) {
   return Center(
@@ -165,6 +168,12 @@ String makeShortDate(DateTime date){
   return '${shortDateFormatter.format(date)}';
 }
 
-String makeCurrency(int money){
-  return numFormat.format(money);
+String makeCurrency(int money, {bool floating = true}){
+  return floating ? numFormat.format(money/100) : numFormatNoFloating.format(money/100);
+}
+
+int makeCleanCurrency(String money){
+  num moneyNum = numSanitizedFormat.parse(money)*100;
+  int moneyInt = moneyNum.toInt();
+  return moneyInt;
 }

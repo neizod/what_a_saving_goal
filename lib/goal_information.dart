@@ -55,12 +55,14 @@ class _GoalInformationState extends State<GoalInformation> {
 
   Widget _goalProgress(BuildContext context) {
     int total = widget.goal['paids'].fold(0, (acc, x) => acc + x['amount'] as int);
+    String totalFormatted = makeCurrency(total);
+    String goalFormatted = makeCurrency(widget.goal['price']);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: LinearPercentIndicator(
         lineHeight: 40,
         percent: min(1, total/widget.goal['price']),
-        center: Text('${total}/${widget.goal['price']} บาท'),
+        center: Text('$totalFormatted/$goalFormatted บาท'),
         linearStrokeCap: LinearStrokeCap.roundAll,
         progressColor: Colors.green[400],
         backgroundColor: Colors.red[400],
@@ -126,9 +128,11 @@ class _GoalInformationState extends State<GoalInformation> {
 
   Widget _periodProgress(List paidsPerPeriod, int perPeriod){
     int sumPeriod = paidsPerPeriod.fold(0, (acc, x) => acc + x['amount'] as int);
+    String sumPeriodFormatted = makeCurrency(sumPeriod, floating: false);
+    String perPeriodFormatted = makeCurrency(perPeriod, floating: false);
     return LinearPercentIndicator(
       lineHeight: 24,
-      center: Text('${sumPeriod} / ${perPeriod} บาท'),
+      center: Text('$sumPeriodFormatted / $perPeriodFormatted บาท'),
       progressColor: Colors.green[400],
       backgroundColor: Colors.red[400],
       percent: min(1, sumPeriod/perPeriod),

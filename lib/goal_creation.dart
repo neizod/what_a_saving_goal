@@ -179,9 +179,9 @@ class _GoalCreationState extends State<GoalCreation>{
           _database.addGoal(
             widget.goals,
             name: formController['name']!.text,
-            price: _price,
+            price: _price!*100,
             numPeriod: _numPeriod,
-            perPeriod: _perPeriod,
+            perPeriod: _perPeriod!*100,
             periodType: _periodType,
             startDate: _startDate,
             endDate: _endDate,
