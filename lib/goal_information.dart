@@ -95,10 +95,12 @@ class _GoalInformationState extends State<GoalInformation> {
     int index = widget.periods.length - revIndex;
     List paidsPerPeriods = widget.paidsPerPeriods[index];
     int sumPeriod = paidsPerPeriods.fold(0, (acc, x) => acc + x['amount'] as int);
-    return ExpansionTile(
+    return Opacity(
+    opacity: (index==widget.periods.length-1) ? 1: 0.3,
+    child: ExpansionTile(
       title: Row(
         children: [
-          Expanded(child: Text(makePeriodTitle(index, widget.periods))),
+          Expanded(child: Text(makePeriodTitle(index, widget.periods),)),
           Expanded(child: _periodProgress(paidsPerPeriods, widget.goal['perPeriod'])),
         ],
       ),
@@ -107,6 +109,7 @@ class _GoalInformationState extends State<GoalInformation> {
         paidsPerPeriods.length,
         (index) => _paidItem(context, paidsPerPeriods[index]),
       ),
+    ),
     );
   }
 

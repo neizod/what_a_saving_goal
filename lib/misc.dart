@@ -157,9 +157,9 @@ String makePeriodRange(int index, List periods) {
   // TODO need to sub the second date by 1 day !
   if (index == 0) {
     //DateFormat()
-    return '??? -- ${fullDateFormatter.format(periods[0])}';
+    return 'ก่อน -- ${fullDateFormatter.format(periods[0])}';
   } if (index == periods.length) {
-    return '${fullDateFormatter.format(periods.last)} -- ???';
+    return '${fullDateFormatter.format(periods.last)} -- หลัง';
   }
   return '${fullDateFormatter.format(periods[index-1])} -- ${fullDateFormatter.format(periods[index])}';
 }
