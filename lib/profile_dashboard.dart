@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'database_handler.dart';
-/*
 import 'transaction_summary.dart';
-*/
 import 'profile_creation.dart';
 import 'transaction_creation.dart';
 import 'goal_information.dart';
@@ -16,7 +14,7 @@ import 'misc.dart';
 
 class ProfileDashboard extends StatefulWidget {
   const ProfileDashboard({Key? key, required this.profiles, required this.profile}) : super(key: key);
-  final List profiles;
+  final List profiles;  // TODO why we need this?
   final Map profile;
 
   @override
@@ -50,7 +48,14 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
             //_showTransactionGuage(),
             _recentTransactionHeadline(context),
             _recentTransactionsListView(context),
-            _transactionCreationButton(context),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _transactionSummaryButton(context),
+                _transactionCreationButton(context),
+              ],
+            ),
             Divider(height: 3),
             _goalHeadline(context),
             _activeGoalsListView(context),
@@ -72,44 +77,15 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   }
 
   Widget _transactionSummaryHeader(BuildContext context) {
+    int current = widget.profile['transactions'].fold(0, (acc, x) => acc + x['amount'] as int);
     return Container(
       margin: EdgeInsets.all(8),
       child: Text(
-        'ยอดเงินปัจจุบัน: ${makeCurrency(widget.profile['current'])} บาท',
+        'ยอดเงินปัจจุบัน: ${makeCurrency(current)} บาท',
         style: Theme.of(context).textTheme.headline6,
       ),
     );
   }
-
-  /*
-  Widget _showTransactionGuage() {
-    return Container(
-      margin: EdgeInsets.all(20),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              color: Colors.red,
-              width: 10,
-              height: 30,
-              child: Center(child:Text('29999')),
-              ),
-            ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.green,
-              width: 10,
-              height: 30,
-              child: Center(child:Text('50000')),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  */
 
   Widget _recentTransactionHeadline(context) {
     return Container(
@@ -165,6 +141,16 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       return Text('+${makeCurrency(amount)}', style: TextStyle(color: Colors.green[900]));
     }
     return Text('-${makeCurrency(amount.abs())}', style: TextStyle(color: Colors.red[500]));
+  }
+
+  Widget _transactionSummaryButton(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(20),
+      child: ElevatedButton(
+        child: Text('ประวัติ'),
+        onPressed: () => _routeToTransactionSummary(context),
+      ),
+    );
   }
 
   Widget _transactionCreationButton(BuildContext context) {
@@ -244,6 +230,17 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       child: ElevatedButton(
         child: Text('เพิ่มเป้าหมาย'),
         onPressed: () => _routeToGoalCreation(context),
+      ),
+    );
+  }
+
+  void _routeToTransactionSummary(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TransactionSummary(
+          transactions: widget.profile['transactions'],
+        ),
       ),
     );
   }
