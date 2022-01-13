@@ -81,7 +81,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     return Container(
       margin: EdgeInsets.all(8),
       child: Text(
-        'ยอดเงินปัจจุบัน: ${makeCurrencyString(widget.profile['current'])} บาท',
+        'ยอดเงินปัจจุบัน: ${makeCurrencyString(current)} บาท',
         style: Theme.of(context).textTheme.headline6,
       ),
     );
