@@ -113,7 +113,7 @@ class _PaidCreationState extends State<PaidCreation>{
       onPressed: (){
         if (_formKey.currentState!.validate()) {
           widget.goal['paids'].add({
-            'amount': _price!,
+            'amount': makeCurrencyInt(_price!.toString()),
             'date': _date!,
           });
           _database.writeDatabase().whenComplete(() => Navigator.pop(context));

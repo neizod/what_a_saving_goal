@@ -55,8 +55,8 @@ class _GoalInformationState extends State<GoalInformation> {
 
   Widget _goalProgress(BuildContext context) {
     int total = widget.goal['paids'].fold(0, (acc, x) => acc + x['amount'] as int);
-    String totalFormatted = makeCurrency(total);
-    String goalFormatted = makeCurrency(widget.goal['price']);
+    String totalFormatted = makeCurrencyString(total);
+    String goalFormatted = makeCurrencyString(widget.goal['price']);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: LinearPercentIndicator(
@@ -122,7 +122,7 @@ class _GoalInformationState extends State<GoalInformation> {
         child: Row(
           children: [
             Expanded(child: Text('${fullDateFormatter.format(paid['date'])}')),
-            Expanded(child: Text('${paid['amount']} บาท', textAlign: TextAlign.right)),
+            Expanded(child: Text('${makeCurrencyString(paid['amount'])} บาท', textAlign: TextAlign.right)),
           ],
         ),
       ),
@@ -131,8 +131,8 @@ class _GoalInformationState extends State<GoalInformation> {
 
   Widget _periodProgress(List paidsPerPeriod, int perPeriod){
     int sumPeriod = paidsPerPeriod.fold(0, (acc, x) => acc + x['amount'] as int);
-    String sumPeriodFormatted = makeCurrency(sumPeriod, floating: false);
-    String perPeriodFormatted = makeCurrency(perPeriod, floating: false);
+    String sumPeriodFormatted = makeCurrencyString(sumPeriod, floating: false);
+    String perPeriodFormatted = makeCurrencyString(perPeriod, floating: false);
     return LinearPercentIndicator(
       lineHeight: 24,
       center: Text('$sumPeriodFormatted / $perPeriodFormatted บาท'),

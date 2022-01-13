@@ -49,7 +49,6 @@ String? Function(String?) notInt(String reason) {
   return (value) => ((value == null || int.tryParse(value) == null) ? reason : null);
 }
 
-
 String? Function(String?) refuse(List<String? Function(String?)> reasons) {
   return (value) => reasons.fold(null, (result, each) => (result == null) ? each(value) : result);
 }
@@ -168,12 +167,18 @@ String makeShortDate(DateTime date){
   return '${shortDateFormatter.format(date)}';
 }
 
-String makeCurrency(int money, {bool floating = true}){
+String makeCurrencyString(int money, {bool floating = true}){
   return floating ? numFormat.format(money.toDouble()/100) : numFormatNoFloating.format(money.toDouble()/100);
 }
 
-int makeCleanCurrency(String money){
+int makeCurrencyInt(String money){
+  // try{
+  //   num moneyNum = numSanitizedFormat.parse(money)*100;
+  //   return moneyNum.toInt();
+  // }
+  // on FormatException {
+  //   return null;
+  // }
   num moneyNum = numSanitizedFormat.parse(money)*100;
-  int moneyInt = moneyNum.toInt();
-  return moneyInt;
+  return moneyNum.toInt();
 }

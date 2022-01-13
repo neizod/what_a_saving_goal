@@ -100,6 +100,7 @@ class _ProfileCreationState extends State<ProfileCreation> {
   }
 
   void createProfile(BuildContext context){
+    
     if (_formKey.currentState!.validate()) {
       Function.apply(
         _database.addProfile,

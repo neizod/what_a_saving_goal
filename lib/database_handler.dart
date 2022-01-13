@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'misc.dart';
 import 'models/paid_history.dart';
 
 
@@ -147,14 +149,15 @@ class DatabaseHandler {
 
   // TODO XXX NOTE: it does NOT enforce the type, we MUST parse it ourselve!
   Future<void> addProfile(List profiles, {name: String, current: int}) async {
+    current = makeCurrencyInt(current);
     Map firstEntry = {
       'name': 'ยอดยกมา',
-      'amount': int.parse(current),
+      'amount': current,
       'date': DateTime.now(),
     };
     profiles.add(Map<String, Object>.from({
       'name': name,
-      'current': int.parse(current), // TODO remove and just use sum transactions ???
+      'current': current, // TODO remove and just use sum transactions ???
       'transactions': [firstEntry],
       'goals': [],
     }));

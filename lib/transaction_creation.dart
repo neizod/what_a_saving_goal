@@ -193,7 +193,7 @@ class TransactionForm extends StatefulWidget{
 
   DateTime getDate() => _date ?? DateTime.now();
   String getName() => descController.text;
-  int getPrice() => makeCleanCurrency(priceController.text);
+  int getPrice() => makeCurrencyInt(priceController.text);
 
   @override
   void dispose(){
@@ -253,7 +253,7 @@ class _TransactionForm extends State<TransactionForm>{
             keyboardType: TextInputType.number,
             onTap: () {
               var textFieldNum = widget.priceController.value.text;
-              var numSanitized = makeCleanCurrency(textFieldNum)/100;
+              var numSanitized = makeCurrencyInt(textFieldNum)/100;
               debugPrint('Formatted ${numSanitized}');
               widget.priceController.value = TextEditingValue(
                 text: numSanitized == 0 ? '' : '$numSanitized',
