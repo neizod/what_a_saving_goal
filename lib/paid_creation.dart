@@ -116,6 +116,9 @@ class _PaidCreationState extends State<PaidCreation>{
             'amount': makeCurrencyInt(_price!.toString()),
             'date': _date!,
           });
+          widget.goal['paids'].sort(
+            (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime)
+          );
           _database.writeDatabase().whenComplete(() => Navigator.pop(context));
         }
       },
