@@ -55,7 +55,7 @@ class _TransactionSummaryState extends State<TransactionSummary> {
     return Container(
       margin: EdgeInsets.all(8),
       child: Text(
-        'ยอดเงินปัจจุบัน: ${makeCurrency(current)} บาท',
+        'ยอดเงินปัจจุบัน: ${makeCurrencyString(current)} บาท',
         style: Theme.of(context).textTheme.headline6,
       ),
     );
@@ -147,9 +147,9 @@ class _TransactionSummaryState extends State<TransactionSummary> {
 
   Text _transactionAmountText(int amount) {
     if (amount > 0) {
-      return Text('+${makeCurrency(amount)}', style: TextStyle(color: Colors.green[900]));
+      return Text('+${makeCurrencyString(amount)}', style: TextStyle(color: Colors.green[900]));
     }
-    return Text('-${makeCurrency(amount.abs())}', style: TextStyle(color: Colors.red[500]));
+    return Text('-${makeCurrencyString(amount.abs())}', style: TextStyle(color: Colors.red[500]));
   }
 
   Widget _transactionCreationButton(BuildContext context) {
