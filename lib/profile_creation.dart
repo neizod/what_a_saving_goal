@@ -24,10 +24,9 @@ class _ProfileCreationState extends State<ProfileCreation> {
 
   @override
   void initState(){
-    if(widget.profile != null){
-      super.initState();
+    super.initState();
+    if (widget.profile != null) {
       formController['name']!.text = widget.profile!['name'];
-      formController['current']!.text = widget.profile!['current'].toString();
     }
   }
 
@@ -45,7 +44,7 @@ class _ProfileCreationState extends State<ProfileCreation> {
             child: Column(
               children: [
                 nameField(),
-                currentField(),
+                (widget.profile == null) ? currentField() : Divider() ,
                 SizedBox(height: 20),
                 saveButton(),
               ],
@@ -74,7 +73,6 @@ class _ProfileCreationState extends State<ProfileCreation> {
 
   TextFormField currentField() {
     return TextFormField(
-      enabled: (widget.profile == null) ? true: false,
       controller: formController['current'],
       keyboardType: TextInputType.number,
       validator: refuse([empty('กรุณากรอกยอดเงิน'), notInt('ยอดเงินต้องเป็นจำนวนเต็ม')]),

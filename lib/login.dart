@@ -15,6 +15,8 @@ class LoginPage extends StatefulWidget {
 
 
 class _LoginPageState extends State<LoginPage> {
+  final DatabaseHandler _database = DatabaseHandler();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,6 +30,19 @@ class _LoginPageState extends State<LoginPage> {
           _profilesListView(context),
         ],
       ),
+      floatingActionButton: _populateExampleData(context),
+    );
+  }
+
+  Widget _populateExampleData(BuildContext context) {
+    return FloatingActionButton(
+      child: (widget.profiles.length != 0) ? Icon(Icons.delete_forever) : Icon(Icons.assistant) ,
+      onPressed: () => (
+        (widget.profiles.length != 0) ? _database.clearAllData() : _database.populateExampleData()
+      ).whenComplete(() => _database.fetchDatabase().then((data) => setState((){
+        widget.profiles.clear();
+        widget.profiles.addAll(data);
+      }))),
     );
   }
 

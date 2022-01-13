@@ -20,7 +20,6 @@ class DatabaseHandler {
     if (_box.length == 0) {
       _box.put(_boxKey, []);
     }
-    await populateExampleData();  // XXX
   }
 
   Future<List> fetchDatabase() async {
@@ -29,6 +28,10 @@ class DatabaseHandler {
 
   Future<void> writeDatabase() async {
     await _box.put(_boxKey, await fetchDatabase());
+  }
+
+  Future<void> clearAllData() async {
+    await _box.clear();
   }
 
   Future<void> populateExampleData() async {
@@ -40,83 +43,98 @@ class DatabaseHandler {
         'transactions': [
           {
             'name': 'เงินเดือน',
-            'amount': 20000,
+            'amount': 2000000,
             'date': DateTime(2022, 01, 01),
           },
           {
             'name': 'ค่าน้ำมันรถ',
-            'amount': -1000,
+            'amount': -100000,
             'date': DateTime(2022, 01, 03),
           },
           {
             'name': 'อาหารเย็น',
-            'amount': -500,
+            'amount': -50000,
             'date': DateTime(2022, 01, 04),
+          },
+          {
+            'name': 'อุปกรณ์สำนักงาน',
+            'amount': -32800,
+            'date': DateTime(2022, 01, 08),
+          },
+          {
+            'name': 'ปุ๋ย',
+            'amount': -40000,
+            'date': DateTime(2022, 01, 09),
+          },
+          {
+            'name': 'เมล็ดพืช',
+            'amount': -30000,
+            'date': DateTime(2022, 01, 09),
           },
         ],
         'goals': [
           {
             'name': 'ไมโครเวฟ',
-            'price': 2000,
+            'price': 200000,
             'numPeriod': 20,
-            'perPeriod': 100,
+            'perPeriod': 10000,
             'periodType': 'day',
             'startDate': DateTime(2021, 12, 30),
             'endDate': DateTime(2022, 01, 25),
             'paids': [
-              { 'amount': 400, 'date': DateTime(2021, 12, 15) },
-              { 'amount': 200, 'date': DateTime(2021, 12, 30) },
-              { 'amount': 300, 'date': DateTime(2021, 12, 31) },
-              { 'amount': 300, 'date': DateTime(2022, 01, 01) },
-              { 'amount': 100, 'date': DateTime(2022, 01, 03) },
+              { 'amount': 40000, 'date': DateTime(2021, 12, 15) },
+              { 'amount': 20000, 'date': DateTime(2021, 12, 30) },
+              { 'amount': 30000, 'date': DateTime(2021, 12, 31) },
+              { 'amount': 30000, 'date': DateTime(2022, 01, 01) },
+              { 'amount': 10000, 'date': DateTime(2022, 01, 03) },
             ],
           },
           {
             'name': 'มอเตอร์ไซค์',
-            'price': 30000,
+            'price': 3000000,
             'numPeriod': 6,
-            'perPeriod': 5000,
+            'perPeriod': 500000,
             'periodType': 'quarter',
             'startDate': DateTime(2022, 01, 01),
             'endDate': DateTime(2023, 07, 01),
             'paids': [
-              { 'amount': 1500, 'date': DateTime(2022, 01, 01) },
-              { 'amount': 9999, 'date': DateTime(2025, 01, 01) },
+              { 'amount': 150000, 'date': DateTime(2022, 01, 01) },
+              { 'amount':  20000, 'date': DateTime(2022, 01, 09) },
+              { 'amount':  50000, 'date': DateTime(2025, 01, 01) },
             ],
           },
           {
             'name': 'คอมพิวเตอร์',
-            'price': 50000,
+            'price': 5000000,
             'numPeriod': 20,
-            'perPeriod': 2500,
+            'perPeriod': 250000,
             'periodType': 'week',
             'startDate': DateTime(2021, 12, 10),
             'endDate': DateTime(2022, 06, 01),
             'paids': [
-              { 'amount': 1500, 'date': DateTime(2021, 12, 22) },
-              { 'amount': 3000, 'date': DateTime(2021, 12, 28) },
-              { 'amount': 1000, 'date': DateTime(2022, 01, 01) },
-              { 'amount':  750, 'date': DateTime(2022, 01, 03) },
+              { 'amount': 150000, 'date': DateTime(2021, 12, 22) },
+              { 'amount': 300000, 'date': DateTime(2021, 12, 28) },
+              { 'amount': 100000, 'date': DateTime(2022, 01, 01) },
+              { 'amount':  75000, 'date': DateTime(2022, 01, 03) },
             ],
           },
         ],
       },
       {
         'name': 'นาย ประหยัด มัธยัสถ์',
-        'current': 777,
         'transactions': [
           {
-            'name': 'ถูกหวย',
-            'amount': 777,
+            'name': 'ปันผล',
+            'amount': 77777,
             'date': DateTime(2007, 07, 07),
           },
         ],
         'goals': [
           {
             'name': 'งานแต่ง',
-            'price': 300000,
+            'price': 30000000,
             'numPeriod': 3,
-            'perPeriod': 100000,
+            'perPeriod': 10000000,
             'periodType': 'year',
             'startDate': DateTime(2010, 01, 01),
             'endDate': DateTime(2040, 01, 01),
@@ -124,22 +142,22 @@ class DatabaseHandler {
           },
           {
             'name': 'เกษียณ',
-            'price': 3000000,
+            'price': 300000000,
             'numPeriod': 400,
-            'perPeriod': 7500,
+            'perPeriod': 750000,
             'periodType': 'month',
             'startDate': DateTime(2020, 01, 01),
             'endDate': DateTime(2050, 01, 01),
             'paids': [
-              { 'amount': 3500, 'date': DateTime(2021, 05, 03) },
-              { 'amount': 3500, 'date': DateTime(2021, 06, 03) },
-              { 'amount': 3500, 'date': DateTime(2021, 07, 03) },
-              { 'amount': 3500, 'date': DateTime(2021, 08, 03) },
-              { 'amount': 3500, 'date': DateTime(2021, 09, 03) },
-              { 'amount': 4000, 'date': DateTime(2021, 10, 03) },
-              { 'amount': 4000, 'date': DateTime(2021, 11, 03) },
-              { 'amount': 4000, 'date': DateTime(2021, 12, 03) },
-              { 'amount': 5000, 'date': DateTime(2022, 01, 03) },
+              { 'amount': 350000, 'date': DateTime(2021, 05, 03) },
+              { 'amount': 350000, 'date': DateTime(2021, 06, 03) },
+              { 'amount': 350000, 'date': DateTime(2021, 07, 03) },
+              { 'amount': 350000, 'date': DateTime(2021, 08, 03) },
+              { 'amount': 350000, 'date': DateTime(2021, 09, 03) },
+              { 'amount': 400000, 'date': DateTime(2021, 10, 03) },
+              { 'amount': 400000, 'date': DateTime(2021, 11, 03) },
+              { 'amount': 400000, 'date': DateTime(2021, 12, 03) },
+              { 'amount': 500000, 'date': DateTime(2022, 01, 03) },
             ],
           },
         ],
