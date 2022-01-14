@@ -111,27 +111,31 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   Widget _transactionItem(BuildContext context, int tailIndex) {
     int index = widget.profile['transactions'].length - 1 - tailIndex;
     Map transaction = widget.profile['transactions'][index];
-    return Container(
-      margin: EdgeInsets.all(1),
-      child: Row(
-        children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Text(transaction['name']),
-          ),
-          Expanded(
-            child: Container(
-              alignment: Alignment.centerRight,
-              child: _transactionAmountText(transaction['amount']),
+    return InkWell(    
+      splashColor: Theme.of(context).primaryColor.withAlpha(60),
+      onTap: () => _routeToTransactionCreation(context, edited: true, index: index),
+      child: Container(
+        margin: EdgeInsets.all(1),
+        child: Row(
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(transaction['name']),
             ),
-          ),
-          Container(
-            alignment: Alignment.centerRight,
-            width: 40,
-            child: Text("บาท"),
-          ),
-        ],
-      ),
+            Expanded(
+              child: Container(
+                alignment: Alignment.centerRight,
+                child: _transactionAmountText(transaction['amount']),
+              ),
+            ),
+            Container(
+              alignment: Alignment.centerRight,
+              width: 40,
+              child: Text("บาท"),
+            ),
+          ],
+        ),
+      )
     );
   }
 
@@ -245,12 +249,14 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     );
   }
 
-  void _routeToTransactionCreation(BuildContext context) {
+  void _routeToTransactionCreation(BuildContext context, {bool edited=false, int? index}) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => TransactionCreation(
           transactions: widget.profile['transactions'],
+          edited: edited,
+          transactionIndex: index,
         ),
       ),
     ).whenComplete(() => setState((){}));

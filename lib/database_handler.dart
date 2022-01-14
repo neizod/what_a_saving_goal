@@ -122,6 +122,7 @@ class DatabaseHandler {
       },
       {
         'name': 'นาย ประหยัด มัธยัสถ์',
+        'current': 77777,
         'transactions': [
           {
             'name': 'ปันผล',

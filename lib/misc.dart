@@ -172,13 +172,7 @@ String makeCurrencyString(int money, {bool floating = true}){
 }
 
 int makeCurrencyInt(String money){
-  // try{
-  //   num moneyNum = numSanitizedFormat.parse(money)*100;
-  //   return moneyNum.toInt();
-  // }
-  // on FormatException {
-  //   return null;
-  // }
   num moneyNum = numSanitizedFormat.parse(money)*100;
   return moneyNum.toInt();
 }
+

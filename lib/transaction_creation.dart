@@ -5,86 +5,6 @@ import 'package:intl/intl.dart';
 import 'database_handler.dart';
 import 'misc.dart';
 
-
-class PaymentButton extends StatefulWidget {
-  bool _income = true;
-  bool _outcome = false;
-
-  bool isIncome() => _income;
-
-  @override
-  _PaymentButton createState() => _PaymentButton();
-}
-
-
-class _PaymentButton extends State<PaymentButton> {
-
-
-  void _handleTap(int index){
-    setState(() {
-      if (index == 0) {
-        widget._income = true;
-        widget._outcome = false;
-      } else {
-        widget._outcome = true;
-        widget._income = false;
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context){
-    return Row(
-      children: [
-        Expanded(
-          child: GestureDetector(
-            onTap: (){
-              _handleTap(0);
-            },
-            child: Container(
-              height: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: widget._income ? Colors.black : Colors.white ,
-                border: Border.all(),
-              ),
-              child: Text("รายรับ",
-                style: TextStyle(
-                  color: widget._income ? Colors.white : Colors.black),
-                ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          width: 10,
-        ),
-        Expanded(
-          child: GestureDetector(
-            onTap: (){
-              _handleTap(1);
-            },
-            child: Container(
-              height: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: widget._outcome ? Colors.black : Colors.white ,
-                border: Border.all(),
-              ),
-              child: Text("รายจ่าย",
-                style: TextStyle(
-                  color: widget._outcome ? Colors.white : Colors.black),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-
 class CategoryButton extends StatefulWidget {
   @override
   _CategoryButton createState() => _CategoryButton();
@@ -189,18 +109,18 @@ class _DateTimeButton extends State<DateTimeButton>{
 class TransactionForm extends StatefulWidget{
   final TextEditingController descController = TextEditingController();
   final TextEditingController priceController = TextEditingController(text: '0.00');
+  final TextEditingController regDateController = TextEditingController();
+
+  bool _edited=false;
+  bool _income=true;
+
   DateTime? _date;
 
   DateTime getDate() => _date ?? DateTime.now();
   String getName() => descController.text;
   int getPrice() => makeCurrencyInt(priceController.text);
-
-  @override
-  void dispose(){
-    priceController.dispose();
-    descController.dispose();
-    //super.dispose();
-  }
+  bool isIncome() => _income;
+  
 
   @override
   _TransactionForm createState() => _TransactionForm();
@@ -210,19 +130,67 @@ class TransactionForm extends StatefulWidget{
 class _TransactionForm extends State<TransactionForm>{
   final NumberFormat numFormat = NumberFormat('#,##0.00');
   final NumberFormat numSanitizedFormat = NumberFormat('en_US');
-  final TextEditingController regDateController = TextEditingController();
 
   @override
-  void initState(){
-    super.initState();
-    widget._date = DateTime.now();
-    regDateController.text = (widget._date == null) ? '' : makeShortDate(widget._date!);
+  void dispose(){
+    widget.priceController.dispose();
+    widget.descController.dispose();
+    widget.regDateController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context){
     return Column(
       children: <Widget> [
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                
+                onTap: (){
+                  if(!widget._edited) _handleTap(true);
+                },
+                child: Container(
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    color: widget._income ? Colors.black : Colors.white ,
+                    border: Border.all(),
+                  ),
+                  child: Text("รายรับ",
+                    style: TextStyle(
+                      color: widget._income ? Colors.white : Colors.black),
+                    ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: (){
+                  if(!widget._edited) _handleTap(false);
+                },
+                child: Container(
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    color: widget._income ? Colors.white : Colors.black ,
+                    border: Border.all(),
+                  ),
+                  child: Text("รายจ่าย",
+                    style: TextStyle(
+                      color: widget._income ? Colors.black : Colors.white),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
         Focus(
           onFocusChange: (hasFocus){
             if(!hasFocus){
@@ -245,9 +213,9 @@ class _TransactionForm extends State<TransactionForm>{
               suffix: Text('\u0E3F'),
               labelText: "จำนวนเงิน",
             ),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 25,
-              color: Colors.green,
+              color: (widget._income) ? Colors.green : Colors.red,
             ),
             validator: refuse([empty('กรุณาระบุจำนวนเงิน')]),
             keyboardType: TextInputType.number,
@@ -287,7 +255,7 @@ class _TransactionForm extends State<TransactionForm>{
           ),
         ),
         TextFormField(
-          controller: regDateController,
+          controller: widget.regDateController,
           decoration: InputDecoration(
             labelText: "วันที่จดบันทึก",
             ),
@@ -298,6 +266,13 @@ class _TransactionForm extends State<TransactionForm>{
       );
   }
 
+  void _handleTap(bool index){
+    setState(() {
+        (index) ? widget._income = true : widget._income = false;
+      }
+    );
+  }
+
   void Function() pickDate() {
     return (){
       showDatePicker(
@@ -306,35 +281,67 @@ class _TransactionForm extends State<TransactionForm>{
         firstDate: DateTime(2020),
         lastDate: DateTime(2120),
       ).then((date) {
-        regDateController.text = makeShortDate(date!);
+        widget.regDateController.text = makeShortDate(date!);
       });
     };
   }
+
 }
 
 
-class TransactionCreation extends StatelessWidget {
-  TransactionCreation({Key? key, required this.transactions}) : super(key: key);
+class TransactionCreation extends StatefulWidget{
+  TransactionCreation({Key? key, required this.transactions, required this.edited, this.transactionIndex}) : super(key: key);
+  
   DatabaseHandler _database = DatabaseHandler();
 
   final List transactions;
-  PaymentButton _paymentButton = PaymentButton();
-  TransactionForm _transactionForm = TransactionForm();
+  final bool edited;
+  final int? transactionIndex;
+
+  @override
+  State<TransactionCreation> createState() => _TransactionCreation();
+}
+
+class _TransactionCreation extends State<TransactionCreation> {
+  
+  final DatabaseHandler _database = DatabaseHandler();
+  final TransactionForm _transactionForm = TransactionForm();
+
+  @override
+  void initState() {
+    if(widget.edited && widget.transactionIndex!=null){
+      var transaction = widget.transactions[widget.transactionIndex!];
+      int amount = transaction['amount'];
+      _transactionForm._edited = true;
+      _transactionForm._income = (amount > 0) ? true : false;
+      if(amount<0) amount*=-1;
+      _transactionForm.descController.text = transaction['name'];
+      _transactionForm.priceController.text = makeCurrencyString(amount);
+      debugPrint(makeShortDate(transaction['date']));
+      _transactionForm.regDateController.text = makeShortDate(transaction['date']);
+    }
+    else{
+      _transactionForm.regDateController.text = makeShortDate(DateTime.now());
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('เพิ่มรายรับรายจ่าย'),
+        actions: [
+          IconButton(
+            onPressed: () => (widget.edited) ? deleteTransactionAlert() : null,
+            icon: const Icon(Icons.delete_forever_rounded),
+          )
+        ],
+        title: (widget.edited) ? Text('แก้ไขรายรับรายจ่าย') : Text('เพิ่มรายรับรายจ่าย'),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Column(
           children: <Widget>[
-            Container(
-              padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-              child: _paymentButton,
-            ),
             Container(
               padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
               child: _transactionForm,
@@ -358,18 +365,28 @@ class TransactionCreation extends StatelessWidget {
               child: FloatingActionButton.extended(
                 onPressed: (){
                   // TODO form validate
-                  int sign = _paymentButton.isIncome() ? 1 : -1 ;
-                  transactions.add({
-                    'name': _transactionForm.getName(),
-                    'amount': sign * _transactionForm.getPrice(),
-                    'date': _transactionForm.getDate(),
-                  });
-                  _database.writeDatabase().whenComplete(() => Navigator.pop(context));
+                  int sign = _transactionForm._income ? 1 : -1 ;
+                  if(widget.edited){
+                    widget.transactions[widget.transactionIndex!] = {
+                      'name': _transactionForm.getName(),
+                      'amount': sign * _transactionForm.getPrice(),
+                      'date': _transactionForm.getDate(),
+                    };
+                    _database.writeDatabase().whenComplete(() => Navigator.pop(context));
+                  }
+                  else{
+                    widget.transactions.add({
+                      'name': _transactionForm.getName(),
+                      'amount': sign * _transactionForm.getPrice(),
+                      'date': _transactionForm.getDate(),
+                    });
+                    _database.writeDatabase().whenComplete(() => Navigator.pop(context));
+                  }
 
                   //Todo: Implement add data to database function
                 },
-                label: Text('เพิ่มบันทึก',
-                  style: Theme.of(context).textTheme.headline5,
+                label: Text((widget.edited)? 'แก้ไข' : 'เพิ่มบันทึก',
+                  // style: Theme.of(context).textTheme.headline5,
                   ),
                 ),
               ),
@@ -379,4 +396,32 @@ class TransactionCreation extends StatelessWidget {
     );
   }
 
+  void deleteTransactionAlert({String alertTitle='Delete Heading', String alertInformation='Init information'}){
+    bool delete=false;
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) => 
+        AlertDialog(
+        title: Text(alertTitle),
+        content: Text(alertInformation),
+        actions: [
+          TextButton(
+            onPressed: (){
+              Navigator.pop(context);
+              }, 
+            child: const Text("ยกเลิก")
+          ),
+          TextButton(onPressed: (){
+            widget.transactions.removeAt(widget.transactionIndex!);
+            delete=true;
+            _database.writeDatabase().whenComplete(() => Navigator.pop(context));
+          }, 
+          child: const Text("ตกลง")
+          )
+        ],
+      )
+    ).whenComplete(() {
+      if(delete) Navigator.pop(context);
+    });
+  }
 }
