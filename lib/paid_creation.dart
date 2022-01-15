@@ -9,8 +9,9 @@ import 'misc.dart';
 
 class PaidCreation extends StatefulWidget {
   // TODO require more?
-  const PaidCreation({Key? key, required this.goal}): super(key: key);
+  const PaidCreation({Key? key, required this.goal, this.paid}): super(key: key);
   final Map goal;
+  final Map? paid;
 
   @override
   State<PaidCreation> createState() => _PaidCreationState();
@@ -33,7 +34,13 @@ class _PaidCreationState extends State<PaidCreation>{
   void initState() {
     super.initState();
     formController['name']!.text = widget.goal['name'];
-    makeDate(DateTime.now());
+    if(widget.paid!=null){
+      formController['price']!.text = makeCurrencyString(widget.paid!['amount']);
+      makeDate(widget.paid!['date']);
+    }
+    else{
+      makeDate(DateTime.now());
+    }
   }
 
   @override
@@ -41,6 +48,12 @@ class _PaidCreationState extends State<PaidCreation>{
     return Scaffold(
       appBar: AppBar(
         title: Text('เก็บออมเป้าหมาย'),
+        actions: [
+          IconButton(
+            onPressed: ()=> (widget.paid==null) ? null: deleteTransactionAlert(),
+           icon: const Icon(Icons.delete_forever_rounded),
+           )
+        ],
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -88,7 +101,16 @@ class _PaidCreationState extends State<PaidCreation>{
       controller: formController['price'],
       keyboardType: TextInputType.number,
       onChanged: (_) => extractFormValues(),
-      validator: refuse([empty('กรุณาระบุจำนวนเงิน'), notInt('จำนวนเงินต้องเป็นจำนวนเต็ม')]),
+      onTap: (){
+        var textFieldNum = formController['price']!.value.text;
+        var numSanitized = makeCurrencyInt(textFieldNum)/100;
+        debugPrint('Formatted ${numSanitized}');
+        formController['price']!.value = TextEditingValue(
+          text: numSanitized == 0 ? '' : '$numSanitized',
+          selection: TextSelection.collapsed(offset: numSanitized == 0 ? 0 : '$numSanitized'.length)
+        );
+      },
+      validator: refuse([empty('กรุณาระบุจำนวนเงิน')]),
       decoration: InputDecoration(
         labelText: "จำนวนเงิน",
       ),
@@ -112,10 +134,16 @@ class _PaidCreationState extends State<PaidCreation>{
       child: Text('เก็บออม'),
       onPressed: (){
         if (_formKey.currentState!.validate()) {
-          widget.goal['paids'].add({
-            'amount': makeCurrencyInt(_price!.toString()),
-            'date': _date!,
-          });
+          if(widget.paid == null){ //Create new paid transaction
+            widget.goal['paids'].add({
+              'amount': makeCurrencyInt(_price!.toString()),
+              'date': _date!,
+            });
+          }
+          else{
+            widget.paid!['amount'] = makeCurrencyInt(_price!.toString());
+            widget.paid!['date'] = _date!;
+          }
           widget.goal['paids'].sort(
             (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime)
           );
@@ -143,5 +171,34 @@ class _PaidCreationState extends State<PaidCreation>{
 
   void extractFormValues() {
     _price = int.tryParse(formController['price']?.text ?? '');
+  }
+
+    void deleteTransactionAlert({String alertTitle='Delete Heading', String alertInformation='Init information'}){
+    bool delete=false;
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) => 
+        AlertDialog(
+        title: Text(alertTitle),
+        content: Text(alertInformation),
+        actions: [
+          TextButton(
+            onPressed: (){
+              Navigator.pop(context);
+              }, 
+            child: const Text("ยกเลิก")
+          ),
+          TextButton(onPressed: (){
+            widget.goal['paids'].remove(widget.paid!);
+            delete=true;
+            _database.writeDatabase().whenComplete(() => Navigator.pop(context));
+          }, 
+          child: const Text("ตกลง")
+          )
+        ],
+      )
+    ).whenComplete(() {
+      if(delete) Navigator.pop(context);
+    });
   }
 }

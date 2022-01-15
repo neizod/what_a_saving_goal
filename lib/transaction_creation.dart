@@ -307,10 +307,12 @@ class _TransactionCreation extends State<TransactionCreation> {
   final DatabaseHandler _database = DatabaseHandler();
   final TransactionForm _transactionForm = TransactionForm();
 
+  var transaction;
+
   @override
   void initState() {
     if(widget.edited && widget.transactionIndex!=null){
-      var transaction = widget.transactions[widget.transactionIndex!];
+      transaction = widget.transactions[widget.transactionIndex!];
       int amount = transaction['amount'];
       _transactionForm._edited = true;
       _transactionForm._income = (amount > 0) ? true : false;
@@ -332,7 +334,9 @@ class _TransactionCreation extends State<TransactionCreation> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () => (widget.edited) ? deleteTransactionAlert() : null,
+            onPressed: () => (widget.edited) ? deleteTransactionAlert(
+              alertTitle: 'ลบรายการ "${transaction['name']}"', 
+              alertInformation: 'คุณต้องการลบ "${transaction['name']}" ออกจากการบันทึกใช่หรือไม่') : null,
             icon: const Icon(Icons.delete_forever_rounded),
           )
         ],

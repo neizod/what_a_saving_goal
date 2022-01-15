@@ -268,7 +268,8 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       context,
       MaterialPageRoute(
         builder: (context) => GoalInformation(
-          goal: widget.profile['goals'][index],
+          goals: widget.profile['goals'],
+          goalIndex: index,
           periods: periods,
           paidsPerPeriods: paidsPerPeriods,
         ),
