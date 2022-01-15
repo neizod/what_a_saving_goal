@@ -50,7 +50,10 @@ class _PaidCreationState extends State<PaidCreation>{
         title: Text('เก็บออมเป้าหมาย'),
         actions: [
           IconButton(
-            onPressed: ()=> (widget.paid==null) ? null: deleteTransactionAlert(),
+            onPressed: ()=> (widget.paid==null) ? null: deleteTransactionAlert(
+              alertInformation: "ลบบันทึกการออมเงิน",
+              alertTitle: "ต้องการลบรายการบันทึกการออมเงินนี้ใช่หรือไม่",
+            ),
            icon: const Icon(Icons.delete_forever_rounded),
            )
         ],
