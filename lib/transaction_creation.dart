@@ -333,12 +333,13 @@ class _TransactionCreation extends State<TransactionCreation> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(
-            onPressed: () => (widget.edited) ? deleteTransactionAlert(
+          (widget.edited) ? IconButton(
+            onPressed: () => deleteTransactionAlert(
               alertTitle: 'ลบรายการ "${transaction['name']}"', 
-              alertInformation: 'คุณต้องการลบ "${transaction['name']}" ออกจากการบันทึกใช่หรือไม่') : null,
+              alertInformation: 'คุณต้องการลบ "${transaction['name']}" ออกจากการบันทึกใช่หรือไม่'),
             icon: const Icon(Icons.delete_forever_rounded),
           )
+          : const SizedBox()
         ],
         title: (widget.edited) ? Text('แก้ไขรายรับรายจ่าย') : Text('เพิ่มรายรับรายจ่าย'),
       ),

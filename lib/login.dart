@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
           _profilesListView(context),
         ],
       ),
-      floatingActionButton: _populateExampleData(context),
+      // floatingActionButton: _populateExampleData(context),
     );
   }
 

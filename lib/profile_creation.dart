@@ -34,7 +34,15 @@ class _ProfileCreationState extends State<ProfileCreation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('เพิ่มบัญชีใหม่'),
+        actions: [(widget.profile == null) ? const SizedBox() : 
+          IconButton(
+            onPressed: () => deleteTransactionAlert(
+              alertTitle: 'ลบบัญชีผู้ใช้ "${widget.profile!['name']}"', 
+              alertInformation: 'คุณต้องการลบบัญชี "${widget.profile!['name']}" ออกจากแอพพลิเคชั่นอย่างถาวรใช่หรือไม่'),
+            icon: const Icon(Icons.delete_forever_rounded)
+            ) 
+          ],
+        title: (widget.profile == null) ? const Text('เพิ่มบัญชีใหม่') : const Text('แก้ไขบัญชี'),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -82,6 +90,45 @@ class _ProfileCreationState extends State<ProfileCreation> {
     );
   }
 
+  // Widget saveDeleteButton() {
+  //   return Container(
+  //     margin: EdgeInsets.all(10),
+  //     child: Row(
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Container(
+  //           width: 100,
+  //           child: ElevatedButton(
+  //             child: const Text('ลบบัญชี'),
+  //             style: ElevatedButton.styleFrom(
+  //               primary: Colors.red
+  //             ),
+  //             onPressed: (){
+  //               switch(widget.profile){
+  //                 case null: createProfile(this.context); break;
+  //                 default : updateProfile(this.context); break;
+  //               }
+  //             },
+  //           ),
+  //         ),
+  //         Container(
+  //           width: 100,
+  //           child: ElevatedButton(
+  //             child: const Text('บันทึก'),
+  //             onPressed: (){
+  //               switch(widget.profile){
+  //                 case null: createProfile(this.context); break;
+  //                 default : updateProfile(this.context); break;
+  //               }
+  //             },
+  //           ),
+  //         ),
+  //       ],
+  //     )
+  //   );
+  // }  
+
   Widget saveButton() {
     return Container(
       margin: EdgeInsets.all(20),
@@ -114,5 +161,34 @@ class _ProfileCreationState extends State<ProfileCreation> {
       widget.profile!['name'] = formController['name']!.text;
       _database.writeDatabase().whenComplete(() => Navigator.pop(context));
     }
+  }
+
+    void deleteTransactionAlert({String alertTitle='Delete Heading', String alertInformation='Init information'}){
+    bool delete=false;
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) => 
+        AlertDialog(
+        title: Text(alertTitle),
+        content: Text(alertInformation),
+        actions: [
+          TextButton(
+            onPressed: (){
+              Navigator.pop(context);
+              }, 
+            child: const Text("ยกเลิก")
+          ),
+          TextButton(onPressed: (){
+            widget.profiles.remove(widget.profile!);
+            delete=true;
+            _database.writeDatabase().whenComplete(() => Navigator.pop(context));
+          }, 
+          child: const Text("ตกลง")
+          )
+        ],
+      )
+    ).whenComplete(() {
+      if(delete) Navigator.of(context)..pop(context)..pop(context);
+    });
   }
 }
