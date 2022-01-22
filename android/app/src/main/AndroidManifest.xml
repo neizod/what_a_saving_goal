@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.what_a_saving_goal">
    <application
-        android:label="what_a_saving_goal"
+        android:label="kebtang"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
