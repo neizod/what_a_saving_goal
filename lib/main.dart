@@ -7,9 +7,9 @@ import 'login.dart';
 
 
 void main() async {
-  final database = DatabaseHandler();
   Intl.defaultLocale = 'th';
   initializeDateFormatting();
+  final database = DatabaseHandler();
   await database.init();
   runApp(MyApp(data: await database.fetchDatabase()));
 }
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       home: LoginPage(profiles: data),
-      //debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

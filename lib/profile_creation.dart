@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'database_handler.dart';
+import 'login.dart';
 import 'misc.dart';
 
 
 class ProfileCreation extends StatefulWidget {
-  const ProfileCreation({Key? key, required this.profiles, this.profile}) : super(key: key);
+  const ProfileCreation({Key? key, required this.profiles, this.profile=null}) : super(key: key);
   final List profiles;
   final Map? profile;
 
@@ -31,17 +32,16 @@ class _ProfileCreationState extends State<ProfileCreation> {
   }
 
   @override
+  void dispose() {
+    formController.forEach((_, value) => value.dispose());
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [(widget.profile == null) ? const SizedBox() : 
-          IconButton(
-            onPressed: () => deleteTransactionAlert(
-              alertTitle: 'ลบบัญชีผู้ใช้ "${widget.profile!['name']}"', 
-              alertInformation: 'คุณต้องการลบบัญชี "${widget.profile!['name']}" ออกจากแอพพลิเคชั่นอย่างถาวรใช่หรือไม่'),
-            icon: const Icon(Icons.delete_forever_rounded)
-            ) 
-          ],
+        actions: [(widget.profile == null) ? const SizedBox() : deleteProfileButton(context)],
         title: (widget.profile == null) ? const Text('เพิ่มบัญชีใหม่') : const Text('แก้ไขบัญชี'),
       ),
       body: SingleChildScrollView(
@@ -52,7 +52,7 @@ class _ProfileCreationState extends State<ProfileCreation> {
             child: Column(
               children: [
                 nameField(),
-                (widget.profile == null) ? currentField() : Divider() ,
+                (widget.profile == null) ? currentField() : const Divider(),
                 SizedBox(height: 20),
                 saveButton(),
               ],
@@ -63,10 +63,31 @@ class _ProfileCreationState extends State<ProfileCreation> {
     );
   }
 
-  @override
-  void dispose() {
-    formController.forEach((_, value) => value.dispose());
-    super.dispose();
+  Widget deleteProfileButton(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.delete_forever_rounded),
+      onPressed: () => showDialog(
+        context: context,
+        builder: (context) => confirmDeleteDialog(context),
+      ).then((confirmed) => (confirmed) ? deleteProfile(context) : null),
+    );
+  }
+
+  Widget confirmDeleteDialog(BuildContext context) {
+    return AlertDialog(
+      title: Text('ยืนยันการลบบัญชี'),
+      content: Text('ต้องการลบบัญชี ${widget.profile!['name']} หรือไม่'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text('ยกเลิก'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text('ตกลง'),
+        ),
+      ],
+    );
   }
 
   TextFormField nameField() {
@@ -144,51 +165,29 @@ class _ProfileCreationState extends State<ProfileCreation> {
     );
   }
 
-  void createProfile(BuildContext context){
-    
+  void createProfile(BuildContext context) {
     if (_formKey.currentState!.validate()) {
-      Function.apply(
-        _database.addProfile,
-        [widget.profiles],
-        formController.map((key, value) => MapEntry(Symbol(key), value.text)),
+      _database.createProfile(
+        widget.profiles,
+        name: formController['name']!.text,
+        current: makeCurrencyInt(formController['current']!.text),
       ).whenComplete(() => Navigator.pop(context));
     }
   }
 
-  void updateProfile(BuildContext context){
-    debugPrint("In update profile function");
+  void updateProfile(BuildContext context) {
     if (_formKey.currentState!.validate()) {
-      widget.profile!['name'] = formController['name']!.text;
-      _database.writeDatabase().whenComplete(() => Navigator.pop(context));
+      _database.updateProfile(
+        widget.profile!,
+        name: formController['name']!.text,
+      ).whenComplete(() => Navigator.pop(context));
     }
   }
 
-    void deleteTransactionAlert({String alertTitle='Delete Heading', String alertInformation='Init information'}){
-    bool delete=false;
-    showDialog(
-      context: context, 
-      builder: (BuildContext context) => 
-        AlertDialog(
-        title: Text(alertTitle),
-        content: Text(alertInformation),
-        actions: [
-          TextButton(
-            onPressed: (){
-              Navigator.pop(context);
-              }, 
-            child: const Text("ยกเลิก")
-          ),
-          TextButton(onPressed: (){
-            widget.profiles.remove(widget.profile!);
-            delete=true;
-            _database.writeDatabase().whenComplete(() => Navigator.pop(context));
-          }, 
-          child: const Text("ตกลง")
-          )
-        ],
-      )
-    ).whenComplete(() {
-      if(delete) Navigator.of(context)..pop(context)..pop(context);
-    });
+  void deleteProfile(BuildContext context) {
+    _database.deleteProfile(
+      widget.profiles,
+      widget.profile!,
+    ).whenComplete(() => Navigator.of(context)..pop()..pop());
   }
 }

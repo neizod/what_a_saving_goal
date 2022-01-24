@@ -3,7 +3,6 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'misc.dart';
-import 'models/paid_history.dart';
 
 
 class DatabaseHandler {
@@ -166,20 +165,27 @@ class DatabaseHandler {
     ]);
   }
 
-  // TODO XXX NOTE: it does NOT enforce the type, we MUST parse it ourselve!
-  Future<void> addProfile(List profiles, {name: String, current: int}) async {
-    current = makeCurrencyInt(current);
+  Future<void> createProfile(List profiles, {String? name, int? current}) async {
     Map firstEntry = {
       'name': 'ยอดยกมา',
       'amount': current,
       'date': DateTime.now(),
     };
-    profiles.add(Map<String, Object>.from({
+    profiles.add({
       'name': name,
-      'current': current, // TODO remove and just use sum transactions ???
       'transactions': [firstEntry],
       'goals': [],
-    }));
+    });
+    await writeDatabase();
+  }
+
+  Future<void> updateProfile(Map profile, {String? name}) async {
+    profile['name'] = name;
+    await writeDatabase();
+  }
+
+  Future<void> deleteProfile(List profiles, Map profile) async {
+    profiles.remove(profile);
     await writeDatabase();
   }
 
