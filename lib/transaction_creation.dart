@@ -281,6 +281,7 @@ class _TransactionForm extends State<TransactionForm>{
         firstDate: DateTime(2020),
         lastDate: DateTime(2120),
       ).then((date) {
+        widget._date = date;
         widget.regDateController.text = makeShortDate(date!);
       });
     };
@@ -377,16 +378,17 @@ class _TransactionCreation extends State<TransactionCreation> {
                       'amount': sign * _transactionForm.getPrice(),
                       'date': _transactionForm.getDate(),
                     };
-                    _database.writeDatabase().whenComplete(() => Navigator.pop(context));
-                  }
-                  else{
+                  } else {
                     widget.transactions.add({
                       'name': _transactionForm.getName(),
                       'amount': sign * _transactionForm.getPrice(),
                       'date': _transactionForm.getDate(),
                     });
-                    _database.writeDatabase().whenComplete(() => Navigator.pop(context));
                   }
+                  widget.transactions.sort(
+                    (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime)
+                  );
+                  _database.writeDatabase().whenComplete(() => Navigator.pop(context));
 
                   //Todo: Implement add data to database function
                 },

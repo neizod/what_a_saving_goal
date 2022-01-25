@@ -52,7 +52,7 @@ class _ProfileCreationState extends State<ProfileCreation> {
             child: Column(
               children: [
                 nameField(),
-                (widget.profile == null) ? currentField() : const Divider(),
+                (widget.profile == null) ? currentField() : const SizedBox(),
                 SizedBox(height: 20),
                 saveButton(),
               ],
@@ -69,7 +69,7 @@ class _ProfileCreationState extends State<ProfileCreation> {
       onPressed: () => showDialog(
         context: context,
         builder: (context) => confirmDeleteDialog(context),
-      ).then((confirmed) => (confirmed) ? deleteProfile(context) : null),
+      ).then((confirmed) => confirmed ? deleteProfile(context) : null),
     );
   }
 

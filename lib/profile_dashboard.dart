@@ -14,7 +14,7 @@ import 'misc.dart';
 
 class ProfileDashboard extends StatefulWidget {
   const ProfileDashboard({Key? key, required this.profiles, required this.profile}) : super(key: key);
-  final List profiles;  // TODO why we need this?
+  final List profiles;
   final Map profile;
 
   @override
@@ -24,6 +24,7 @@ class ProfileDashboard extends StatefulWidget {
 
 class _ProfileDashboardState extends State<ProfileDashboard> {
   final DatabaseHandler _database = DatabaseHandler();
+  final TextEditingController _reminderController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +61,11 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
             _goalHeadline(context),
             _activeGoalsListView(context),
             _goalCreationButton(context),
+            Divider(height: 3),
+            _reminderHeadline(context),
+            _reminderNote(context),
+            _reminderEditingButton(context),
+            SizedBox(height: 200),
           ],
         ),
       ),
@@ -238,6 +244,69 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     );
   }
 
+  Widget _reminderHeadline(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(8),
+      child: Text(
+        'บันทึกช่วยจำ',
+        style: Theme.of(context).textTheme.headline6,
+      ),
+    );
+  }
+
+  Widget _reminderNote(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(20),
+      child: Text(
+        widget.profile['note'],
+      ),
+    );
+  }
+
+  Widget _reminderEditingButton(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(20),
+      child: ElevatedButton(
+        child: Text('แก้ไขบันทึก'),
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) => _reminderEditingDialog(context),
+        ).then((save) => save ? updateProfileNote(context) : null),
+      ),
+    );
+  }
+
+  Widget _reminderEditingDialog(BuildContext context) {
+    _reminderController.text = widget.profile['note'];
+    return AlertDialog(
+      title: Text('แก้ไขบันทึก'),
+      content: TextField(
+        controller: _reminderController,
+        keyboardType: TextInputType.multiline,
+        minLines: 2,
+        maxLines: 5,
+        maxLength: 255,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text('ยกเลิก'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text('บันทึก'),
+        ),
+      ],
+    );
+  }
+
+  void updateProfileNote(BuildContext context) {
+    _database.updateProfileNote(
+      widget.profile,
+      note: _reminderController.text,
+    ).whenComplete(() => setState((){}));
+  }
+
   void _routeToTransactionSummary(BuildContext context) {
     Navigator.push(
       context,
@@ -289,10 +358,14 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   }
 
   void _routeToProfileCreation(BuildContext context) {
-    debugPrint("Go to profile creation page");
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ProfileCreation(profiles: widget.profiles, profile: widget.profile,)),
+      MaterialPageRoute(
+        builder: (context) => ProfileCreation(
+          profiles: widget.profiles,
+          profile: widget.profile,
+        ),
+      ),
     ).whenComplete(() => setState((){}));
   }
 }

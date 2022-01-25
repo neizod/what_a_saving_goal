@@ -38,7 +38,7 @@ class DatabaseHandler {
     _box.put(_boxKey, [
       {
         'name': 'นางสาว ตั้งใจ เก็บเงิน',
-        'current': 52196,
+        'note': 'แบงก์เขียว: 1-2345-67-8\nแบงก์ม่วง: 9-999-9999-9',
         'transactions': [
           {
             'name': 'เงินเดือน',
@@ -121,7 +121,7 @@ class DatabaseHandler {
       },
       {
         'name': 'นาย ประหยัด มัธยัสถ์',
-        'current': 77777,
+        'note': 'super valentine!',
         'transactions': [
           {
             'name': 'ปันผล',
@@ -173,6 +173,7 @@ class DatabaseHandler {
     };
     profiles.add({
       'name': name,
+      'note': '',
       'transactions': [firstEntry],
       'goals': [],
     });
@@ -189,6 +190,12 @@ class DatabaseHandler {
     await writeDatabase();
   }
 
+  Future<void> updateProfileNote(Map profile, {String? note}) async {
+    profile['note'] = note;
+    await writeDatabase();
+  }
+
+  // XXX
   Future<void> addGoal(List goals,
                       {name: String, price: int,
                        numPeriod: int, perPeriod:int, periodType: String,
