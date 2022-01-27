@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'constants.dart';
+
 
 // widgets ===================================================================
 
@@ -96,11 +98,11 @@ DateTime nextYear(DateTime date, int years) {
 }
 
 
-List<DateTime> listPeriods(Map goal, {bool endDateIsNow: true, bool includeLastEntry: true}) {
+List<DateTime> listPeriods(Map goal, {int endDateOffset = 0, bool includeLastEntry = true}) {
   DateTime startDate = goal['startDate'];
   DateTime endDate = goal['endDate'];
-  if (endDateIsNow) {
-    endDate = DateTime.now();
+  if (endDateOffset >= 0) {
+    endDate = nextTime(DateTime.now(), endDateOffset, goal['periodType']);
   }
   if (startDate.isAfter(endDate)) {
     endDate = startDate;
@@ -147,32 +149,39 @@ String makePeriodTitle(int index, List periods) {
     return 'ก่อนออม';
   } else if (index == periods.length) {
     return 'อนาคต';
-  } // TODO == periods.length - 1 => ปัจจุบัน ???
+  } else if (index == periods.length - Constants.periodsAhead - 1) {
+    return 'งวดที่ ${index} (ปัจจุบัน)';
+  }
   return 'งวดที่ ${index}';
 }
 
 
 String makePeriodRange(int index, List periods) {
-  // TODO need to sub the second date by 1 day !
   if (index == 0) {
-    //DateFormat()
-    return 'ก่อน -- ${fullDateFormatter.format(periods[0])}';
+    return 'ก่อน ${fullDateFormatter.format(periods[0])}';
   } if (index == periods.length) {
-    return '${fullDateFormatter.format(periods.last)} -- หลัง';
+    return 'หลัง ${fullDateFormatter.format(periods.last)}';
   }
-  return '${fullDateFormatter.format(periods[index-1])} -- ${fullDateFormatter.format(periods[index])}';
+  DateTime startDate = periods[index-1];
+  DateTime endDate = periods[index].subtract(Duration(days: 1));
+  if (startDate == endDate) {
+    return 'วันที่ ${fullDateFormatter.format(startDate)}';
+  }
+  return '${fullDateFormatter.format(startDate)} -- ${fullDateFormatter.format(endDate)}';
 }
+
 
 String makeShortDate(DateTime date){
   return '${shortDateFormatter.format(date)}';
 }
 
+
 String makeCurrencyString(int money, {bool floating = true}){
   return floating ? numFormat.format(money.toDouble()/100) : numFormatNoFloating.format(money.toDouble()/100);
 }
+
 
 int makeCurrencyInt(String money){
   num moneyNum = numSanitizedFormat.parse(money)*100;
   return moneyNum.toInt();
 }
-

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
+import 'constants.dart';
 import 'database_handler.dart';
 import 'transaction_summary.dart';
 import 'profile_creation.dart';
@@ -196,7 +197,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
 
   Widget _goalItem(BuildContext context, int index) {
     Map goal = widget.profile['goals'][index];
-    List periods = listPeriods(goal);
+    List periods = listPeriods(goal, endDateOffset: Constants.periodsAhead);
     List paidsPerPeriods = listPaidsPerPeriods(goal, periods);
     return Container(
       height: 40,
@@ -220,7 +221,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   }
 
   Widget _goalCurrentProgress(Map goal, List paidsPerPeriods) {
-    List currentPeriod = paidsPerPeriods[paidsPerPeriods.length-2];
+    List currentPeriod = paidsPerPeriods[paidsPerPeriods.length-Constants.periodsAhead-2];
     int paidCurrentPeriod = currentPeriod.fold(0, (acc, x) => acc + x['amount'] as int);
     return Expanded(
       child: LinearPercentIndicator(

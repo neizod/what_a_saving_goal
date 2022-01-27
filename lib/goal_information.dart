@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
+import 'constants.dart';
 import 'database_handler.dart';
 import 'paid_creation.dart';
 import 'misc.dart';
@@ -103,8 +104,11 @@ class _GoalInformationState extends State<GoalInformation> {
     int index = widget.periods.length - revIndex;
     List paidsPerPeriods = widget.paidsPerPeriods[index];
     int sumPeriod = paidsPerPeriods.fold(0, (acc, x) => acc + x['amount'] as int);
+    if ((index == 0 || revIndex == 0) && sumPeriod == 0) {
+      return SizedBox();
+    }
     return Opacity(
-    opacity: (index==widget.periods.length-1) ? 1: 0.3,
+    opacity: (index == widget.periods.length-Constants.periodsAhead-1) ? 1 : 0.3,
     child: ExpansionTile(
       title: Row(
         children: [
