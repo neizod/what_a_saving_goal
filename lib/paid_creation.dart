@@ -36,6 +36,7 @@ class _PaidCreationState extends State<PaidCreation>{
     formController['name']!.text = widget.goal['name'];
     if(widget.paid!=null){
       formController['price']!.text = makeCurrencyString(widget.paid!['amount']);
+      _price = widget.paid!['amount'];
       makeDate(widget.paid!['date']);
     }
     else{
@@ -139,12 +140,12 @@ class _PaidCreationState extends State<PaidCreation>{
         if (_formKey.currentState!.validate()) {
           if(widget.paid == null){ //Create new paid transaction
             widget.goal['paids'].add({
-              'amount': makeCurrencyInt(_price!.toString()),
+              'amount': _price,
               'date': _date!,
             });
           }
           else{
-            widget.paid!['amount'] = makeCurrencyInt(_price!.toString());
+            widget.paid!['amount'] = _price;
             widget.paid!['date'] = _date!;
           }
           widget.goal['paids'].sort(
@@ -173,7 +174,8 @@ class _PaidCreationState extends State<PaidCreation>{
   }
 
   void extractFormValues() {
-    _price = int.tryParse(formController['price']?.text ?? '');
+    _price = makeCurrencyInt(formController['price']?.text ?? '');
+    //_price = int.tryParse(formController['price']?.text ?? '');
   }
 
     void deleteTransactionAlert({String alertTitle='Delete Heading', String alertInformation='Init information'}){
